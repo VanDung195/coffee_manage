@@ -75,32 +75,43 @@
                         </select>
                     </div>
                     <div class="form-group" style="margin-left: 42px;width:135px;">
-                        <label for="">Quantity</label>
+                        <label for="">Quantity (Min: 1)</label>
                         <br>
                         <button
+                        type="button"
                         class="btn-update-quantity"
                         data-type='0'
                         style="float: left"
+                        disabled
                         >
                         -
                         </button>
                             <input type="text" name="quantity" id="quantity" value="2" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" class="form-control" readonly>
                         <button
+                        type="button"
                         class="btn-update-quantity"
                         data-type='1'
                         style="float: left;"
+                        disabled
                         >
                         +
                         </button>
                     </div>
-                    <div class="form-group col-4">
+                    <div class="form-group col-3">
                         <span class="span-sum">
                             <label>Price</label>
-                            <input type="text" name="price" id="price" value="0" class="form-control" readonly>
+                            <input type="text" name="price" id="price" class="form-control" readonly>
                         </span>
                     </div>
+                    <div class="form-group col-1">
+                        <label>Delete</label>
+                        <button
+                        type="button"
+                        class="btn-delete"
+                        >X</button>
+                    </div>
                 </div>
-                <button type="submit">Create</button>
+                <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append-item">Thêm món</button>
             </form>
         </div>
         <div class="modal-footer">
@@ -134,7 +145,9 @@
         function showModal() {
             $("#modal-company").modal("show");
         }
-
+        function updatePrice() {
+            
+        }
         $(document).ready(function () {
             $("#select-item").select2({tag: true});
             $(document).on("click", ".open-AddBookDialog", function () {
@@ -150,30 +163,63 @@
             $('.btn-table').click(function(){
                 var tableId = $(this).data('table-id');
                 $("#table-id").val(tableId);
+                $("#price").val('0')
+                $("#quantity").val('0')
                 $("#modal-company").modal("show");
+
             })
             $('.btn-close').click(function(){
                 $("#modal-company").modal('toggle');
                 $("#search").val('');
             })
-            $('#modal-company').on('hidden.bs.modal', function(){
-                // $("#search").val('');
-                $("#quantity").val('');
-                // $('#select-item option:selected').removeAttr('selected');
-                $("#select-item option:selected").each(function(){
-                    $(this).removeAttr('selected');
-                })
-                $("#div-select select").val("0").change();
-            });
-
-
+            // $('#modal-company').on('hidden.bs.modal', function(){
+            //     // $("#search").val('');
+            //     $("#price").val('');
+            //     $("#quantity").val('1');
+            //     // $('#select-item option:selected').removeAttr('selected');
+            //     $("#select-item option:selected").each(function(){
+            //         $(this).removeAttr('selected');
+            //     })
+            //     $("#div-select select").val("0").change();
+            // });
+            $('#modal-cpmpany').on('hidden.bs.modal', function () {
+                // $(this).find('form').trigger('reset');
+                $("$modal-company").html("");
+            })
             $('#select-item').on('change',function(){
+                $(".btn-update-quantity").attr('disabled', false);
+                $("#quantity").val('1');
                 let price = $(this).find(":selected").data("price");
                 let quantity = parseInt(document.getElementById('quantity').value);
                 let sum = price * quantity;
                 $("#price").val(sum);
-                console.log(price, quantity);
             });
+            $(".btn-update-quantity").on('click', function(){
+                let type = parseInt($(this).data('type'));
+                let quantity = parseInt(document.getElementById('quantity').value);
+                if(type===0)
+                {
+                    if(quantity>1){
+                        quantity = quantity - 1;
+                        $("#quantity").val(quantity);
+                    }
+                }else{
+                    quantity += 1;
+                    $("#quantity").val(quantity);
+                }
+                let price = $("#select-item").find(":selected").data("price");
+                let sum = price * quantity;
+                $("#price").val(sum);
+            })
+
+            $("#append-item").on('click',function(){
+                console.log(1);
+                let parent = $("#div-select").parent();
+                if(parent.length > 1){
+                    parent.remove();
+                }
+                console.log(parent);
+            })
             //livesearch
             // $('#search').on('keyup', function(){
             //     $value = $(this).val();
