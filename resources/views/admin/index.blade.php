@@ -26,6 +26,9 @@
         .btn-update-quantity:active {
             background-color: #dae0e5;
         }
+        .form-test{
+            color: red;
+        }
     </style>
     
 @endpush
@@ -59,13 +62,13 @@
                 </tbody>
             </table> --}}
 
-            <form action="" method="POST">
+            <form action="" method="POST" id="form">
                 @csrf
                 <input type="text" class="form-control" name="table-id" id="table-id" readonly>
-                <div class="form-row">
+                <div class="form-row" id="item">
                     <div class="form-group col-5" id="div-select">
                         <label for="">Món</label>
-                        <select name="item" id="select-item">
+                        <select name="item" class="select-item">
                             <option value="0" data-price="0" selected>Chọn món</option>
                             @foreach ($items as $item)
                                 <option value="{{$item->id}}" data-price="{{ $item->price }}">
@@ -106,13 +109,15 @@
                     <div class="form-group col-1">
                         <label>Delete</label>
                         <button
+                        style="background-color: red"
                         type="button"
                         class="btn-delete"
                         >X</button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append-item">Thêm món</button>
+                
             </form>
+            <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
         </div>
         <div class="modal-footer">
             <button type="button" onclick="submitForm('company')" class="btn btn-success" >Create</button>
@@ -149,7 +154,7 @@
             
         }
         $(document).ready(function () {
-            $("#select-item").select2({tag: true});
+            $(".select-item").select2({tag: true});
             $(document).on("click", ".open-AddBookDialog", function () {
                 var myBookId = $(this).data('id');
                 $(".modal-body #bookId").val( myBookId );
@@ -172,21 +177,28 @@
                 $("#modal-company").modal('toggle');
                 $("#search").val('');
             })
-            // $('#modal-company').on('hidden.bs.modal', function(){
-            //     // $("#search").val('');
-            //     $("#price").val('');
-            //     $("#quantity").val('1');
-            //     // $('#select-item option:selected').removeAttr('selected');
+            $('#modal-company').on('hidden.bs.modal', function(){
+                // $("#search").val('');
+                $("#price").val('');
+                $("#quantity").val('1');
+                // $('#select-item option:selected').removeAttr('selected');
+                $(".select-item option:selected").each(function(){
+                    $(this).removeAttr('selected');
+                })
+                $("#div-select select").val("0").change();
+            });
+            // $('#modal-cpmpany').on('hidden.bs.modal', function () {
+            //     // $(this).find('form').trigger('reset');
             //     $("#select-item option:selected").each(function(){
             //         $(this).removeAttr('selected');
             //     })
             //     $("#div-select select").val("0").change();
-            // });
-            $('#modal-cpmpany').on('hidden.bs.modal', function () {
-                // $(this).find('form').trigger('reset');
-                $("$modal-company").html("");
-            })
-            $('#select-item').on('change',function(){
+
+            //     $("$modal-company").html("");
+                
+                
+            // })
+            $('.select-item').on('change',function(){
                 $(".btn-update-quantity").attr('disabled', false);
                 $("#quantity").val('1');
                 let price = $(this).find(":selected").data("price");
@@ -207,19 +219,139 @@
                     quantity += 1;
                     $("#quantity").val(quantity);
                 }
-                let price = $("#select-item").find(":selected").data("price");
+                let price = $(".select-item").find(":selected").data("price");
                 let sum = price * quantity;
                 $("#price").val(sum);
             })
 
-            $("#append-item").on('click',function(){
-                console.log(1);
-                let parent = $("#div-select").parent();
-                if(parent.length > 1){
-                    parent.remove();
-                }
-                console.log(parent);
-            })
+            // $("#append-item").on('click',function(){
+            //     let html = `<div class="form-row" id="item">
+            //         <div class="form-group col-5" id="div-select">
+            //             <label for="">Món</label>
+            //             <select name="item" id="select-item">
+            //                 <option value="0" data-price="0" selected>Chọn món</option>
+            //                 @foreach ($items as $item)
+            //                     <option value="{{$item->id}}" data-price="{{ $item->price }}">
+            //                         {{ $item->name }}
+            //                     </option>
+            //                 @endforeach
+            //             </select>
+            //         </div>
+            //         <div class="form-group" style="margin-left: 42px;width:135px;">
+            //             <label for="">Quantity (Min: 1)</label>
+            //             <br>
+            //             <button
+            //             type="button"
+            //             class="btn-update-quantity"
+            //             data-type='0'
+            //             style="float: left"
+            //             disabled
+            //             >
+            //             -
+            //             </button>
+            //                 <input type="text" name="quantity" id="quantity" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" class="form-control" readonly>
+            //             <button
+            //             type="button"
+            //             class="btn-update-quantity"
+            //             data-type='1'
+            //             style="float: left;"
+            //             disabled
+            //             >
+            //             +
+            //             </button>
+            //         </div>
+            //         <div class="form-group col-3">
+            //             <span class="span-sum">
+            //                 <label>Price</label>
+            //                 <input type="text" name="price" id="price" class="form-control" readonly>
+            //             </span>
+            //         </div>
+            //         <div class="form-group col-1">
+            //             <label>Delete</label>
+            //             <button
+            //             type="button"
+            //             class="btn-delete"
+            //             >X</button>
+            //         </div>
+            //     </div>`;
+            //     let newItem = $(html).appendTo("#form");
+            //     let parent = $("#div-select").parent();
+            //     console.log(parent);
+            //     newItem.find('*').trigger('change');
+            //     // if(parent.length > 1){
+            //     //     parent.remove();
+            //     // }
+            //     // let itemParent = $("#item").parent();
+
+            //     // console.log(itemParent.childrent());
+            // })
+
+                var addBtn = document.getElementById('append');
+                addBtn.addEventListener('click', function(){
+                    console.log(1);
+
+                    let div = document.createElement("div");
+                    div.innerHTML = `
+                    <div class="form-group col-5" class="div-select">
+                        <label for="">Món</label>
+                        <select name="item" class="select-item">
+                            <option value="0" data-price="0" selected>Chọn món</option>
+                            @foreach ($items as $item)
+                                <option value="{{$item->id}}" data-price="{{ $item->price }}">
+                                    {{ $item->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-left: 42px;width:135px;">
+                        <label for="">Quantity (Min: 1)</label>
+                        <br>
+                        <button
+                        type="button"
+                        class="btn-update-quantity"
+                        data-type='0'
+                        style="float: left"
+                        disabled
+                        >
+                        -
+                        </button>
+                            <input type="text" name="quantity" id="quantity" value="2" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" class="form-control" readonly>
+                        <button
+                        type="button"
+                        class="btn-update-quantity"
+                        data-type='1'
+                        style="float: left;"
+                        disabled
+                        >
+                        +
+                        </button>
+                    </div>
+                    <div class="form-group col-3">
+                        <span class="span-sum">
+                            <label>Price</label>
+                            <input type="text" name="price" id="price" class="form-control" readonly>
+                        </span>
+                    </div>
+                    <div class="form-group col-1">
+                        <label>Delete</label>
+                        <button
+                        style="background-color: red"
+                        type="button"
+                        class="btn-delete"
+                        >X</button>
+                    </div>
+                `;
+                    
+                div.classList.add("form-row")
+                document.getElementById('form').appendChild(div);
+                $(".form-row .select-item").select2({tag: true});
+
+                })
+
+
+
+
+
             //livesearch
             // $('#search').on('keyup', function(){
             //     $value = $(this).val();
