@@ -118,8 +118,17 @@
                 <div id="append-item">
 
                 </div>
+                <div>
+                    <div>
+                        <span class="fl-right" style="float: right;margin-bottom: 20px;">
+                            <label for="">Total price</label>
+                            <input type="text" name="total-price" id="total-price" value="0" class="form-control" style="border: none;background-color: #464f5b;">
+                        </span>
+                    </div>
+                </div>
                 {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
             </form>
+            <br>
             <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
         </div>
         <div class="modal-footer">
@@ -153,8 +162,8 @@
         function showModal() {
             $("#modal-invoice").modal("show");
         }
-        function updatePrice() {
-            
+        function getTotal() {
+            let total = 0;
         }
         $(document).ready(function () {
             $(".select-item").select2({tag: true});
@@ -259,68 +268,7 @@
                 $(this).closest('.form-row').find("#price").val(sum);
             })
             
-            // $("#append-item").on('click',function(){
-            //     let html = `<div class="form-row" id="item">
-            //         <div class="form-group col-5" id="div-select">
-            //             <label for="">Món</label>
-            //             <select name="item" id="select-item">
-            //                 <option value="0" data-price="0" selected>Chọn món</option>
-            //                 @foreach ($items as $item)
-            //                     <option value="{{$item->id}}" data-price="{{ $item->price }}">
-            //                         {{ $item->name }}
-            //                     </option>
-            //                 @endforeach
-            //             </select>
-            //         </div>
-            //         <div class="form-group" style="margin-left: 42px;width:135px;">
-            //             <label for="">Quantity (Min: 1)</label>
-            //             <br>
-            //             <button
-            //             type="button"
-            //             class="btn-update-quantity"
-            //             data-type='0'
-            //             style="float: left"
-            //             disabled
-            //             >
-            //             -
-            //             </button>
-            //                 <input type="text" name="quantity" id="quantity" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" class="form-control" readonly>
-            //             <button
-            //             type="button"
-            //             class="btn-update-quantity"
-            //             data-type='1'
-            //             style="float: left;"
-            //             disabled
-            //             >
-            //             +
-            //             </button>
-            //         </div>
-            //         <div class="form-group col-3">
-            //             <span class="span-sum">
-            //                 <label>Price</label>
-            //                 <input type="text" name="price" id="price" class="form-control" readonly>
-            //             </span>
-            //         </div>
-            //         <div class="form-group col-1">
-            //             <label>Delete</label>
-            //             <button
-            //             type="button"
-            //             class="btn-delete"
-            //             >X</button>
-            //         </div>
-            //     </div>`;
-            //     let newItem = $(html).appendTo("#form");
-            //     let parent = $("#div-select").parent();
-            //     console.log(parent);
-            //     newItem.find('*').trigger('change');
-            //     // if(parent.length > 1){
-            //     //     parent.remove();
-            //     // }
-            //     // let itemParent = $("#item").parent();
-
-            //     // console.log(itemParent.childrent());
-            // })
-
+                //Append item 
                 var addBtn = document.getElementById('append');
                 addBtn.addEventListener('click', function(){
                     console.log(1);
