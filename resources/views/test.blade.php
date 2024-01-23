@@ -6,6 +6,40 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+<style>
+    .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fefefe;
+    padding: 20px;
+}
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+#abc {
+    background-color: red;
+    color: black;
+    border: 12px solid red;
+}
+</style>
 <body id="body">
     {{-- <button id="show" onclick="show()">
         X
@@ -53,8 +87,61 @@
     <button id="myBtn">Try it</button>
 
     <p id="demo">
+
+
+
+
+
+    <button id="openModalBtn">Open Modal</button>
+    <div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModalBtn">&times;</span>
+        <div id="dynamicContent"></div>
+    </div>
+    </div>
+
 </body>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Get modal and buttons
+    var modal = document.getElementById('modal');
+    var openModalBtn = document.getElementById('openModalBtn');
+    var closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Add event listener to open modal button
+    openModalBtn.addEventListener('click', function () {
+        // Clear previous content
+        document.getElementById('dynamicContent').innerHTML = '';
+
+        // Create new content (in this case, a div containing an input field)
+        var dynamicContent = document.createElement('div');
+        dynamicContent.innerHTML = `<input type="text" placeholder="Enter something" id="abc">
+                                    `;
+
+        // Append the new content to the modal
+        document.getElementById('dynamicContent').appendChild(dynamicContent);
+
+        // Display the modal
+        modal.style.display = 'block';
+    });
+
+    // Add event listener to close modal button
+    closeModalBtn.addEventListener('click', function () {
+        // Hide the modal
+        modal.style.display = 'none';
+    });
+
+    // Close modal if the overlay is clicked
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
+
+
+
     function Show() {
         document.getElementById('create').style.display = "block";
     }
