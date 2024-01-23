@@ -41,7 +41,7 @@
 
 
     <!-- Modal botstrap -->
-<div id="modal-company" class="modal fade" role="dialog">
+<div id="modal-invoice" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
       <!-- Modal content-->
         <div class="modal-content">
@@ -65,8 +65,8 @@
             <form action="" method="POST" id="form">
                 @csrf
                 <input type="text" class="form-control" name="table-id" id="table-id" readonly>
-                <div class="form-row" id="item">
-                    <div class="form-group col-5" id="div-select">
+                <div class="item form-row" id="item">
+                    <div class="div-select form-group col-5" id="div-select">
                         <label for="">Món</label>
                         <select name="item" class="select-item">
                             <option value="0" data-price="0" selected>Chọn món</option>
@@ -89,7 +89,7 @@
                         >
                         -
                         </button>
-                            <input type="text" name="quantity" id="quantity" value="2" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" class="form-control" readonly>
+                            <input type="text" id="quantity" name="quantity" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
                         <button
                         type="button"
                         class="btn-update-quantity"
@@ -103,19 +103,22 @@
                     <div class="form-group col-3">
                         <span class="span-sum">
                             <label>Price</label>
-                            <input type="text" name="price" id="price" class="form-control" readonly>
+                            <input type="text" name="price" id="price" class="price form-control" readonly>
                         </span>
                     </div>
-                    <div class="form-group col-1">
+                    {{-- <div class="form-group col-1">
                         <label>Delete</label>
                         <button
                         style="background-color: red"
                         type="button"
                         class="btn-delete"
                         >X</button>
-                    </div>
+                    </div> --}}
                 </div>
-                
+                <div id="append-item">
+
+                </div>
+                {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
             </form>
             <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
         </div>
@@ -148,45 +151,57 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         function showModal() {
-            $("#modal-company").modal("show");
+            $("#modal-invoice").modal("show");
         }
         function updatePrice() {
             
         }
         $(document).ready(function () {
             $(".select-item").select2({tag: true});
-            $(document).on("click", ".open-AddBookDialog", function () {
-                var myBookId = $(this).data('id');
-                $(".modal-body #bookId").val( myBookId );
-                // As pointed out in comments, 
-                // it is unnecessary to have to manually call the modal.
-                // $('#addBookDialog').modal('show');
-            });
+            // $(document).on("click", ".open-AddBookDialog", function () {
+            //     var myBookId = $(this).data('id');
+            //     $(".modal-body #bookId").val( myBookId );
+            //     // As pointed out in comments, 
+            //     // it is unnecessary to have to manually call the modal.
+            //     // $('#addBookDialog').modal('show');
+            // });
             // $(document).on('click', '.table', function(){
-            //     $('#modal-company').modal('show')
+            //     $('#modal-invoice').modal('show')
             // })
             $('.btn-table').click(function(){
                 var tableId = $(this).data('table-id');
                 $("#table-id").val(tableId);
                 $("#price").val('0')
-                $("#quantity").val('0')
-                $("#modal-company").modal("show");
+                $(".quantity").val('0')
+                $("#modal-invoice").modal("show");
 
             })
             $('.btn-close').click(function(){
-                $("#modal-company").modal('toggle');
+                $("#modal-invoice").modal('toggle');
                 $("#search").val('');
             })
-            $('#modal-company').on('hidden.bs.modal', function(){
+            $('#modal-invoice').on('hidden.bs.modal', function(){
                 // $("#search").val('');
+                let parentDiv = document.getElementById('append-item');
+                let childDiv = parentDiv.getElementsByClassName('form-row');
+                while(childDiv.length > 0) {
+                    parentDiv.removeChild(childDiv[0]);
+                }
                 $("#price").val('');
-                $("#quantity").val('1');
+                $(".quantity").val('1');
                 // $('#select-item option:selected').removeAttr('selected');
                 $(".select-item option:selected").each(function(){
                     $(this).removeAttr('selected');
                 })
                 $("#div-select select").val("0").change();
             });
+            // $('.delete-test').on('click', function(){
+            //     let parentDiv = document.getElementById('append-item');
+            //     let childDiv = parentDiv.getElementsByClassName('form-row');
+            //     while(childDiv.length > 0) {
+            //         parentDiv.removeChild(childDiv[0]);
+            //     }
+            // })
             // $('#modal-cpmpany').on('hidden.bs.modal', function () {
             //     // $(this).find('form').trigger('reset');
             //     $("#select-item option:selected").each(function(){
@@ -194,36 +209,56 @@
             //     })
             //     $("#div-select select").val("0").change();
 
-            //     $("$modal-company").html("");
+            //     $("$modal-invoice").html("");
                 
                 
             // })
-            $('.select-item').on('change',function(){
-                $(".btn-update-quantity").attr('disabled', false);
-                $("#quantity").val('1');
-                let price = $(this).find(":selected").data("price");
-                let quantity = parseInt(document.getElementById('quantity').value);
-                let sum = price * quantity;
-                $("#price").val(sum);
-            });
+            // $('.select-item').on('change',function(){
+            //     $(".btn-update-quantity").attr('disabled', false);
+            //     $(".quantity").val('1');
+            //     let price = $(this).find(":selected").data("price");
+            //     let quantity = parseInt(document.getElementById('quantity').value);
+            //     let sum = price * quantity;
+            //     $("#price").val(sum);
+            // });
+
+            $(".form-row .select-item").on('change', function(){
+                    $(".btn-update-quantity").attr('disabled', false);
+                    let formRow = $(this).closest('.form-row');
+                    let quantityInput = formRow.find('.quantity');
+                    quantityInput.val('1');
+                    let quantity = parseInt(quantityInput.val());
+                    // let price = $(this).find(":selected").data("price");
+                    // let sum = price * quantity;
+                    // $("#price").val(sum);
+                    let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                    let sum = price * quantity;
+                    // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                    $(this).closest('.form-row').find("#price").val(sum);
+                });
+
             $(".btn-update-quantity").on('click', function(){
                 let type = parseInt($(this).data('type'));
-                let quantity = parseInt(document.getElementById('quantity').value);
+                let quantityInput = $(this).closest('.form-row').find('.quantity');
+                // console.log(quantityInput);
+                let quantity = parseInt(quantityInput.val());
                 if(type===0)
                 {
                     if(quantity>1){
                         quantity = quantity - 1;
-                        $("#quantity").val(quantity);
+                        quantityInput.val(quantity);
                     }
                 }else{
                     quantity += 1;
-                    $("#quantity").val(quantity);
+                    quantityInput.val(quantity);
                 }
-                let price = $(".select-item").find(":selected").data("price");
+                console.log(quantity);
+                let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
                 let sum = price * quantity;
-                $("#price").val(sum);
+                // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                $(this).closest('.form-row').find("#price").val(sum);
             })
-
+            
             // $("#append-item").on('click',function(){
             //     let html = `<div class="form-row" id="item">
             //         <div class="form-group col-5" id="div-select">
@@ -315,7 +350,7 @@
                         >
                         -
                         </button>
-                            <input type="text" name="quantity" id="quantity" value="2" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" class="form-control" readonly>
+                            <input type="text" id="quantity" name="quantity" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
                         <button
                         type="button"
                         class="btn-update-quantity"
@@ -329,7 +364,7 @@
                     <div class="form-group col-3">
                         <span class="span-sum">
                             <label>Price</label>
-                            <input type="text" name="price" id="price" class="form-control" readonly>
+                            <input type="text" name="price" id="price" class="price form-control" readonly>
                         </span>
                     </div>
                     <div class="form-group col-1">
@@ -341,34 +376,94 @@
                         >X</button>
                     </div>
                 `;
-                    
                 div.classList.add("form-row")
-                document.getElementById('form').appendChild(div);
+                // document.getElementById('form').appendChild(div);
+                document.getElementById('append-item').appendChild(div);
                 $(".form-row .select-item").select2({tag: true});
-
-                })
-
-
+                envent();
+            })
 
 
+            function envent()
+            {
+                // $('.form-row:last-child .select-item').on('change',function(){
+                //     // let parent = $("#div-select").parent();
+                //     // let child = parent.find($('#div-select'));
+                //     // console.log(child);
+                //     let quantityInput = $(".quantity").closest('.form-row').find('.quantity');
+                //     let priceInput = $(".price").closest('.form-row').find('.price');
+                //     let btnUpdate = $(".btn-update-quantity").closest('.form-row').find('.quantity');
+                //     // $(".btn-update-quantity").attr('disabled', false);
+                //     // $(".quantity").val('1');
+                //     // $(".price").val('0')
+                //     quantityInput.val('1');
+                //     priceInput.val('0');
+                //     btnUpdate.attr('disabled', false);
 
-            //livesearch
-            // $('#search').on('keyup', function(){
-            //     $value = $(this).val();
-            //     console.log(1);
-            //     $.ajax({
-            //         type: 'get',
-            //         url: '{{ route('item.search') }}',
-            //         data: {'search': $value},
-            //         success: function (response) {
-            //             console.log(response);
-            //             $('tbody').html(response.data);
-            //         },
-            //         error: function (response) {
-            //             console.log(12312);
-            //         }
-            //     });
-            // })
+                //     let price = $(this).find(":selected").data("price");
+                //     let quantity = parseInt(document.getElementById('quantity').value);
+                //     let sum = price * quantity;
+                //     $("#price").val(sum);
+                // });
+                $(".form-row .select-item").on('change', function(){
+                    $(".btn-update-quantity").attr('disabled', false);
+                    let formRow = $(this).closest('.form-row');
+                    let quantityInput = formRow.find('.quantity');
+                    quantityInput.val('1');
+                    let quantity = parseInt(quantityInput.val());
+                    // let price = $(this).find(":selected").data("price");
+                    // let sum = price * quantity;
+                    
+                    // $("#price").val(sum);
+                    let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                    let sum = price * quantity;
+                    // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                    $(this).closest('.form-row').find("#price").val(sum);
+                });
+                // Sự kiện cho nút tăng giảm trong form-row mới
+                $(".form-row:last-child .btn-update-quantity").on('click', function(){
+                    console.log(123);
+                    let type = parseInt($(this).data('type'));
+                    let quantityInput = $(this).closest('.form-row').find('.quantity');
+                    let quantity = parseInt(quantityInput.val());
+                    if (type === 0 && quantity > 1) {
+                        quantity = quantity - 1;
+                        quantityInput.val(quantity);
+                    } else if (type === 1) {
+                        quantity += 1;
+                        quantityInput.val(quantity);
+                    }
+                    console.log(quantity);
+                    let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                    let sum = price * quantity;
+                    // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                        $(this).closest('.form-row').find("#price").val(sum);
+                    });
+
+                    $(".form-row .btn-delete").on('click', function(){
+                        let divDelete = $(this).closest('.form-row');
+                        divDelete.remove();
+                    })
+                } 
+
+
+                    //livesearch
+                    // $('#search').on('keyup', function(){
+                    //     $value = $(this).val();
+                    //     console.log(1);
+                    //     $.ajax({
+                    //         type: 'get',
+                    //         url: '{{ route('item.search') }}',
+                    //         data: {'search': $value},
+                    //         success: function (response) {
+                    //             console.log(response);
+                    //             $('tbody').html(response.data);
+                    //         },
+                    //         error: function (response) {
+                    //             console.log(12312);
+                    //         }
+                    //     });
+                    // })
         });
 
     </script>
