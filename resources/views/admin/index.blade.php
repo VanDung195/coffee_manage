@@ -118,18 +118,23 @@
                 <div id="append-item">
 
                 </div>
-                <div>
-                    <div>
-                        <span class="fl-right" style="float: right;margin-bottom: 20px;">
-                            <label for="">Total price</label>
-                            <input type="text" name="total-price" id="total-price" value="0" class="form-control" style="border: none;background-color: #464f5b;">
+                <div class="form-row" style="margin-top: 20px;">
+                    <div class="form-group col-5">
+                        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
+                    </div> 
+                    <div class="form-group col-2" style="margin-left: 60px;">
+                        <h4>Total price: </h4>
+                    </div>
+                    <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
+                        <span class="fl-right" style="margin-bottom: 20px;">
+                            <input type="text" name="total-price" id="total-price" value="0" class="form-control" readonly>
                         </span>
                     </div>
                 </div>
                 {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
             </form>
             <br>
-            <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
+            
         </div>
         <div class="modal-footer">
             <button type="button" onclick="submitForm('company')" class="btn btn-success" >Create</button>
@@ -162,8 +167,14 @@
         function showModal() {
             $("#modal-invoice").modal("show");
         }
-        function getTotal() {
+
+        function getTotal(sum) {
             let total = 0;
+            total +=sum;
+            
+            console.log(total);
+            // let pricee = formrow.find("#price").val();
+            // console.log(pricee);
         }
         $(document).ready(function () {
             $(".select-item").select2({tag: true});
@@ -244,6 +255,10 @@
                     let sum = price * quantity;
                     // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
                     $(this).closest('.form-row').find("#price").val(sum);
+
+                    // let totalPrice = formRow.find('#price').val();
+                    // console.log(totalPrice);
+                    // getTotal($(this).closest('form-row'));
                 });
 
             $(".btn-update-quantity").on('click', function(){
@@ -266,6 +281,7 @@
                 let sum = price * quantity;
                 // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
                 $(this).closest('.form-row').find("#price").val(sum);
+                // getTotal();
             })
             
                 //Append item 
@@ -367,6 +383,7 @@
                     let sum = price * quantity;
                     // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
                     $(this).closest('.form-row').find("#price").val(sum);
+
                 });
                 // Sự kiện cho nút tăng giảm trong form-row mới
                 $(".form-row:last-child .btn-update-quantity").on('click', function(){
