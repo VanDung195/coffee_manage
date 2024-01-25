@@ -20,17 +20,26 @@ class MenuItemController extends Controller
             $items = MenuItem::query()
                     ->where('name', 'like', '%' . $request->search . '%')->get();
             // dd($item);
+            // if($items)
+            // {
+            //     $output .= '<tr>
+            //     <td>
+            //         <select name="item_select" class="form-control">';
+            //     foreach ($items as $key => $item) {
+            //         $output .= '<option value="' . $item->id . '">' . $item->name . '</option>';
+            //     }
+            //     $output .= '</select>
+            //         </td>
+            //     </tr>';
+            // }
+
             if($items)
             {
-                $output .= '<tr>
-                <td>
-                    <select name="item_select" class="form-control">';
+                $output .= '<ul>';
                 foreach ($items as $key => $item) {
-                    $output .= '<option value="' . $item->id . '">' . $item->name . '</option>';
+                    $output .= '<li><a href="#" data-id="' . $item->id . '" class="item-link">' . $item->name . '</a></li>';
                 }
-                $output .= '</select>
-                    </td>
-                </tr>';
+                $output .= '</ul>';
             }
         }
         return $this->successResponse($output);
