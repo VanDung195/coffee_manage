@@ -54,11 +54,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th>name</th>
+                        <th>Món</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <h1>asdasd</h1>
                 </tbody>
             </table> --}}
 
