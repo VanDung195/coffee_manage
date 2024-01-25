@@ -118,7 +118,7 @@
                 <div id="append-item">
 
                 </div>
-                <div class="form-row" style="margin-top: 20px;">
+                <div class="form-row" style="margin-top: 30px;">
                     <div class="form-group col-5">
                         <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
                     </div> 
@@ -168,13 +168,37 @@
             $("#modal-invoice").modal("show");
         }
 
-        function getTotal(sum) {
+        // function updateRowTotal(formRow) {
+        //     let quantity = parseInt(formRow.find('.quantity'),val());
+        //     let price = formRow.find('.select-item').find(":selected").data("price");
+
+        //     let sum = price * quantity;
+
+        //     formRow.find('#price').val(sum);
+
+        //     updateTotalPrice();
+        // }
+        function updateRowTotal(formRow) {
+            let quantity = parseInt(formRow.find('.quantity').val());
+            let price = formRow.find(".select-item").find(":selected").data("price");
+            let sum = price * quantity;
+            formRow.find("#price").val(sum);
+            // console.log(1);
+            // Cập nhật tổng tiền của tất cả sản phẩm
+            updateTotalPrice();
+        }
+
+        function updateTotalPrice() {
             let total = 0;
-            total +=sum;
-            
+            $(".item").each(function(){
+                let quantity = parseInt($(this).find('.quantity').val());
+                let price = $(this).find(".select-item").find(":selected").data("price");
+                let totalPrice = quantity*price;
+                total += price * quantity;
+                // console.log(quantity,price);
+            })
             console.log(total);
-            // let pricee = formrow.find("#price").val();
-            // console.log(pricee);
+            $("#total-price").val(total);
         }
         $(document).ready(function () {
             $(".select-item").select2({tag: true});
@@ -243,25 +267,30 @@
             // });
 
             $(".form-row .select-item").on('change', function(){
-                    $(".btn-update-quantity").attr('disabled', false);
+                    // $(".btn-update-quantity").attr('disabled', false);
                     let formRow = $(this).closest('.form-row');
-                    let quantityInput = formRow.find('.quantity');
-                    quantityInput.val('1');
-                    let quantity = parseInt(quantityInput.val());
-                    // let price = $(this).find(":selected").data("price");
-                    // let sum = price * quantity;
-                    // $("#price").val(sum);
-                    let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                    let sum = price * quantity;
-                    // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
-                    $(this).closest('.form-row').find("#price").val(sum);
+                    let quantityInput = formRow.find('.quantity').val('1');
+                    let btnUpdateQuantity = formRow.find('.btn-update-quantity');
+                    btnUpdateQuantity.attr('disabled', false);
 
+                    // // quantityInput.val('1');  OLD
+                    // let quantity = parseInt(quantityInput.val());
+                    // // let price = $(this).find(":selected").data("price");
+                    // // let sum = price * quantity;
+                    // // $("#price").val(sum);
+                    // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                    // let sum = price * quantity;
+                    // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                    // $(this).closest('.form-row').find("#price").val(sum);
+                    updateRowTotal(formRow);
+                    
                     // let totalPrice = formRow.find('#price').val();
                     // console.log(totalPrice);
                     // getTotal($(this).closest('form-row'));
                 });
 
             $(".btn-update-quantity").on('click', function(){
+                let formRow = $(this).closest('.form-row');
                 let type = parseInt($(this).data('type'));
                 let quantityInput = $(this).closest('.form-row').find('.quantity');
                 // console.log(quantityInput);
@@ -276,12 +305,13 @@
                     quantity += 1;
                     quantityInput.val(quantity);
                 }
-                console.log(quantity);
-                let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                let sum = price * quantity;
-                // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
-                $(this).closest('.form-row').find("#price").val(sum);
-                // getTotal();
+                // console.log(quantity);
+                // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                // let sum = price * quantity;
+                // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                // $(this).closest('.form-row').find("#price").val(sum);
+                updateRowTotal(formRow);
+                
             })
             
                 //Append item 
@@ -341,6 +371,7 @@
                     </div>
                 `;
                 div.classList.add("form-row")
+                div.classList.add("item")
                 // document.getElementById('form').appendChild(div);
                 document.getElementById('append-item').appendChild(div);
                 $(".form-row .select-item").select2({tag: true});
@@ -370,24 +401,26 @@
                 //     $("#price").val(sum);
                 // });
                 $(".form-row .select-item").on('change', function(){
-                    $(".btn-update-quantity").attr('disabled', false);
+                    // $(".btn-update-quantity").attr('disabled', false);
                     let formRow = $(this).closest('.form-row');
                     let quantityInput = formRow.find('.quantity');
+                    let btnUpdateQuantity = formRow.find('.btn-update-quantity');
+                    btnUpdateQuantity.attr('disabled', false);
                     quantityInput.val('1');
                     let quantity = parseInt(quantityInput.val());
                     // let price = $(this).find(":selected").data("price");
                     // let sum = price * quantity;
                     
-                    // $("#price").val(sum);
-                    let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                    let sum = price * quantity;
-                    // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
-                    $(this).closest('.form-row').find("#price").val(sum);
-
+                    // // $("#price").val(sum);
+                    // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                    // let sum = price * quantity;
+                    // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
+                    // $(this).closest('.form-row').find("#price").val(sum);
+                    updateRowTotal(formRow);
                 });
                 // Sự kiện cho nút tăng giảm trong form-row mới
                 $(".form-row:last-child .btn-update-quantity").on('click', function(){
-                    console.log(123);
+                    let formRow = $(this).closest('.form-row');
                     let type = parseInt($(this).data('type'));
                     let quantityInput = $(this).closest('.form-row').find('.quantity');
                     let quantity = parseInt(quantityInput.val());
@@ -398,16 +431,17 @@
                         quantity += 1;
                         quantityInput.val(quantity);
                     }
-                    console.log(quantity);
-                    let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                    let sum = price * quantity;
+                    // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
+                    // let sum = price * quantity;
                     // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
-                        $(this).closest('.form-row').find("#price").val(sum);
+                        // $(this).closest('.form-row').find("#price").val(sum);
+                        updateRowTotal(formRow);
                     });
 
                     $(".form-row .btn-delete").on('click', function(){
                         let divDelete = $(this).closest('.form-row');
                         divDelete.remove();
+                        updateTotalPrice();
                     })
                 } 
 
