@@ -118,8 +118,16 @@
 
                 </div>
                 <div class="form-row" style="margin-top: 30px;">
-                    <div class="form-group col-5">
-                        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
+                    <div class="form-group col-5" id="div-paid">
+                        <select name="is_paid" id="select_paid" class="form-control">
+                            {{-- @foreach ($is_paids as $key => $value)
+                                <option value="{{$key}}" >
+                                    {{ $value }}
+                                </option>
+                            @endforeach --}}
+                            <option value="0" selected>Chưa thanh toán</option>
+                            <option value="1">Đã thanh toán</option>
+                        </select>
                     </div> 
                     <div class="form-group col-2" style="margin-left: 60px;">
                         <h4>Total price: </h4>
@@ -131,6 +139,7 @@
                     </div>
                 </div>
                 {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
+                <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
             </form>
             <br>
             
@@ -225,6 +234,8 @@
             })
             $('#modal-invoice').on('hidden.bs.modal', function(){
                 // $("#search").val('');
+                $(".btn-update-quantity").attr('disabled', false);
+
                 let parentDiv = document.getElementById('append-item');
                 let childDiv = parentDiv.getElementsByClassName('form-row');
                 while(childDiv.length > 0) {
@@ -237,6 +248,10 @@
                     $(this).removeAttr('selected');
                 })
                 $("#div-select select").val("0").change();
+                $("#select-paid option:selected").each(function(){
+                    $(this).removeAttr('selected');
+                })
+                $("#div-paid select").val('0').change();
             });
             // $('.delete-test').on('click', function(){
             //     let parentDiv = document.getElementById('append-item');
