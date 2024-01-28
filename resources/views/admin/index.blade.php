@@ -61,13 +61,13 @@
                 </tbody>
             </table> --}}
 
-            <form action="" method="POST" id="form">
+            <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
                 @csrf
                 <input type="text" class="form-control" name="table-id" id="table-id" readonly>
                 <div class="item form-row" id="item">
                     <div class="div-select form-group col-5" id="div-select">
                         <label for="">Món</label>
-                        <select name="item" class="select-item">
+                        <select name="name[]" class="select-item">
                             <option value="0" data-price="0" selected>Chọn món</option>
                             @foreach ($items as $item)
                                 <option value="{{$item->id}}" data-price="{{ $item->price }}">
@@ -88,7 +88,7 @@
                         >
                         -
                         </button>
-                            <input type="text" id="quantity" name="quantity" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
+                            <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
                         <button
                         type="button"
                         class="btn-update-quantity"
@@ -102,7 +102,7 @@
                     <div class="form-group col-3">
                         <span class="span-sum">
                             <label>Price</label>
-                            <input type="text" name="price" id="price" class="price form-control" readonly>
+                            <input type="text" name="price[]" id="price" class="price form-control" readonly>
                         </span>
                     </div>
                     {{-- <div class="form-group col-1">
@@ -145,7 +145,7 @@
             
         </div>
         <div class="modal-footer">
-            <button type="button" onclick="submitForm('company')" class="btn btn-success" >Create</button>
+            <button type="button" onclick="submitForm()" class="btn btn-success" >Create</button>
         </div>
     </div>
 </div>
@@ -172,6 +172,25 @@
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        function submitForm() {
+            const obj = $("#form-create");
+            let formData = new FormData(obj[0]);
+            console.log(formData);
+            $.ajax({
+                type: 'post',
+                url: obj.attr('action'),
+                data: formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function(response) {
+                    console.log(3232);
+                }
+            });
+        }
         function showModal() {
             $("#modal-invoice").modal("show");
         }
@@ -190,7 +209,7 @@
             let quantity = parseInt(formRow.find('.quantity').val());
             let price = formRow.find(".select-item").find(":selected").data("price");
             let sum = price * quantity;
-            formRow.find("#price").val(sum);
+            formRow.find(".price").val(sum);
             // console.log(1);
             // Cập nhật tổng tiền của tất cả sản phẩm
             updateTotalPrice();
@@ -302,6 +321,7 @@
                     // console.log(totalPrice);
                     // getTotal($(this).closest('form-row'));
                 });
+            
 
             $(".btn-update-quantity").on('click', function(){
                 let formRow = $(this).closest('.form-row');
@@ -337,7 +357,7 @@
                     div.innerHTML = `
                     <div class="form-group col-5" class="div-select">
                         <label for="">Món</label>
-                        <select name="item" class="select-item">
+                        <select name="name[]" class="select-item">
                             <option value="0" data-price="0" selected>Chọn món</option>
                             @foreach ($items as $item)
                                 <option value="{{$item->id}}" data-price="{{ $item->price }}">
@@ -358,7 +378,7 @@
                         >
                         -
                         </button>
-                            <input type="text" id="quantity" name="quantity" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
+                            <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
                         <button
                         type="button"
                         class="btn-update-quantity"
@@ -372,7 +392,7 @@
                     <div class="form-group col-3">
                         <span class="span-sum">
                             <label>Price</label>
-                            <input type="text" name="price" id="price" class="price form-control" readonly>
+                            <input type="text" name="price[]" id="price" class="price form-control" readonly>
                         </span>
                     </div>
                     <div class="form-group col-1">
