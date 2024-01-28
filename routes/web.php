@@ -26,5 +26,6 @@ Route::get('/test2', [TestController::class, 'test2'])->name('test2');
 Route::get('/index',[TableController::class, 'index']);
 Route::get('/search', [MenuItemController::class, 'search'])->name('item.search');
 
-Route::post('/create',[InvoiceController::class, 'create'])->name('invoice.creatae');
+Route::post('/store',[InvoiceController::class, 'store'])->name('invoice.store');
+
 Route::get('/create', [TestController::class, 'create']);
