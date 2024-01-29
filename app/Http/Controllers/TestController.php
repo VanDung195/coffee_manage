@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\TableIsPaidEnum;
 use App\Models\MenuItem;
+use App\Models\Table;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
@@ -18,11 +19,13 @@ class TestController extends Controller
         //     echo $value;
         // }
         // return TableController::class;
-        $isPaids = TableIsPaidEnum::getKeys();
-        dd($isPaids);
-        foreach ($isPaids as $key => $value) {
-            dd($key,$value);
-        }
+        // $isPaids = TableIsPaidEnum::getKeys();
+        // dd($isPaids);
+        // foreach ($isPaids as $key => $value) {
+        //     dd($key,$value);
+        // }
+
+        // return Table::query()->get('name');
     }
     public function create() {
         return view('test');
