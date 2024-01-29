@@ -34,9 +34,9 @@
 @endpush
 @section('content')
     @foreach ($table as $item)
-    <button class="btn-table" data-table-id="{{ $item->name }}">
-        {{ $item->name }}
-    </button>
+        <button class="btn-table" data-table-id="{{ $item->name }}">
+            {{ $item->name }}
+        </button>
     @endforeach
 
 
@@ -77,7 +77,7 @@
                         </select>
                     </div>
                     <div class="form-group" style="margin-left: 42px;width:135px;">
-                        <label for="">Quantity (Min: 1)</label>
+                        <label for="">Số lượng (Min: 1)</label>
                         <br>
                         <button
                         type="button"
@@ -101,7 +101,7 @@
                     </div>
                     <div class="form-group col-3">
                         <span class="span-sum">
-                            <label>Price</label>
+                            <label>Giá</label>
                             <input type="text" name="price[]" id="price" class="price form-control" readonly>
                         </span>
                     </div>
@@ -130,7 +130,7 @@
                         </select>
                     </div> 
                     <div class="form-group col-2" style="margin-left: 60px;">
-                        <h4>Total price: </h4>
+                        <h4>Tổng tiền: </h4>
                     </div>
                     <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
                         <span class="fl-right" style="margin-bottom: 20px;">
@@ -145,7 +145,7 @@
             
         </div>
         <div class="modal-footer">
-            <button type="button" onclick="submitForm()" class="btn btn-success" >Create</button>
+            <button type="button" onclick="submitForm()" class="btn btn-success" >Tạo hoá đơn</button>
         </div>
     </div>
 </div>
