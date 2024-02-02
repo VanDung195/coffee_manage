@@ -7,6 +7,14 @@
         background-color: black;
         border: 1px solid black;
         margin: 50px;
+        color: rgb(14, 225, 52);
+    }
+    .btn-show-invoice-detail {
+        width: 50px;
+        height: 50px;
+        background-color: black;
+        border: 1px solid black;
+        margin: 50px;
         color: red;
     }
     .btn-update-quantity {
@@ -34,9 +42,16 @@
 @endpush
 @section('content')
 @foreach ($table as $item)
-<button class="btn-table" data-table-id="{{ $item->name }}">
-    {{ $item->name }}
-</button>
+<div class="show-table" style="float: left;">
+    <button class="btn-table" data-table-id="{{ $item->name }}">
+        {{ $item->name }}
+    </button>
+</div>
+<div class="show-table-detail" style="display: none;float: left;">
+    <button class="btn-show-invoice-detail" data-table-id="{{ $item->name }}">
+        {{$item->name}}
+    </button>
+</div>
 @endforeach
 
 
