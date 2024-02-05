@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\TableController;
@@ -17,13 +18,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('layout.master');
-});
+// Route::get('/', function () {
+//     return view('layout.master');
+// });
 Route::get('/test', [TestController::class, 'test']);
 Route::get('/test2', [TestController::class, 'test2'])->name('test2');
 
-Route::get('/index',[TableController::class, 'index']);
+Route::get('/',[TableController::class, 'index'])->name('table');
+
+Route::get('/login', [AuthController::class, 'login']);
 Route::get('/search', [MenuItemController::class, 'search'])->name('item.search');
 
 Route::post('/store',[InvoiceController::class, 'store'])->name('invoice.store');
