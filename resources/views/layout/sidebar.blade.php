@@ -23,15 +23,15 @@
         <ul class="metismenu side-nav mm-show">
             <li class="side-nav-title side-nav-item">Manager</li>
             <li class="side-nav-item">
-                <a href="#" class="side-nav-link">
+                <a href="{{route('table')}}" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> User </span>
+                    <span> Table </span>
                 </a>
             </li>
             <li class="side-nav-item">
                 <a href="#" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> Post </span>
+                    <span> Invoice </span>
                 </a>
             </li>
         </ul>        
