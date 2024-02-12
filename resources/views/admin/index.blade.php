@@ -61,7 +61,7 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Create invoice</h4>
+                <h4 class="modal-title">Tạo hoá đơn</h4>
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -199,7 +199,8 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response);
+                let dataArray = response.data;
+                console.log(response.data.name);
             },
             error: function(response) {
                 console.log(3232);
