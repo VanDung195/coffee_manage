@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', [TestController::class, 'test']);
 Route::get('/test2', [TestController::class, 'test2'])->name('test2');
 
-Route::get('/',[TableController::class, 'index'])->name('table');
+Route::get('/index',[TableController::class, 'index'])->name('table');
 
 Route::get('/login', [AuthController::class, 'login']);
 Route::get('/search', [MenuItemController::class, 'search'])->name('item.search');
