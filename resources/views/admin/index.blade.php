@@ -199,8 +199,13 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                let dataArray = response.data;
-                console.log(response.data.name);
+                console.log(response);
+                // console.log(response.data.name.length);
+                // for(let i = 0; i < 3; i++)
+                // {
+                //     console.log(response.data.name[i]);
+                // }
+                // console.log(response.data.name[0]);
             },
             error: function(response) {
                 console.log(3232);
@@ -408,7 +413,7 @@
             <div class="form-group col-3">
             <span class="span-sum">
             <label>Price</label>
-            <input type="text" name="price[]" id="price" class="price form-control" readonly>
+            <input type="text" name="price[]" id="price" class="price form-control" value=0 readonly>
             </span>
             </div>
             <div class="form-group col-1">
