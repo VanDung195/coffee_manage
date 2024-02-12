@@ -14,7 +14,7 @@ class InvoiceController extends Controller
     {
         try {
             
-            return $this->successResponse(1);
+            return $this->successResponse($request->all());
         } catch (\Throwable $th) {
             dd($th);
         }
