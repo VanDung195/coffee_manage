@@ -14,9 +14,21 @@ class InvoiceController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $id = (int)$request->id;
-            $item = MenuItem::query()->where('id', 1)->get();
-            return $this->successResponse($item);
+            $names = $request->name;
+            $quantity = $request->quantity;
+            $items = [];
+            // dd($names);
+            foreach ($names as $id) {
+                // $items[] = MenuItem::query()->where('id', $id)->get();
+                $id = (int)$id;
+                $item = MenuItem::query()->where('id', $id)->get();
+                $items[] = $item;
+            }
+            dd($items);
+            $item = MenuItem::query()->where('id', $id)->get();
+            dd($item);
+            // dd($request->all());
+            return $this->successResponse($request);
         } catch (\Throwable $th) {
             dd($th);
         }
