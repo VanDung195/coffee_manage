@@ -16,6 +16,7 @@ class InvoiceController extends Controller
         try {
             $names = $request->name;
             $quantity = $request->quantity;
+            
             $items = [];
             // dd($names);
             foreach ($names as $id) {
