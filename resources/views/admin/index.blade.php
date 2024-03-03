@@ -117,7 +117,7 @@
                 <div class="form-group col-3">
                     <span class="span-sum">
                         <label>Giá</label>
-                        <input type="text" name="price[]" id="price" class="price form-control" readonly>
+                        <input type="text" id="price" class="price form-control" readonly>
                     </span>
                 </div>
                 {{-- <div class="form-group col-1">
@@ -149,7 +149,7 @@
                 </div>
                 <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
                     <span class="fl-right" style="margin-bottom: 20px;">
-                        <input type="text" name="total-price" id="total-price" value="0" class="form-control" readonly>
+                        <input type="text" id="total-price" value="0" class="form-control" readonly>
                     </span>
                 </div>
             </div>
@@ -413,7 +413,7 @@
             <div class="form-group col-3">
             <span class="span-sum">
             <label>Price</label>
-            <input type="text" name="price[]" id="price" class="price form-control" value=0 readonly>
+            <input type="text" id="price" class="price form-control" value=0 readonly>
             </span>
             </div>
             <div class="form-group col-1">
