@@ -8,4 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'id',
+        'user_id',
+        'created_at',
+        'checkin_time',
+        'checkout_time',
+        'total_price',
+    ];
+
+    public $timestamps = false;
+
+    protected static function booted()
+    {
+        static::creating(static function($object){
+            $object->user_id = 1;
+        });
+    }
 }
