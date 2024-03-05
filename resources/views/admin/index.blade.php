@@ -82,7 +82,7 @@
                     <div class="item form-row" id="item">
                         <div class="div-select form-group col-5" id="div-select">
                             <label for="">Món</label>
-                            <select name="name[]" class="select-item">
+                            <select name="id[]" class="select-item">
                                 <option value="0" data-price="0" selected>Chọn món</option>
                                 @foreach ($items as $item)
                                 <option value="{{$item->id}}" data-price="{{ $item->price }}">
@@ -378,7 +378,7 @@
             div.innerHTML = `
             <div class="form-group col-5" class="div-select">
             <label for="">Món</label>
-            <select name="name[]" class="select-item">
+            <select name="id[]" class="select-item">
             <option value="0" data-price="0" selected>Chọn món</option>
             @foreach ($items as $item)
             <option value="{{$item->id}}" data-price="{{ $item->price }}">
