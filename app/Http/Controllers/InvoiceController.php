@@ -19,17 +19,20 @@ class InvoiceController extends Controller
             $invoice_detail = [];
 
             //Lấy danh sách các tên món có trong hoá đơn
-            $ItemName = $allData['name'];
+            $ItemNames = $allData['name'];
 
             //Lấy thông tin chi tiết của sản phấm 
             $menuItems = MenuItem::query()
-                        ->whereIn('id',$ItemName)->get();
+                        ->whereIn('id',$ItemNames)->get();
 
-            foreach ($allData['name'] as $index => $name) {
+            $menuItemsMap = $menuItems->keyBy('name')->toArray();
+
+            // dd($menuItemsMap);
+            foreach ($ItemNames as $index => $name) {
                 $quantity = $allData['quantity'][$index];
 
             }
-            return $this->successResponse($);
+            return $this->successResponse();
         } catch (\Throwable $th) {
             dd($th);
         }
