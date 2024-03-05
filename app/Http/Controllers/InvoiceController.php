@@ -21,8 +21,8 @@ class InvoiceController extends Controller
 
                 //Lấy danh sách các tên món có trong hoá đơn
                 $ItemsId = $allData['id'];
-
-                //Lấy thông tin chi tiết của sản phấm 
+                // dd($allData);
+                //Lấy thông tin chi tiết của sản phấm (Hàm whereIn để tìm ra cái id của 1 mảng)
                 $menuItems = MenuItem::query()
                             ->whereIn('id',$ItemsId)->get();
 
@@ -44,6 +44,14 @@ class InvoiceController extends Controller
                 ]
                 */
                 // dd($menuItemsMap);
+                $total_price = 0;
+                foreach($ItemsId as $index => $id) {
+                    $quantity = $allData['quantity'][$index];
+                    $price = $menuItemsMap[$id]['price'];
+
+                    $total_price += $quantity * $price;
+                }
+                dd($total_price);
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
@@ -58,9 +66,9 @@ class InvoiceController extends Controller
 
                     // dd($quantity, $price);
                 }
-                return $this->successResponse();
+                return $this->successResponse(1);
             }
-
+            return $this->successResponse();
 
         } catch (\Throwable $th) {
             dd($th);
