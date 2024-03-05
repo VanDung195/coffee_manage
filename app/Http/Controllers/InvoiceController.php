@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Invoice\StoreRequest;
 use App\Models\Invoice;
 use App\Models\MenuItem;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -51,7 +52,35 @@ class InvoiceController extends Controller
 
                     $total_price += $quantity * $price;
                 }
-                dd($total_price);
+
+                //cách cũ
+                // check if current date is between two dates php
+                // $currentDate = date('Y-m-d');
+
+                // $endDate = $this->end_date->format('Y-m-d');
+                // $startDate = $this->start_date->format('Y-m-d');
+                // //echo $paymentDate; // echos today! 
+                    
+                // // if (($currentDate >= $this->end_date) && ($currentDate <= $this->start_date)){
+                // //     return true;
+                // // }
+
+                // // return false;
+                // // dd($endDate);
+                // // dd($this->$startDate);
+                // return ($currentDate <= $endDate) || ($currentDate >= $startDate);
+                $date = date('Y-m-d');
+                $time = date('H:i:s');
+                dd($date, $time);
+                // dd($total_price);
+                // $dt = new DateTime();
+                // $invoice = Invoice::create([
+                //     'created_at' => date('d-m-Y H:i:s'),
+                //     'checkin_time' => date('H:i:s'),
+                //     'checkout_time' => date('H:i:s'),
+                //     'total_price' => $total_price,
+                // ]);
+
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
