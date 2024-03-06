@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Invoice\StoreRequest;
 use App\Models\Invoice;
 use App\Models\MenuItem;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -62,24 +63,27 @@ class InvoiceController extends Controller
                 // //echo $paymentDate; // echos today! 
                     
                 // // if (($currentDate >= $this->end_date) && ($currentDate <= $this->start_date)){
-                // //     return true;
+                // //     return true;s
                 // // }
 
                 // // return false;
                 // // dd($endDate);
                 // // dd($this->$startDate);
                 // return ($currentDate <= $endDate) || ($currentDate >= $startDate);
-                $date = date('Y-m-d');
-                $time = date('H:i:s');
-                dd($date, $time);
+                // $date = date('Y-m-d');
+                // $time = date('H:i:s');
+                // dd($date, $time);
                 // dd($total_price);
                 // $dt = new DateTime();
-                // $invoice = Invoice::create([
-                //     'created_at' => date('d-m-Y H:i:s'),
-                //     'checkin_time' => date('H:i:s'),
-                //     'checkout_time' => date('H:i:s'),
-                //     'total_price' => $total_price,
-                // ]);
+                
+                $now = Carbon::now('Asia/Bangkok');
+                dd($now->format('H:i:s'));
+                $invoice = Invoice::create([
+                    'created_at' => $now->format('d-m-Y'),
+                    'checkin_time' => $now->format('H:i:s'),
+                    'checkout_time' => $now->format('H:i:s'),
+                    'total_price' => $total_price,
+                ]);
 
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
