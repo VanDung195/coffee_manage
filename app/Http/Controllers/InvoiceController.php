@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Invoice\StoreRequest;
 use App\Models\Invoice;
+use App\Models\InvoiceDetail;
 use App\Models\MenuItem;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -27,8 +29,10 @@ class InvoiceController extends Controller
                 //Lấy thông tin chi tiết của sản phấm (Hàm whereIn để tìm ra cái id của 1 mảng)
                 $menuItems = MenuItem::query()
                             ->whereIn('id',$ItemsId)->get();
-
+                $menuNames = MenuItem::query()->whereIn('id',$ItemsId)->pluck('name');
+                // dd($menuNames, $menuItems);
                 $menuItemsMap = $menuItems->keyBy('id')->toArray();
+                dd($menuItemsMap);
                 /*Ví dụ: 
                 array:2 [ // app\Http\Controllers\InvoiceController.php:45
                     1 => array:4 [
@@ -84,7 +88,7 @@ class InvoiceController extends Controller
                     'checkout_time' => $now->format('H:i:s'),
                     'total_price' => $total_price,
                 ]);
-
+                $invoice_id = $invoice->id;
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
@@ -95,7 +99,9 @@ class InvoiceController extends Controller
                     $price = isset($menuItemsMap[$id]['price']) ? $menuItemsMap[$id]['price'] : 0;
                     // dd((float)$price);
 
-                    
+                    InvoiceDetail::create([
+
+                    ]);
 
                     // dd($quantity, $price);
                 }
@@ -104,6 +110,7 @@ class InvoiceController extends Controller
             return $this->successResponse();
 
         } catch (\Throwable $th) {
+
             dd($th);
         }
     }
