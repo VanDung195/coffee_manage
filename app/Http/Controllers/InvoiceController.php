@@ -7,7 +7,6 @@ use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\MenuItem;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +31,7 @@ class InvoiceController extends Controller
                 $menuNames = MenuItem::query()->whereIn('id',$ItemsId)->pluck('name');
                 // dd($menuNames, $menuItems);
                 $menuItemsMap = $menuItems->keyBy('id')->toArray();
-                dd($menuItemsMap);
+                // dd($menuItemsMap);
                 /*Ví dụ: 
                 array:2 [ // app\Http\Controllers\InvoiceController.php:45
                     1 => array:4 [
@@ -52,12 +51,13 @@ class InvoiceController extends Controller
                 // dd($menuItemsMap);
                 $total_price = 0;
                 foreach($ItemsId as $index => $id) {
+                    // dd((int)$id);
                     $quantity = $allData['quantity'][$index];
                     $price = $menuItemsMap[$id]['price'];
 
                     $total_price += $quantity * $price;
                 }
-
+                // dd($total_price);
                 //cách cũ
                 // check if current date is between two dates php
                 // $currentDate = date('Y-m-d');
@@ -99,13 +99,30 @@ class InvoiceController extends Controller
                     $price = isset($menuItemsMap[$id]['price']) ? $menuItemsMap[$id]['price'] : 0;
                     // dd((float)$price);
 
+                    $name = MenuItem::query()
+                            ->where('id', $id)->pluck('name');
+
                     InvoiceDetail::create([
-
+                        'invoice_id' => $invoice_id,
+                        'menu_item_id' => $id,
+                        'quantity' => $quantity,
                     ]);
-
+                    
+                    $invoice_details[] = [
+                        'name' => $name,
+                        'quantity' => $quantity,
+                        'price' => $price,
+                    ];
                     // dd($quantity, $price);
                 }
-                return $this->successResponse(1);
+                return $this->successResponse([
+                    'table_id' => $tableId,
+                    'invoice_details' => $invoice_details,
+                    'total_price' => $total_price,
+                    'created_at' => $now->format('d:m:Y'),
+                    'checkin_time' => $now->format('H:i'),
+                    'checkout_time' => $now->format('H:i'),
+                ]);
             }
             return $this->successResponse();
 
