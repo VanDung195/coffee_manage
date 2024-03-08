@@ -35,6 +35,7 @@ class TestController extends Controller
     }
     public function test2(Request $request)
     {
-        dd($request->all());
+        $test = MenuItem::query()->where('id', 1)->first()->toArray();
+        dd($test['name']);
     }
 }
