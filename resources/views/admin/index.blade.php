@@ -140,8 +140,8 @@
                             {{ $value }}
                         </option>
                         @endforeach --}}
-                        <option value="0" selected>Chưa thanh toán</option>
-                        <option value="1">Đã thanh toán</option>
+                        <option value="0">Chưa thanh toán</option>
+                        <option value="1" selected>Đã thanh toán</option>
                     </select>
                 </div> 
                 <div class="form-group col-2" style="margin-left: 60px;">
