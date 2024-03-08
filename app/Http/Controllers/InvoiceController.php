@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class InvoiceController extends Controller
 {
     use ResponseTrait;
-    public function store(Request $request): JsonResponse
+    public function store(StoreRequest $request): JsonResponse
     {
         try {
             if($request->is_paid == 1) {
@@ -81,14 +81,15 @@ class InvoiceController extends Controller
                 // $dt = new DateTime();
                 
                 $now = Carbon::now('Asia/Bangkok');
-                dd($now->format('H:i:s'));
-                $invoice = Invoice::create([
-                    'created_at' => $now->format('d-m-Y'),
-                    'checkin_time' => $now->format('H:i:s'),
-                    'checkout_time' => $now->format('H:i:s'),
-                    'total_price' => $total_price,
-                ]);
-                $invoice_id = $invoice->id;
+                // dd($now->format('H:i:s'));
+                // $invoice = Invoice::create([
+                //     'created_at' => $now->format('d-m-Y'),
+                //     'checkin_time' => $now->format('H:i:s'),
+                //     'checkout_time' => $now->format('H:i:s'),
+                //     'total_price' => $total_price,
+                // ]);
+                // $invoice_id = $invoice->id;
+                $invoice_id = 1;
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
@@ -99,17 +100,18 @@ class InvoiceController extends Controller
                     $price = isset($menuItemsMap[$id]['price']) ? $menuItemsMap[$id]['price'] : 0;
                     // dd((float)$price);
 
-                    $name = MenuItem::query()
-                            ->where('id', $id)->pluck('name');
+                    $item = MenuItem::query()
+                            ->where('id', $id)->first();
 
-                    InvoiceDetail::create([
-                        'invoice_id' => $invoice_id,
-                        'menu_item_id' => $id,
-                        'quantity' => $quantity,
-                    ]);
+                    // InvoiceDetail::create([
+                    //     'invoice_id' => $invoice_id,
+                    //     'menu_item_id' => $id,
+                    //     'quantity' => $quantity,
+                    // ]);
                     
                     $invoice_details[] = [
-                        'name' => $name,
+                        'id' => $id,
+                        'name' => $item->name,
                         'quantity' => $quantity,
                         'price' => $price,
                     ];
