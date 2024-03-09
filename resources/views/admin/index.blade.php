@@ -83,7 +83,7 @@
                         <div class="div-select form-group col-5" id="div-select">
                             <label for="">Món</label>
                             <select name="id[]" class="select-item">
-                                <option value="0" data-price="0" selected>Chọn món</option>
+                                <option selected>Chọn món</option>
                                 @foreach ($items as $item)
                                 <option value="{{$item->id}}" data-price="{{ $item->price }}">
                                     {{ $item->name }}
@@ -209,6 +209,7 @@
             },
             error: function(response) {
                 console.log(3232);
+                console.log(response);
             }
         });
     }
