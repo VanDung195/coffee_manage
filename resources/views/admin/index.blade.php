@@ -41,15 +41,16 @@
 
 @endpush
 @section('content')
-@foreach ($table as $item)
+@foreach ($tables as $table)
 <div class="show-table" style="float: left;">
-    <button class="btn-table" data-table-id="{{ $item->name }}">
-        {{ $item->name }}
+    <button class="btn-table" data-table-id="{{ $table->name }}">
+        {{ $table->name }}
     </button>
+    <div class="tinh_trang">Trong</div>
 </div>
 <div class="show-table-detail" style="display: none;float: left;">
-    <button class="btn-show-invoice-detail" data-table-id="{{ $item->name }}">
-        {{$item->name}}
+    <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}">
+        {{$table->name}}
     </button>
 </div>
 @endforeach
@@ -199,7 +200,13 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log(response);
+                // console.log(response.data);
+                let response_1 = {
+                    table_id: response.data,
+                }
+                // console.log(response_1);
+
+
                 // console.log(response.data.name.length);
                 // for(let i = 0; i < 3; i++)
                 // {
