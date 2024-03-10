@@ -10,14 +10,14 @@ class TableController extends Controller
 {
     public function index()
     {
-        $table = Table::query()
+        $tables = Table::query()
         ->orderBy('stt', 'asc')
         ->paginate(10);
         $items = MenuItem::query()
                     ->get();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[
-            'table' => $table,
+            'tables' => $tables,
             'items' => $items,
             'is_paids' => $is_paids,
         ]);
