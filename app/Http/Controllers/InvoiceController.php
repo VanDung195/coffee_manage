@@ -78,13 +78,14 @@ class InvoiceController extends Controller
             if((int)$request->is_paid == 1) {
                 
                 // dd($now->format('H:i:s'));
-                $invoice = Invoice::create([
-                    'created_at' => $now->format('Y:m:d'),
-                    'checkin_time' => $now->format('H:i:s'),
-                    'checkout_time' => $now->format('H:i:s'),
-                    'total_price' => $total_price,
-                ]);
-                $invoice_id = $invoice->id;
+                // $invoice = Invoice::create([
+                //     'created_at' => $now->format('Y:m:d'),
+                //     'checkin_time' => $now->format('H:i:s'),
+                //     'checkout_time' => $now->format('H:i:s'),
+                //     'total_price' => $total_price,
+                // ]);
+                // $invoice_id = $invoice->id;
+                $invoice_id = 1;
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
@@ -98,11 +99,11 @@ class InvoiceController extends Controller
                     $item = MenuItem::query()
                             ->where('id', $id)->first();
 
-                    InvoiceDetail::create([
-                        'invoice_id' => $invoice_id,
-                        'menu_item_id' => $id,
-                        'quantity' => $quantity,
-                    ]);
+                    // InvoiceDetail::create([
+                    //     'invoice_id' => $invoice_id,
+                    //     'menu_item_id' => $id,
+                    //     'quantity' => $quantity,
+                    // ]);
                     
                     $invoice_details[] = [
                         'id' => $id,
