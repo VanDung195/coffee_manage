@@ -42,13 +42,18 @@
 @endpush
 @section('content')
 @foreach ($tables as $table)
-<div class="show-table" id="{{ $table->name }}" style="display: block;float: left;">
+{{-- @if ($table->status == 'Trong')
+    
+@else
+    
+@endif --}}
+<div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
     <button class="btn-table" data-table-id="{{ $table->name }}">
         {{ $table->name }}
     </button>
     <div class="tinh_trang">Trong</div>
 </div>
-<div class="show-table-detail {{ $table->name }}" style="display: none;float: left;">
+<div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
     <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}">
         {{$table->name}}
     </button>
@@ -202,8 +207,12 @@
             success: function (response) {
                 // console.log(response.data.table_id);
                 let table_id = response.data.table_id;
-                document.getElementById(table_id).style.display = 'none';
-                document.querySelectorAll(table_id).style.display = 'block';
+                let show_table = 'show_table_'+ table_id;   
+                let show_detail = 'show_detail_'+table_id;
+                
+                console.log(show_table,show_detail);
+                document.getElementById(show_table).style.display = 'none';
+                document.getElementById(show_detail).style.display = 'block';
                 
                 // let table_id = response.data.table_id;
 
@@ -245,6 +254,11 @@
     function closeModal() {
         
     }
+    // function clearModal() {
+        // $('#modal-invoice').on('hidden.bs.modal', function(){
+        //     $(this).find('form').trigger('reset');
+        // })
+    // }
 
         // function updateRowTotal(formRow) {
         //     let quantity = parseInt(formRow.find('.quantity'),val());
@@ -302,26 +316,32 @@
             $("#modal-invoice").modal('toggle');
             $("#search").val('');
         })
+
+        //reset modal when closing modal
         $('#modal-invoice').on('hidden.bs.modal', function(){
                 // $("#search").val('');
-            $(".btn-update-quantity").attr('disabled', false);
 
-            let parentDiv = document.getElementById('append-item');
-            let childDiv = parentDiv.getElementsByClassName('form-row');
-            while(childDiv.length > 0) {
-                parentDiv.removeChild(childDiv[0]);
-            }
-            $("#price").val('');
-            $(".quantity").val('1');
-                // $('#select-item option:selected').removeAttr('selected');
-            $(".select-item option:selected").each(function(){
-                $(this).removeAttr('selected');
-            })
-            $("#div-select select").val("0").change();
-            $("#select-paid option:selected").each(function(){
-                $(this).removeAttr('selected');
-            })
-            $("#div-paid select").val('0').change();
+            $(this).find('form').trigger('reset');
+            $(".select-item").select2({tag: true});
+            ///Cũ méo ổn
+            // $(".btn-update-quantity").attr('disabled', false);
+
+            // let parentDiv = document.getElementById('append-item');
+            // let childDiv = parentDiv.getElementsByClassName('form-row');
+            // while(childDiv.length > 0) {
+            //     parentDiv.removeChild(childDiv[0]);
+            // }
+            // $("#price").val('');
+            // $(".quantity").val('1');
+            //     // $('#select-item option:selected').removeAttr('selected');
+            // $(".select-item option:selected").each(function(){
+            //     $(this).removeAttr('selected');
+            // })
+            // $("#div-select select").val("0").change();
+            // $("#select-paid option:selected").each(function(){
+            //     $(this).removeAttr('selected');
+            // })
+            // $("#div-paid select").val('0').change();
         });
             // $('.delete-test').on('click', function(){
             //     let parentDiv = document.getElementById('append-item');
