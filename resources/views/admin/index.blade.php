@@ -42,13 +42,13 @@
 @endpush
 @section('content')
 @foreach ($tables as $table)
-<div class="show-table" style="float: left;">
+<div class="show-table" id="{{ $table->name }}" style="display: block;float: left;">
     <button class="btn-table" data-table-id="{{ $table->name }}">
         {{ $table->name }}
     </button>
     <div class="tinh_trang">Trong</div>
 </div>
-<div class="show-table-detail" style="display: none;float: left;">
+<div class="show-table-detail {{ $table->name }}" style="display: none;float: left;">
     <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}">
         {{$table->name}}
     </button>
@@ -200,12 +200,27 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                // console.log(response.data);
-                let response_1 = {
-                    table_id: response.data,
-                }
-                // console.log(response_1);
+                // console.log(response.data.table_id);
+                let table_id = response.data.table_id;
+                document.getElementById(table_id).style.display = 'none';
+                document.querySelectorAll(table_id).style.display = 'block';
+                
+                // let table_id = response.data.table_id;
 
+                // // 1. Ẩn phần tử có ID là table_id
+                // let tableElement = document.getElementById(table_id);
+                // if (tableElement) {
+                //     tableElement.style.display = 'none';
+                // }
+
+                // // 2. Hiển thị tất cả các phần tử có class là table_id
+                // let elements = document.querySelectorAll(table_id);
+                // elements.forEach(function(element) {
+                //     element.style.display = 'block';
+                // });
+
+                // document.getElementById('')
+                // showInvoiceDetail(response);
 
                 // console.log(response.data.name.length);
                 // for(let i = 0; i < 3; i++)
@@ -220,8 +235,15 @@
             }
         });
     }
+
+    function showInvoiceDetail(invoice) {
+
+    }
     function showModal() {
         $("#modal-invoice").modal("show");
+    }
+    function closeModal() {
+        
     }
 
         // function updateRowTotal(formRow) {
