@@ -96,9 +96,12 @@ class InvoiceController extends Controller
                     $price = isset($menuItemsMap[$id]['price']) ? $menuItemsMap[$id]['price'] : 0;
                     // dd((float)$price);
 
+                    $thanh_tien = $quantity * $price;
+
                     $item = MenuItem::query()
                             ->where('id', $id)->first();
 
+                    
                     // InvoiceDetail::create([
                     //     'invoice_id' => $invoice_id,
                     //     'menu_item_id' => $id,
@@ -110,6 +113,7 @@ class InvoiceController extends Controller
                         'name' => $item->name,
                         'quantity' => $quantity,
                         'price' => $price,
+                        'thanh_tien' => $thanh_tien,
                     ];
                     // dd($quantity, $price);
                 }
@@ -118,7 +122,7 @@ class InvoiceController extends Controller
                     'table_id' => $tableId,
                     'invoice_details' => $invoice_details,
                     'total_price' => $total_price,
-                    'created_at' => $now->format('d:m:Y'),
+                    'created_at' => $now->format('d/m/Y'),
                     'checkin_time' => $now->format('H:i'),
                     'checkout_time' => $now->format('H:i'),
                     'is_paid' => $request->is_paid,
