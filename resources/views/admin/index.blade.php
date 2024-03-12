@@ -71,17 +71,6 @@
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                {{-- <input type="text" name="search" id="search" class="form-control">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Món</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table> --}}
-
                 <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
                     @csrf
                     <input type="text" class="form-control" name="table-id" id="table-id" readonly>
@@ -126,14 +115,6 @@
                         <input type="text" id="price" class="price form-control" readonly>
                     </span>
                 </div>
-                {{-- <div class="form-group col-1">
-                    <label>Delete</label>
-                    <button
-                    style="background-color: red"
-                    type="button"
-                    class="btn-delete"
-                    >X</button>
-                </div> --}}
             </div>
             <div id="append-item">
 
@@ -141,11 +122,6 @@
             <div class="form-row" style="margin-top: 30px;">
                 <div class="form-group col-5" id="div-paid">
                     <select name="is_paid" id="select_paid" class="form-control">
-                        {{-- @foreach ($is_paids as $key => $value)
-                        <option value="{{$key}}" >
-                            {{ $value }}
-                        </option>
-                        @endforeach --}}
                         <option value="0">Chưa thanh toán</option>
                         <option value="1" selected>Đã thanh toán</option>
                     </select>
@@ -170,25 +146,6 @@
     </div>
 </div>
 </div>
-{{-- <p>Link 1</p>
-<a data-toggle="modal" data-id="ISBN564541" title="Add this item" class="open-AddBookDialog btn btn-primary" href="#addBookDialog">test</a>
-
-<p>&nbsp;</p>
-
-
-<p>Link 2</p>
-<a data-toggle="modal" data-id="ISBN-001122" title="Add this item" class="open-AddBookDialog btn btn-primary" href="#addBookDialog">test</a>
-
-<div class="modal hide" id="addBookDialog">
-    <div class="modal-header">
-        <button class="close" data-dismiss="modal">×</button>
-        <h3>Modal header</h3>
-    </div>
-    <div class="modal-body">
-        <p>some content</p>
-        <input type="text" name="bookId" id="bookId" value=""/>
-    </div>
-</div> --}}
 @endsection
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -207,36 +164,24 @@
             success: function (response) {
                 // console.log(response.data.table_id);
                 let table_id = response.data.table_id;
-                let show_table = 'show_table_'+ table_id;   
+                let show_table = 'show_table_'+ table_id;
                 let show_detail = 'show_detail_'+table_id;
-                
-                console.log(show_table,show_detail);
-                document.getElementById(show_table).style.display = 'none';
-                document.getElementById(show_detail).style.display = 'block';
-                
-                // let table_id = response.data.table_id;
 
-                // // 1. Ẩn phần tử có ID là table_id
-                // let tableElement = document.getElementById(table_id);
-                // if (tableElement) {
-                //     tableElement.style.display = 'none';
-                // }
+                console.log(response.data.total_price);
+                // console.log(response.data);
 
-                // // 2. Hiển thị tất cả các phần tử có class là table_id
-                // let elements = document.querySelectorAll(table_id);
-                // elements.forEach(function(element) {
-                //     element.style.display = 'block';
-                // });
+                let invoice_item = response.data.invoice_details;
+                // console.log(invoice_item);
 
-                // document.getElementById('')
-                // showInvoiceDetail(response);
+                invoice_item.forEach(function(item,index){
+                    // console.log(item['name'],item['id'],);
+                    console.log(item);
+                })
 
-                // console.log(response.data.name.length);
-                // for(let i = 0; i < 3; i++)
-                // {
-                //     console.log(response.data.name[i]);
-                // }
-                // console.log(response.data.name[0]);
+                // console.log(show_table,show_detail);
+                // document.getElementById(show_table).style.display = 'none';
+                // document.getElementById(show_detail).style.display = 'block';
+
             },
             error: function(response) {
                 console.log(3232);
@@ -254,22 +199,9 @@
     function closeModal() {
         
     }
-    // function clearModal() {
-        // $('#modal-invoice').on('hidden.bs.modal', function(){
-        //     $(this).find('form').trigger('reset');
-        // })
-    // }
+    function showModalIncvoiceDetail(modal_id) {
 
-        // function updateRowTotal(formRow) {
-        //     let quantity = parseInt(formRow.find('.quantity'),val());
-        //     let price = formRow.find('.select-item').find(":selected").data("price");
-
-        //     let sum = price * quantity;
-
-        //     formRow.find('#price').val(sum);
-
-        //     updateTotalPrice();
-        // }
+    }
     function updateRowTotal(formRow) {
         let quantity = parseInt(formRow.find('.quantity').val());
         let price = formRow.find(".select-item").find(":selected").data("price");
@@ -287,23 +219,12 @@
             let price = $(this).find(".select-item").find(":selected").data("price");
             let totalPrice = quantity*price;
             total += price * quantity;
-                // console.log(quantity,price);
         })
         console.log(total);
         $("#total-price").val(total);
     }
     $(document).ready(function () {
         $(".select-item").select2({tag: true});
-            // $(document).on("click", ".open-AddBookDialog", function () {
-            //     var myBookId = $(this).data('id');
-            //     $(".modal-body #bookId").val( myBookId );
-            //     // As pointed out in comments, 
-            //     // it is unnecessary to have to manually call the modal.
-            //     // $('#addBookDialog').modal('show');
-            // });
-            // $(document).on('click', '.table', function(){
-            //     $('#modal-invoice').modal('show')
-            // })
         $('.btn-table').click(function(){
             var tableId = $(this).data('table-id');
             $("#table-id").val(tableId);
@@ -426,7 +347,7 @@
 
             let div = document.createElement("div");
             div.innerHTML = `
-            <div class="form-group col-5" class="div-select">
+            <div class="form-group col-5 class="div-select">
             <label for="">Món</label>
             <select name="id[]" class="select-item">
             <option value="0" data-price="0" selected>Chọn món</option>
