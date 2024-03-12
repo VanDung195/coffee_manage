@@ -16,7 +16,7 @@ class TableController extends Controller
         $items = MenuItem::query()
                     ->get();
         $is_paids = TableIsPaidEnum::getKeys();
-        return view('admin.index',[
+        return view('admin.index',[ 
             'tables' => $tables,
             'items' => $items,
             'is_paids' => $is_paids,
