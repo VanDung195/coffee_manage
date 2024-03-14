@@ -168,6 +168,7 @@
             success: function (response) {
                 // console.log(response.data.table_id);
                 let table_id = response.data.table_id;
+                let total_price = response.data.total_price;
                 let show_table = 'show_table_'+ table_id;
                 let show_detail = 'show_detail_'+table_id;
 
@@ -176,67 +177,82 @@
                 let invoice_item = response.data.invoice_details;
                 // console.log(invoice_item);
 
-                invoice_item.forEach(function(item,index){
-                    // console.log(item['name'],item['id'],);
-                    console.log(item);
-                })
+                // invoice_item.forEach(function(item,index){
+                //     // console.log(item['name'],item['id'],);
+                //     console.log(item);
+                // })
 
                 let divabc = document.getElementById("modal-invoice-detail");
-                divabc.innerHTML = `
-                <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
-                    <div class="modal-dialog modal-lg">
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Hoá đơn chi tiết</h4>
-                                <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- Thêm div mới ở đây -->
-                                <h3>Bàn số: </h3>
-                                <div class="form-row">
-                                    <div class="items">
-                                        
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label>Tên món: </label>
-                                        <input type="text" class="form-control" value="asdasdasdasd">
-                                    </div>
-                                    <div class="form-group col-2">
-                                        <label>Số lượng: </label>
-                                        <input type="text" class="form-control" id="" value="12">
-                                    </div>
-                                    <div class="form-group col-2">
-                                        <label>Giá: </label>
-                                        <input type="text" class="form-control" value="12312" name="" id="">
-                                    </div>
-                                    <div class="form-group col-2">
-                                        <label>Thành tiền: </label>
-                                        <input type="text" class="form-control" value="123123" name="" id="">
-                                    </div>
+                // divabc.innerHTML = `aasdasdasdasdasdasdasdasdasdasdasdasda</h1>`;
+                // let htmltext = `<h1>asdasdasdasd`;
+                // htmltext += `asdaaaaaaaaaaaasdasdasdasdas</h1>`;
+                let modal_invoice = `
+                    <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Hoá đơn chi tiết</h4>
+                                    <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
                                 </div>
-                                <div class="form-row" style="margin-top: 30px;">
-                                    <div class="form-group col-5" id="div-paid">
-                                        <input type="text" class="form-control" value="Đã thanh toán">
-                                    </div> 
-                                    <div class="form-group col-2" style="margin-left: 60px;">
-                                        <h4>Tổng tiền: </h4>
-                                    </div>
-                                    <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
-                                        <span class="fl-right" style="margin-bottom: 20px;">
-                                            <input type="text" id="total-price" value="0" class="form-control" readonly>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" onclick="deleteModal()" class="btn btn-danger">Xoá hoá đơn</button>
-                                <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
-                            </div>
+                                <div class="modal-body">
+                                    <h3>Bàn số: ${table_id}</h3>
+                                    <div class="items form-row">
+                `;
+
+                invoice_item.forEach(function(item, index) {
+                    modal_invoice += `
+                        <div class="form-group col-6">
+                            <label>Tên món: </label>
+                            <input type="text" class="form-control" value="${item['name']}">
+                        </div>
+                        <div class="form-group col-2">
+                            <label>Số lượng: </label>
+                            <input type="text" class="form-control" id="" value="${item['quantity']}">
+                        </div>
+                        <div class="form-group col-2">
+                            <label>Giá: </label>
+                            <input type="text" class="form-control" value="12312" name="" id="${item['price']}">
+                        </div>
+                        <div class="form-group col-2">
+                            <label>Thành tiền: </label>
+                            <input type="text" class="form-control" value="${item['thanh_tien']}" name="" id="">
+                        </div>
+                    `;
+                });
+
+                modal_invoice += `
+                    <div class="form-row" style="margin-top: 30px;">
+                        <div class="form-group col-5" id="div-paid">
+                            <input type="text" class="form-control" value="Đã thanh toán">
+                        </div> 
+                        <div class="form-group col-2" style="margin-left: 60px;">
+                            <h4>Tổng tiền: ${total_price}</h4>
+                        </div>
+                        <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
+                            <span class="fl-right" style="margin-bottom: 20px;">
+                                <input type="text" id="total-price" value="0" class="form-control" readonly>
+                            </span>
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="deleteModal()" class="btn btn-danger">Xoá hoá đơn</button>
+                    <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
+                </div>
+                </div>
+                </div>
+                </div>
                 `;
+
+// Ẩn thẻ h1 có id "testcmm"
+modal_invoice = modal_invoice.replace('<h1 id="testcmm" style="display: none;">asdasdas</h1>', '');
+
+
+
+                console.log(modal_invoice);
+
+
+                divabc.innerHTML = modal_invoice;
                 // console.log(divabc);
                 // console.log(21312312321321312321);
                 // console.log(show_table,show_detail);
@@ -250,12 +266,13 @@
             }
         });
     }
-
-    function showInvoiceDetail(table_name) {
-        console.log(table_name);
-    }
     function showModal() {
         $("#modal-invoice").modal("show");
+    }
+    function showInvoiceDetail(table_name){
+        let modal_name = "#invoice_detail_" + table_name;
+        $(modal_name).modal("show");
+        console.log(modal_name);
     }
     function closeModal() {
         
