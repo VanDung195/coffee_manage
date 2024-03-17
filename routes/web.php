@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/test', [TestController::class, 'test']);
 Route::get('/test2', [TestController::class, 'test2'])->name('test2');
+Route::get('/test3', [TestController::class, 'test3']);
 
 Route::get('/index',[TableController::class, 'index'])->name('table');
 
