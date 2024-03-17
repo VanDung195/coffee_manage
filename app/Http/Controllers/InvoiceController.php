@@ -6,6 +6,7 @@ use App\Http\Requests\Invoice\StoreRequest;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\MenuItem;
+use App\Models\Table;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,10 @@ class InvoiceController extends Controller
                 ]
             ]
             */
-            // dd($menuItemsMap);
+            // dd($menuItemsMap);\
+            // dd($tableId);
+            // dd($index);
+            //Bỏ cái số thứ tự trên này bị lỗi mới vcl
             $total_price = 0;
             foreach($ItemsId as $index => $id) {
                 // dd((int)$id);
@@ -117,9 +121,14 @@ class InvoiceController extends Controller
                     ];
                     // dd($quantity, $price);
                 }
+                
+                $indexQ = Table::query()->where('name',$tableId)->first('stt');
+                $index = $indexQ->stt;
+                // dd($index);
                 $message = 'Thanh cong roi nhe!';
                 return $this->successResponse([
                     'table_id' => $tableId,
+                    'index' => $index,
                     'invoice_details' => $invoice_details,
                     'total_price' => $total_price,
                     'created_at' => $now->format('d/m/Y'),
