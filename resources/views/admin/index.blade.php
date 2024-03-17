@@ -54,14 +54,14 @@
     <div class="tinh_trang">Trong</div>
 </div>
 <div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
-    <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('{{ $table->name }}')">
+    <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('#invoice_detail_{{ $table->stt }}')">
         {{$table->name}}
     </button>
 </div>
 @endforeach
 
 {{-- Div chứa modal invoice detail --}}
-<div id="modal-invoice-detail">
+<div id="append_modal_invoice_detail">
     
 </div>
 
@@ -166,28 +166,15 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                // console.log(response.data.table_id);
                 let table_id = response.data.table_id;
                 let total_price = response.data.total_price;
                 let show_table = 'show_table_'+ table_id;
                 let show_detail = 'show_detail_'+table_id;
-
-                // console.log(response.data.total_price);
-                // console.log(response.data);
+                let index = response.data.index;
                 let invoice_item = response.data.invoice_details;
-                // console.log(invoice_item);
-
-                // invoice_item.forEach(function(item,index){
-                //     // console.log(item['name'],item['id'],);
-                //     console.log(item);
-                // })
-
-                let divabc = document.getElementById("modal-invoice-detail");
-                // divabc.innerHTML = `aasdasdasdasdasdasdasdasdasdasdasdasda</h1>`;
-                // let htmltext = `<h1>asdasdasdasd`;
-                // htmltext += `asdaaaaaaaaaaaasdasdasdasdas</h1>`;
+                
                 let modal_invoice = `
-                    <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
+                    <div id="invoice_detail_${index}" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -196,11 +183,11 @@
                                 </div>
                                 <div class="modal-body">
                                     <h3>Bàn số: ${table_id}</h3>
-                                    <div class="items form-row">
+                                    
                 `;
-
                 invoice_item.forEach(function(item, index) {
                     modal_invoice += `
+                    <div class="items form-row">
                         <div class="form-group col-6">
                             <label>Tên món: </label>
                             <input type="text" class="form-control" value="${item['name']}">
@@ -211,15 +198,15 @@
                         </div>
                         <div class="form-group col-2">
                             <label>Giá: </label>
-                            <input type="text" class="form-control" value="12312" name="" id="${item['price']}">
+                            <input type="text" class="form-control" value="${item['price']}" name="" id="">
                         </div>
                         <div class="form-group col-2">
                             <label>Thành tiền: </label>
                             <input type="text" class="form-control" value="${item['thanh_tien']}" name="" id="">
                         </div>
+                    </div>
                     `;
                 });
-
                 modal_invoice += `
                     <div class="form-row" style="margin-top: 30px;">
                         <div class="form-group col-5" id="div-paid">
@@ -244,18 +231,14 @@
                 </div>
                 `;
 
-// Ẩn thẻ h1 có id "testcmm"
-modal_invoice = modal_invoice.replace('<h1 id="testcmm" style="display: none;">asdasdas</h1>', '');
+                let div2 = document.createElement("div");
+                div2.innerHTML = modal_invoice;
 
-
-
-                console.log(modal_invoice);
-
-
-                divabc.innerHTML = modal_invoice;
-                // console.log(divabc);
-                // console.log(21312312321321312321);
-                // console.log(show_table,show_detail);
+                div2.classList.add("form-group");
+                // divabc.innerHTML = modal_invoice;
+                // let divabc = document.getElementById("modal-invoice-detail");
+                // divabc.appendChild(modal_invoice);
+                document.getElementById("append_modal_invoice_detail").appendChild(div2);
                 document.getElementById(show_table).style.display = 'none';
                 document.getElementById(show_detail).style.display = 'block';
 
@@ -270,9 +253,10 @@ modal_invoice = modal_invoice.replace('<h1 id="testcmm" style="display: none;">a
         $("#modal-invoice").modal("show");
     }
     function showInvoiceDetail(table_name){
-        let modal_name = "#invoice_detail_" + table_name;
-        $(modal_name).modal("show");
-        console.log(modal_name);
+        console.log(table_name);
+        // let modal_name = "#invoice_detail_" + table_name;
+        $(table_name).modal("show");
+        // console.log(modal_name);
     }
     function closeModal() {
         
