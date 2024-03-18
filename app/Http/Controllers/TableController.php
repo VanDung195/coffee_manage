@@ -15,6 +15,10 @@ class TableController extends Controller
         ->paginate(10);
         $items = MenuItem::query()
                     ->get();
+        foreach ($tables as $table) {
+            printf($table->name);
+        }
+        dd();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[ 
             'tables' => $tables,
