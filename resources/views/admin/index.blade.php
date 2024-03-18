@@ -168,6 +168,7 @@
             success: function (response) {
                 let table_id = response.data.table_id;
                 let total_price = response.data.total_price;
+                let formatTotalPrice = total_price.toLocaleString('vi-VN');
                 let show_table = 'show_table_'+ table_id;
                 let show_detail = 'show_detail_'+table_id;
                 let index = response.data.index;
@@ -198,11 +199,11 @@
                         </div>
                         <div class="form-group col-2">
                             <label>Giá: </label>
-                            <input type="text" class="form-control" value="${item['price']}" name="" id="">
+                            <input type="text" class="form-control" value="${item['price'].toLocaleString('vi-VN')}" name="" id="">
                         </div>
                         <div class="form-group col-2">
                             <label>Thành tiền: </label>
-                            <input type="text" class="form-control" value="${item['thanh_tien']}" name="" id="">
+                            <input type="text" class="form-control" value="${item['thanh_tien'].toLocaleString('vi-VN')}" name="" id="">
                         </div>
                     </div>
                     `;
@@ -212,14 +213,10 @@
                         <div class="form-group col-5" id="div-paid">
                             <input type="text" class="form-control" value="Đã thanh toán">
                         </div> 
-                        <div class="form-group col-2" style="margin-left: 60px;">
-                            <h4>Tổng tiền: ${total_price}</h4>
+                        <div class="form-group col-6" style="margin-left: 60px;">
+                            <h4>Tổng tiền: ${formatTotalPrice}</h4>
                         </div>
-                        <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
-                            <span class="fl-right" style="margin-bottom: 20px;">
-                                <input type="text" id="total-price" value="0" class="form-control" readonly>
-                            </span>
-                        </div>
+                        
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -241,6 +238,8 @@
                 document.getElementById("append_modal_invoice_detail").appendChild(div2);
                 document.getElementById(show_table).style.display = 'none';
                 document.getElementById(show_detail).style.display = 'block';
+
+                $('#modal-invoice').modal('toggle');
 
             },
             error: function(response) {
@@ -268,13 +267,14 @@
         let quantity = parseInt(formRow.find('.quantity').val());
         let price = formRow.find(".select-item").find(":selected").data("price");
         let sum = price * quantity;
-        formRow.find(".price").val(sum);
+        formRow.find(".price").val(sum.toLocaleString('vi-VN'));
             // console.log(1);
             // Cập nhật tổng tiền của tất cả sản phẩm
         updateTotalPrice();
     }
 
     function updateTotalPrice() {
+        console.log(12387123987123871289);
         let total = 0;
         $(".item").each(function(){
             let quantity = parseInt($(this).find('.quantity').val());
@@ -283,7 +283,7 @@
             total += price * quantity;
         })
         console.log(total);
-        $("#total-price").val(total);
+        $("#total-price").val(total.toLocaleString('vi-VN'));
     }
     $(document).ready(function () {
         $(".select-item").select2({tag: true});
@@ -300,7 +300,7 @@
             $("#search").val('');
         })
 
-        //reset modal when closing modal
+        //reset modal khi đóng modal
         $('#modal-invoice').on('hidden.bs.modal', function(){
                 // $("#search").val('');
 
@@ -309,11 +309,11 @@
             ///Cũ méo ổn
             // $(".btn-update-quantity").attr('disabled', false);
 
-            // let parentDiv = document.getElementById('append-item');
-            // let childDiv = parentDiv.getElementsByClassName('form-row');
-            // while(childDiv.length > 0) {
-            //     parentDiv.removeChild(childDiv[0]);
-            // }
+            let parentDiv = document.getElementById('append-item');
+            let childDiv = parentDiv.getElementsByClassName('form-row');
+            while(childDiv.length > 0) {
+                parentDiv.removeChild(childDiv[0]);
+            }
             // $("#price").val('');
             // $(".quantity").val('1');
             //     // $('#select-item option:selected').removeAttr('selected');
