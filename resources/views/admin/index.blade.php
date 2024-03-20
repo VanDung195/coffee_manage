@@ -51,7 +51,6 @@
     <button class="btn-table" data-table-id="{{ $table->name }}">
         {{ $table->name }}
     </button>
-    <div class="tinh_trang">Trong</div>
 </div>
 <div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
     <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('#invoice_detail_{{ $table->stt }}')">
