@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InvoiceApiController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\TableController;
@@ -24,6 +25,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', [TestController::class, 'test']);
 Route::get('/test2', [TestController::class, 'test2'])->name('test2');
 Route::get('/test3', [TestController::class, 'test3']);
+Route::get('/testApi', [InvoiceApiController::class, 'index']);
+Route::get('/', [InvoiceApiController::class, 'index'])->name('api.invoices');
 
 Route::get('/index',[TableController::class, 'index'])->name('table');
 
