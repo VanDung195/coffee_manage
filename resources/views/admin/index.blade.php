@@ -153,6 +153,18 @@
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+$(document).ready(function () {
+    $.ajax({
+        url: '{{ route('api.invoices') }}',
+        dataType: 'json',
+        success: function (response) {
+            console.log(response);
+        },
+        error: function () {
+            console.log('Sai mia no roi may');
+        }
+    });
+});
     function submitForm() {
         const obj = $("#form-create");
         let formData = new FormData(obj[0]);
@@ -173,6 +185,7 @@
                 let index = response.data.index;
                 let invoice_item = response.data.invoice_details;
                 
+                console.log(response.data);
                 let modal_invoice = `
                     <div id="invoice_detail_${index}" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
