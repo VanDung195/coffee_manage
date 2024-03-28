@@ -20,7 +20,7 @@ class InvoiceDetail extends Model
 
     public function invoices(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Invoice::class, 'invoice_id');
     }
 
     public function menuItems(): BelongsTo
