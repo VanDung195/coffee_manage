@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TableStausEnum;
 use App\Http\Requests\Invoice\StoreRequest;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
@@ -78,14 +79,15 @@ class InvoiceController extends Controller
             
             $now = Carbon::now('Asia/Bangkok');
             if((int)$request->is_paid == 1) {
-                $invoice = Invoice::create([
-                    'created_at' => $now->format('Y:m:d'),
-                    'checkin_time' => $now->format('H:i:s'),
-                    'checkout_time' => $now->format('H:i:s'),
-                    'total_price' => $total_price,
-                ]);
-                $invoice_id = $invoice->id;
-                // $invoice_id = 1;
+                // $invoice = Invoice::create([
+                //     'created_at' => $now->format('Y:m:d'),
+                //     'checkin_time' => $now->format('H:i:s'),
+                //     'checkout_time' => $now->format('H:i:s'),
+                //     'total_price' => $total_price,
+                //     'table_id' => $tableId,
+                // ]);
+                // $invoice_id = $invoice->id;
+                $invoice_id = 1;
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
@@ -102,11 +104,11 @@ class InvoiceController extends Controller
                             ->where('id', $id)->first();
 
                     
-                    InvoiceDetail::create([
-                        'invoice_id' => $invoice_id,
-                        'menu_item_id' => $id,
-                        'quantity' => $quantity,
-                    ]);
+                    // InvoiceDetail::create([
+                    //     'invoice_id' => $invoice_id,
+                    //     'menu_item_id' => $id,
+                    //     'quantity' => $quantity,
+                    // ]);
                     
                     $invoice_details[] = [
                         'id' => $id,
@@ -121,6 +123,7 @@ class InvoiceController extends Controller
                 $indexQ = Table::query()->where('name',$tableId)->first();
                 
                 Table::where('name',$tableId)->update([
+                    'status' => TableStausEnum::BAN,
                     'invoice_id' => $invoice_id,
                 ]);
                 $index = $indexQ->stt;
