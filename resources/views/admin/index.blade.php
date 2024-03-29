@@ -158,7 +158,16 @@ $(document).ready(function () {
         url: '{{ route('api.invoices') }}',
         dataType: 'json',
         success: function (response) {
-            console.log(response);
+            // console.log(response.data[0].total_price);
+            response.data.forEach(function (item, index){
+                // console.log(item);
+                item.details.forEach(function (item, index){
+                    console.log(item.menu_items.name);
+                })
+                console.log('---------------------');
+            })
+            
+            // let table_id = response.data.table_id
         },
         error: function () {
             console.log('Sai mia no roi may');
