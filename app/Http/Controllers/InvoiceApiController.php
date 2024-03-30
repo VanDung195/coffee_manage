@@ -28,6 +28,7 @@ class InvoiceApiController extends Controller
         ->whereIn('id', $table_invoice_id)
         ->get()
         ->toArray();
+        // dd($invoices);
         $message = 'Get api thanh cong';
         return $this->successResponse($invoices,$message);
     }
