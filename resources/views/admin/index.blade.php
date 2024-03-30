@@ -53,7 +53,7 @@
     </button>
 </div>
 <div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
-    <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('#invoice_detail_{{ $table->stt }}')">
+    <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('#invoice_detail_{{ $table->name }}')">
         {{$table->name}}
     </button>
 </div>
@@ -159,17 +159,84 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (response) {
             // console.log(response.data[0].total_price);
+
+            //invoice
+            console.log(response.data);
+            let divapi = document.createElement("divApi");
             response.data.forEach(function (item, index){
+                let table_id_api = item.table_id;
+                let show_table_api = 'show_table_'+table_id_api;
+                let show_detail_api = 'show_detail_'+table_id_api; 
+                document.getElementById(show_table_api).style.display = 'none';
+                document.getElementById(show_detail_api).style.display = 'block';
+                let modal_invoice_api = `
+                <div id="invoice_detail_${table_id_api}" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Hoá đơn chi tiết</h4>
+                                <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <h3>Bàn số: ${table_id_api}</h3>
+                `;
                 // console.log(item);
+                //invoice detail
                 item.details.forEach(function (item, index){
-                    console.log(item.menu_items.name);
+                    // console.log(item.menu_items.name);
+                    modal_invoice_api += `
+                    <div class="items form-row">
+                        <div class="form-group col-6">
+                            <label>Tên món: </label>
+                            <input type="text" class="form-control" value="${item.menu_items.name}">
+                        </div>
+                        <div class="form-group col-2">
+                            <label>Số lượng: </label>
+                            <input type="text" class="form-control" id="" value="${item.quantity}">
+                        </div>
+                        <div class="form-group col-2">
+                            <label>Giá: </label>
+                            <input type="text" class="form-control" value="${(item.menu_items.price).toLocaleString('vi-VN')}" name="" id="">
+                        </div>
+                        <div class="form-group col-2">
+                            <label>Thành tiền: </label>
+                            <input type="text" class="form-control" value="${(item.quantity * item.menu_items.price).toLocaleString('vi-VN')}" name="" id="">
+                        </div>
+                    </div>
+                    `;
                 })
+                modal_invoice_api += `
+                <div class="form-row" style="margin-top: 30px;">
+                        <div class="form-group col-5" id="div-paid">
+                            <input type="text" class="form-control" value="Đã thanh toán">
+                        </div> 
+                        <div class="form-group col-6" style="margin-left: 60px;">
+                            <h4>Tổng tiền: ${(item.total_price).toLocaleString('vi-VN')}</h4>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="deleteModal()" class="btn btn-danger">Xoá hoá đơn</button>
+                    <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
+                </div>
+                </div>
+                </div>
+                </div>
+                `;
                 console.log('---------------------');
+                divapi.innerHTML = modal_invoice_api;
+                console.log(modal_invoice_api);
+                modal_invoice_api = null;
+
+                divapi.classList.add("form-group");
+                document.getElementById("append_modal_invoice_detail").appendChild(divapi);
+                console.log('thanh cong');
             })
-            
             // let table_id = response.data.table_id
         },
-        error: function () {
+        error: function (error) {
+            console.log(error);
             console.log('Sai mia no roi may');
         }
     });
@@ -196,7 +263,7 @@ $(document).ready(function () {
                 
                 console.log(response.data);
                 let modal_invoice = `
-                    <div id="invoice_detail_${index}" class="modal fade" role="dialog">
+                    <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -276,7 +343,6 @@ $(document).ready(function () {
         console.log(table_name);
         // let modal_name = "#invoice_detail_" + table_name;
         $(table_name).modal("show");
-        // console.log(modal_name);
     }
     function closeModal() {
         
