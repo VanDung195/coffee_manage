@@ -18,6 +18,7 @@ class InvoiceController extends Controller
     {
         try {
             $tableId = $request->input('table-id');    
+            // dd($tableId);
             $allData = $request->all();
             //Lấy danh sách các tên món có trong hoá đơn
             $ItemsId = $allData['id'];
@@ -76,18 +77,20 @@ class InvoiceController extends Controller
             // dd($date, $time);
             // dd($total_price);
             // $dt = new DateTime();
-            
+            // dd($tableId);
             $now = Carbon::now('Asia/Bangkok');
             if((int)$request->is_paid == 1) {
-                // $invoice = Invoice::create([
-                //     'created_at' => $now->format('Y:m:d'),
-                //     'checkin_time' => $now->format('H:i:s'),
-                //     'checkout_time' => $now->format('H:i:s'),
-                //     'total_price' => $total_price,
-                //     'table_id' => $tableId,
-                // ]);
-                // $invoice_id = $invoice->id;
-                $invoice_id = 1;
+                $invoice = Invoice::create([
+                    'created_at' => $now->format('Y:m:d'),
+                    'checkin_time' => $now->format('H:i:s'),
+                    'checkout_time' => $now->format('H:i:s'),
+                    'total_price' => $total_price,
+                    'table_id' => $tableId,
+                ]);
+                
+                $invoice_id = $invoice->id;
+                // $invoice_id = 1;
+                // dd($tableId);
                 foreach ($ItemsId as $index => $id) {
                     // dd($index,$id);
                     /*
@@ -104,11 +107,11 @@ class InvoiceController extends Controller
                             ->where('id', $id)->first();
 
                     
-                    // InvoiceDetail::create([
-                    //     'invoice_id' => $invoice_id,
-                    //     'menu_item_id' => $id,
-                    //     'quantity' => $quantity,
-                    // ]);
+                    InvoiceDetail::create([
+                        'invoice_id' => $invoice_id,
+                        'menu_item_id' => $id,
+                        'quantity' => $quantity,
+                    ]);
                     
                     $invoice_details[] = [
                         'id' => $id,
@@ -121,9 +124,8 @@ class InvoiceController extends Controller
                 }
                 
                 $indexQ = Table::query()->where('name',$tableId)->first();
-                
                 Table::where('name',$tableId)->update([
-                    'status' => TableStausEnum::BAN,
+                    'status' => TableStausEnum::getKey(0),
                     'invoice_id' => $invoice_id,
                 ]);
                 $index = $indexQ->stt;
