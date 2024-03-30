@@ -23,7 +23,7 @@ class InvoiceApiController extends Controller
         $invoices = Invoice::with(['details' => function($query) {
             $query->select('invoice_id', 'menu_item_id', 'quantity');
         }, 'details.menuItems' => function($query) {
-            $query->select('id', 'name');
+            $query->select('id', 'name','price');
         }])
         ->whereIn('id', $table_invoice_id)
         ->get()
