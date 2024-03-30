@@ -11,7 +11,10 @@ class Table extends Model
     use HasFactory;
     public $timestamps = false;
     
-    protected $fillable = ['invoice_id'];
+    protected $fillable = [
+        'invoice_id',
+        'status',
+    ];
 
     public function invoice(): BelongsTo
     {
