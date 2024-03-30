@@ -17,6 +17,7 @@ class Invoice extends Model
         'checkin_time',
         'checkout_time',
         'total_price',
+        'table_id',
     ];
 
     public $timestamps = false;
