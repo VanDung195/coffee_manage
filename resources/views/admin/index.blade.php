@@ -162,7 +162,7 @@ $(document).ready(function () {
 
             //invoice
             console.log(response.data);
-            let divapi = document.createElement("divApi");
+            let divapi = document.createElement("div");
             response.data.forEach(function (item, index){
                 let table_id_api = item.table_id;
                 let show_table_api = 'show_table_'+table_id_api;
@@ -217,23 +217,29 @@ $(document).ready(function () {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="deleteModal()" class="btn btn-danger">Xoá hoá đơn</button>
+                    <button type="button" onclick="deleteInvoice('${table_id_api}')" class="btn btn-danger">Xoá hoá đơn</button>
                     <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
                 </div>
                 </div>
                 </div>
                 </div>
                 `;
-                console.log('---------------------');
-                divapi.innerHTML = modal_invoice_api;
-                console.log(modal_invoice_api);
-                modal_invoice_api = null;
 
-                divapi.classList.add("form-group");
-                document.getElementById("append_modal_invoice_detail").appendChild(divapi);
-                console.log('thanh cong');
+                let diva = document.createElement("div");
+                diva.innerHTML = modal_invoice_api;
+                diva.classList.add("form-group");
+                diva.setAttribute("id","div_invoice_detail_"+table_id_api);
+
+                document.getElementById("append_modal_invoice_detail").appendChild(diva);
+                console.log('---------------------');
+                // divapi.innerHTML = modal_invoice_api;
+                // console.log(modal_invoice_api);
+                // // modal_invoice_api = null;
+
+                // divapi.classList.add("form-group");
+                // document.getElementById("append_modal_invoice_detail").appendChild(divapi);
+                // console.log('thanh cong');
             })
-            // let table_id = response.data.table_id
         },
         error: function (error) {
             console.log(error);
@@ -308,7 +314,7 @@ $(document).ready(function () {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="deleteModal()" class="btn btn-danger">Xoá hoá đơn</button>
+                    <button type="button" onclick="deleteInvoice('${table_id}')" class="btn btn-danger">Xoá hoá đơn</button>
                     <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
                 </div>
                 </div>
@@ -320,10 +326,12 @@ $(document).ready(function () {
                 div2.innerHTML = modal_invoice;
 
                 div2.classList.add("form-group");
+                div2.setAttribute("id","div_invoice_detail_"+table_id);
                 // divabc.innerHTML = modal_invoice;
                 // let divabc = document.getElementById("modal-invoice-detail");
                 // divabc.appendChild(modal_invoice);
                 document.getElementById("append_modal_invoice_detail").appendChild(div2);
+                //show_table la cai nut de mo invoice and invoice detail
                 document.getElementById(show_table).style.display = 'none';
                 document.getElementById(show_detail).style.display = 'block';
 
@@ -345,10 +353,62 @@ $(document).ready(function () {
         $(table_name).modal("show");
     }
     function closeModal() {
-        
+        $('#modal-invoice').modal('toggle');
     }
-    function showModalIncvoiceDetail(modal_id) {
+    function deleteInvoice(table_id) {
+        //table_name (table_id)
+        let table_name = table_id;
+        $.ajax({
+            type: 'get',
+            url: '{{ route('table.update') }}',
+            data: {table_name},
+            success: function (response) {
+                let modal_invoice = "#invoice_detail_"+table_name;
+                $(modal_invoice).modal('toggle');
 
+                let div_invoice = "div_invoice_detail_"+table_id;
+                let divR = document.getElementById(div_invoice);
+                divR.remove();
+
+                let btn_show_table = "show_table_"+table_id;
+                let btn_show_invoice_detail = "show_detail_"+table_id;
+                // let test = document.getElementById(btn_show_table);
+                // let test2 = document.getElementById(btn_show_invoice_detail);
+                // console.log(test2);
+                document.getElementById(btn_show_table).style.display = 'block';
+                document.getElementById(btn_show_invoice_detail).style.display = 'none';
+
+                console.log('thanh cmn cong roi');
+            }
+        });
+
+
+
+
+
+        // console.log(table_id);
+        // let modal_invoice = "#invoice_detail_"+table_id;
+        // // console.log(table_id);
+        // $(modal_invoice).modal('toggle');
+        // console.log(1231232131231231231736173127361863187);
+        // let div_invoice = "div_invoice_detail_"+table_id;
+        // let test = document.getElementById(div_invoice);
+        // test.remove();
+        // console.log(test);
+
+
+        // $(div_invoice).remove();
+        // let btn_show_table = "show_table_"+table_id;
+        // let btn_show_invoice_detail = "show_detail_"+table_id;
+        // let element = document.getElementById(div_invoice);
+        // element.remove();
+        // document.getElementById(btn_show_table).style.display = 'block';
+        // document.getElementById(btn_show_invoice_detail).style.display = 'none';
+
+        // // let modal_invoice = '#invoice_detail_'+table_id;
+        // // console.log(modal_invoice);
+        // let modal_invoice = document.getElementById("invoice_detail_"+table_id);
+        // console.log(modal_invoice);
     }
     function updateRowTotal(formRow) {
         let quantity = parseInt(formRow.find('.quantity').val());
