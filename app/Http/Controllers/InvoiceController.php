@@ -144,21 +144,22 @@ class InvoiceController extends Controller
             }
 
             //is_paid ===  0 (chua thanh toan thi se them vao session de lo khach hang co huy hoa don)
-            if(!session()->has('invoice'))
-            {
-                session()->put('invoice', []);
-            }
+            // if(!session()->has('invoice'))
+            // {
+            //     session()->put('invoice', []);
+            // }
             
-            $invoice = session()->get('invoice');
-            if(array_key_exists($tableId, $invoice)){
-                dd(1);
-            }
+            // $invoice = session()->get('invoice');
+            // if(array_key_exists($tableId, $invoice)){
+            //     dd(1);
+            // }
 
-            return $this->successResponse();
+            // return $this->successResponse();
 
         } catch (\Throwable $th) {
 
             dd($th);
         }
     }
+
 }
