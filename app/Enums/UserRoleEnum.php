@@ -11,8 +11,9 @@ use BenSampo\Enum\Enum;
  */
 final class UserRoleEnum extends Enum
 {
-    public const ADMIN = 0; //Chủ quán
-    public const MANAGER = 1; //Quản lý
-    public const CASHIER = 2; //Thu ngân
-    public const STAFF = 3; //Nhân viên còn lại (pha chế, phục vụ, giữ xe)
+    public const ADMIN = 1; //Chủ quán
+    public const MANAGER = 2; //Quản lý
+    public const CASHIER = 3; //Thu ngân
+    public const BARTENDER = 4; //Pha chế
+    public const STAFF = 5; //Phục vụ (giữ xe thì tuỳ, tính sau)
 }
