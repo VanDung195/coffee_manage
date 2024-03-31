@@ -35,7 +35,7 @@
                                 <p class="text-muted mb-4">Nhập tài khoản và mật khẩu</p>
                             </div>
 
-                            <form action="" method="POST">
+                            <form action="{{ route('process_login') }}" method="POST">
                                 @csrf
                                 <div class="form-group">
                                     <label for="account">Tài khoản</label>
