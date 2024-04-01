@@ -16,4 +16,13 @@ final class UserRoleEnum extends Enum
     public const CASHIER = 3; //Thu ngân
     public const BARTENDER = 4; //Pha chế
     public const STAFF = 5; //Phục vụ (giữ xe thì tuỳ, tính sau)
+
+    public static function getRoleForRegister(): array
+    {
+        return [
+            'cashier' => self::CASHIER,
+            'bartender' => self::BARTENDER,
+            'staff' => self::STAFF,
+        ];
+    }
 }
