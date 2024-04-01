@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -15,17 +16,29 @@ class AuthController extends Controller
     }
     public function process_login(Request $request) 
     {
-        $account = $request->account;
-        $password = $request->password;
+        // $account = $request->account;
+        // $password = $request->password;
         
-        $user = User::query()
-                ->where('account','=', $account)
-                ->first();
-        if($user) {
-            $user = User::query()
-                    ->where('password', $password)->first();
+        // $user = User::query()
+        //         ->where('account','=', $account)
+        //         ->first();
+        // if($user) {
+        //     $user = User::query()
+        //             ->where('password', $password)->first();
+        // }
+        // dd($user);
+
+        $user = $request->only('account','password');
+        // dd($user);
+        if(Auth::attempt($user)){
+            $user = Auth::user();
+            auth()->login($user);
+            // dd(user()->role);
+            
+            return redirect()->route('table');
         }
-        dd($user);
+
+        return redirect()->route('login')->with('error', 'Dang nhap that bai');
     }
     public function register() {
         $roleForRegister = UserRoleEnum::getRoleForRegister();
@@ -54,7 +67,7 @@ class AuthController extends Controller
             $user->phone = $request->account;
             $user->role = $request->role;
         }
-        $user->save();
+        // $user->save();
         return redirect()->route('table');
     }
 }
