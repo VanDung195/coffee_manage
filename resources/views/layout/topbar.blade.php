@@ -11,21 +11,14 @@
             </div>
         </li>
         
-
-        
-
-        
-
-        
-
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <span class="account-user-avatar"> 
                     <img src="assets/images/users/avatar-1.jpg" alt="user-image" class="rounded-circle">
                 </span>
                 <span>
-                    <span class="account-user-name">Dominic Keller</span>
-                    <span class="account-position">Founder</span>
+                    <span class="account-user-name">{{ user()->name }}</span>
+                    <span class="account-position">{{ getRoleByValue(user()->role) }}</span>
                 </span>
             </a>
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated topbar-dropdown-menu profile-dropdown">
@@ -72,7 +65,7 @@
         <i class="mdi mdi-menu"></i>
     </button>
     <div class="app-search dropdown d-none d-lg-block">
-        <form>
+        {{-- <form>
             <div class="input-group">
                 <input type="text" class="form-control dropdown-toggle" placeholder="Search..." id="top-search">
                 <span class="mdi mdi-magnify search-icon"></span>
@@ -81,7 +74,7 @@
                 </div>
             </div>
 
-        </form>
+        </form> --}}
 
         <div class="dropdown-menu dropdown-menu-animated dropdown-lg" id="search-dropdown">
             <!-- item-->
