@@ -19,3 +19,13 @@ if(!function_exists('isAdmin')) {
         return user() && user()->role === UserRoleEnum::ADMIN;
     }
 }
+if(!function_exists('isManager')) {
+    function isManager() {
+        return user() && user()->role === UserRoleEnum::MANAGER;
+    }
+}
+if(!function_exists('getRoleByValue')){
+    function getRoleByValue($value){
+        return UserRoleEnum::getKey($value);
+    }
+}
