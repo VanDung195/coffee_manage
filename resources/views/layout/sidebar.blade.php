@@ -31,10 +31,10 @@
             <li class="side-nav-item">
                 <a href="#" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> Invoice </span>
+                    <span> Attandance </span>
                 </a>
             </li>
-        </ul>        
+        </ul>
         <!-- End Sidebar -->
         <div class="clearfix"></div>
     </div></div></div></div><div class="simplebar-placeholder" style="width: auto; height: 60px;"></div></div><div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none; transform: translate3d(0px, 0px, 0px);"></div></div><div class="simplebar-track simplebar-vertical" style="visibility: hidden;"><div class="simplebar-scrollbar" style="height: 0px; transform: translate3d(0px, 0px, 0px); display: none;"></div></div></div>
