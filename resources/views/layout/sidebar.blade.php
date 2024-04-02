@@ -34,6 +34,26 @@
                     <span> Attandance </span>
                 </a>
             </li>
+            @if (user()->role === 1 || user()->role === 2 && user())
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-home-alt"></i>
+                        <span> User </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-home-alt"></i>
+                        <span> Món </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-home-alt"></i>
+                        <span> Hoá đơn </span>
+                    </a>
+                </li>
+            @endif
         </ul>
         <!-- End Sidebar -->
         <div class="clearfix"></div>
