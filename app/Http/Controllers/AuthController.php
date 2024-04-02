@@ -70,4 +70,10 @@ class AuthController extends Controller
         // $user->save();
         return redirect()->route('table');
     }
+    public function logout()
+    {
+        auth()->logout();
+
+        return redirect()->route('login');
+    }
 }
