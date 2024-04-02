@@ -30,7 +30,7 @@ class Invoice extends Model
     protected static function booted()
     {
         static::creating(static function($object){
-            $object->user_id = 1;
+            $object->user_id = user()->id;
         });
     }
 }
