@@ -31,12 +31,12 @@
             <li class="side-nav-item">
                 <a href="#" class="side-nav-link">
                     <i class="uil-home-alt"></i>
-                    <span> Attandance </span>
+                    <span> Điểm danh nhân viên </span>
                 </a>
             </li>
             @if (user()->role === 1 || user()->role === 2 && user())
                 <li class="side-nav-item">
-                    <a href="#" class="side-nav-link">
+                    <a href="{{ route('admin.user.index') }}" class="side-nav-link">
                         <i class="uil-home-alt"></i>
                         <span> User </span>
                     </a>
