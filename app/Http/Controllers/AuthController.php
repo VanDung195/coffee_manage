@@ -67,7 +67,7 @@ class AuthController extends Controller
             $user->phone = $request->account;
             $user->role = $request->role;
         }
-        // $user->save();
+        $user->save();
         return redirect()->route('table');
     }
     public function logout()
