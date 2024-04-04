@@ -30,8 +30,8 @@ Route::get('/testApi', [InvoiceApiController::class, 'index']);
 Route::get('/', [InvoiceApiController::class, 'index'])->name('api.invoices');
 Route::get('/update', [TableController::class, 'update'])->name('table.update');
 
-Route::get('/index',[TableController::class, 'index'])->name('table')->middleware(AdminMiddleware::class);
-// Route::get('/index',[TableController::class, 'index'])->name('table');
+// Route::get('/index',[TableController::class, 'index'])->name('table')->middleware(AdminMiddleware::class);
+Route::get('/index',[TableController::class, 'index'])->name('table');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'process_login'])->name('process_login');
