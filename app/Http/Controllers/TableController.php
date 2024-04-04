@@ -12,14 +12,14 @@ class TableController extends Controller
 {
     public function index()
     {
+        if(!user()){
+            return redirect()->route('login');
+        }
         $tables = Table::query()
         ->orderBy('stt', 'asc')
         ->paginate(10);
         $items = MenuItem::query()
                     ->get();
-        foreach ($tables as $table) {
-            
-        }
         // dd();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[ 
