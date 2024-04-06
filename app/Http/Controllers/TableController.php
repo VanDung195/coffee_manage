@@ -18,9 +18,7 @@ class TableController extends Controller
         $tables = Table::query()
         ->orderBy('stt', 'asc')
         ->paginate(10);
-        $items = MenuItem::query()
-                    ->get();
-        // dd();
+        $items = getAndCacheMenuItems();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[ 
             'tables' => $tables,
