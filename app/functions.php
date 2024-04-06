@@ -1,11 +1,20 @@
 <?php
 
+use App\Enums\SystemCacheEnum;
 use App\Enums\UserRoleEnum;
+use App\Models\MenuItem;
 
 if(!function_exists('getAndCacheMenuItems')){
-    function getAndCacheMenuItems()
+    function getAndCacheMenuItems(): object
     {
-        
+        return cache()->remember(
+            SystemCacheEnum::MENU_ITEMS,
+            84000*30,
+            function(){
+                $items = MenuItem::query()->get();
+                return $items;
+            }
+        );
     }
 }
 if(!function_exists('user')) {
