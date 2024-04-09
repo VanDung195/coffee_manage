@@ -53,6 +53,21 @@
                         <span> Hoá đơn </span>
                     </a>
                 </li>
+                <li class="side-nav-item">
+                    <a href="javascript: void(0);" class="side-nav-link" aria-expanded="false">
+                        <i class="uil-store"></i>
+                        <span> Thống kê doanh thu </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="side-nav-second-level mm-collapse" aria-expanded="false" style="height: 0px;">
+                        <li>
+                            <a href="{{ route('admin.statistic.day') }}">Thống kê theo ngày</a>
+                        </li>
+                        <li>
+                            <a href="#">Thống kê theo tháng</a>
+                        </li>
+                    </ul>
+                </li>
             @endif
         </ul>
         <!-- End Sidebar -->
