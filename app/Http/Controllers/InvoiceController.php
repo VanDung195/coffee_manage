@@ -81,7 +81,7 @@ class InvoiceController extends Controller
             $now = Carbon::now('Asia/Bangkok');
             if((int)$request->is_paid == 1) {
                 $invoice = Invoice::create([
-                    'created_at' => $now->format('Y:m:d'),
+                    'created_at' => $now->format('Y:m:d H:i:s'),
                     'checkin_time' => $now->format('H:i:s'),
                     'checkout_time' => $now->format('H:i:s'),
                     'total_price' => $total_price,
