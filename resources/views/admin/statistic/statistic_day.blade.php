@@ -51,69 +51,122 @@
 @endpush
 @section('content')
 <figure class="highcharts-figure">
-    <div id="container"></div>
-    <p class="highcharts-description">
-        A basic column chart comparing estimated corn and wheat production
-        in some countries.
-
-        The chart is making use of the axis crosshair feature, to highlight
-        the hovered country.
-    </p>
+    <div id="container1"></div>
+    <h1>Thống kê thứ 2</h1>
+    <div id="container2"></div>
 </figure>
 @endsection
 @push('js')
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>\
-    <script>
-        Highcharts.chart('container', {
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: 'Corn vs wheat estimated production for 2020',
-            align: 'left'
-        },
-        subtitle: {
-            text:
-                'Source: <a target="_blank" ' +
-                'href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
-            align: 'left'
-        },
-        xAxis: {
-            categories: {{ $arrX }},
-            crosshair: true,
-            accessibility: {
-                description: 'Countries'
-            }
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: '1000 metric tons (MT)'
-            }
-        },
-        tooltip: {
-            valueSuffix: ' (1000 MT)'
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
-        },
-        series: [
-            {
-                name: 'Corn',
-                data: [406292, 260000, 107000, 68300, 27500, 14500]
-            },
-            {
-                name: 'Wheat',
-                data: [51086, 136000, 5500, 141000, 107180, 77000]
-            }
-        ]
-    });
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>\
+<script>
 
-    </script>
+$(document).ready(function () {
+    $.ajax({
+        // type: "method",
+        url: '{{ route('admin.statistic.day') }}',
+        data: "data",
+        dataType: "json",
+        success: function (response) {
+            // console.log(response);
+            // console.log(response.data);
+            let data = response.data;
+            let ArrX = data.arrX;
+            let ArrY = data.arrY;
+            // console.log(Object.values(ArrX));
+            Highcharts.chart('container1', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Thống kê số lượng sản phẩm bán được theo ngày: '+ response.data.day,
+                    align: 'left'
+                },
+                subtitle: {
+                    text:
+                        'Hồ Văn Dũng đã làm',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: Object.keys(ArrX),
+                    crosshair: true,
+                    accessibility: {
+                        description: 'Countries'
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Số lượng sản phẩm bán ra'
+                    }
+                },
+                tooltip: {
+                    valueSuffix: ' sản phẩm'
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [
+                    {
+                        name: 'Số lượng sản phẩm đã bán',
+                        // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
+                        data: Object.values(ArrX)
+                    }
+                ]
+            });
+
+
+            Highcharts.chart('container2', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Thống kê doanh thu ngày: '+ response.data.day,
+                    align: 'left'
+                },
+                subtitle: {
+                    text:
+                        'HAHAHAHAHAHA',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: Object.keys(ArrY),
+                    crosshair: true,
+                    accessibility: {
+                        description: 'Countries'
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Doanh thu của sản phẩm'
+                    }
+                },
+                tooltip: {
+                    valueSuffix: ' VND'
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [
+                    {
+                        name: 'Doanh thu của sản phẩm đã bán',
+                        // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
+                        data: Object.values(ArrY)
+                    }
+                ]
+            });
+        }
+    });
+});
+
+</script>
 @endpush
