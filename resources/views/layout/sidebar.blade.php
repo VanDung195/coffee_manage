@@ -61,7 +61,7 @@
                     </a>
                     <ul class="side-nav-second-level mm-collapse" aria-expanded="false" style="height: 0px;">
                         <li>
-                            <a href="{{ route('admin.statistic.day') }}">Thống kê theo ngày</a>
+                            <a href="{{ route('admin.statistic.day_i') }}">Thống kê theo ngày</a>
                         </li>
                         <li>
                             <a href="#">Thống kê theo tháng</a>
