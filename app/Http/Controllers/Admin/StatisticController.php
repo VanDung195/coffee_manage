@@ -72,4 +72,17 @@ class StatisticController extends Controller
     {
         return view('admin.statistic.statistic_month');
     }
+    public function statistic_month()
+    {
+        $year = 2024;
+        $sql = Invoice::selectRaw('invoices.id as mahoadon, menu_items.name as tensanpham, date_format(invoices.created_at, "%e-%m") as ngaytao,sum(invoice_details.quantity) as soluong')
+                        ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
+                        ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                        ->whereYear('invoices.created_at', $year)
+                        // ->where('invoices.created_at', 'LIKE', '2024-%')
+                        ->groupBy('mahoadon', 'tensanpham', 'ngaytao')
+                        ->get();
+        // dd(json_encode($sql));
+        return $this->successResponse($sql);
+    }
 }
