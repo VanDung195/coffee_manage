@@ -64,7 +64,7 @@
                             <a href="{{ route('admin.statistic.day_i') }}">Thống kê theo ngày</a>
                         </li>
                         <li>
-                            <a href="#">Thống kê theo tháng</a>
+                            <a href="{{ route('admin.statistic.month_i') }}">Thống kê theo tháng</a>
                         </li>
                     </ul>
                 </li>
