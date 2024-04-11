@@ -18,8 +18,16 @@ class StatisticController extends Controller
     public function statistic_day_i(){
         return view('admin.statistic.statistic_day');
     }
-    public function statistic_day(){
-         $today =  date('Y-m-d');
+    public function statistic_day(Request $request){
+        // $today = date('Y-m-d');
+        // dd($request->all());
+        $today = $request->all() ? $request->all() : date('Y-m-d');
+
+        // if($request->all() == null) {
+        //     $today =  date('Y-m-d');
+        // }else{
+        //     $today = $request->all();
+        // }
         //  $today = date('2024-04-09');
         // $today = '2024-04-09';
 
@@ -34,9 +42,6 @@ class StatisticController extends Controller
                 ->whereDate('created_at', $today)
                 ->groupBy('year', 'month', 'day','menu_items.name')
                 ->get();
-        if(is_null($menu_items)){
-            dd('co gi dau ma thong ke');
-        }
         // dd($menu_items);
         $arrX = [];
         $arrY = [];
@@ -55,6 +60,16 @@ class StatisticController extends Controller
             'arrY' => $arrY,
             'day' => $today,
         ]);
-        dd(1);
+        // return view('admin.statistic.statistic_day', [
+        //     'arrX' => $arrX,
+        //     'arrY' => $arrY,
+        //     'day' => $today,
+        //     'exists' => $exists,
+        // ]);
+        // dd(1);
+    }
+    public function statistic_month_i() 
+    {
+        return view('admin.statistic.statistic_month');
     }
 }
