@@ -51,18 +51,16 @@
 @endpush
 @section('content')
 <h1>Thống kê ngày hôm nay hoặc chọn ngày cụ thể để thống kê</h1>
-<form>
     <div class="form-group col-2">
         <label for="example-date">Date</label>
         <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}">
     </div>
     <button onclick="submitForm(event)">Choose</button>
-</form>
-<figure class="highcharts-figure">
-    <div id="container1"></div>
-    <h1>Thống kê thứ 2</h1>
-    <div id="container2"></div>
-</figure>
+    <figure class="highcharts-figure">
+        <div id="container1"></div>
+        <h1>Thống kê thứ 2</h1>
+        <div id="container2"></div>
+    </figure>
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -75,7 +73,6 @@ function submitForm(){
     let date_input = $('#date').val();
     let date = new Date(date_input);
     let formattedDate = date.toLocaleDateString('vi-VN');
-    // console.log(datee.toLocaleDateString('vi-VN'));
     $.ajax({
         type: "get",
         url: '{{ route('admin.statistic.day') }}',
@@ -149,7 +146,6 @@ function getChart1(ArrX, response,date){
         series: [
             {
                 name: 'Số lượng sản phẩm đã bán',
-                // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
                 data: Object.values(ArrX)
             }
         ]
@@ -194,7 +190,6 @@ function getChart2(ArrY,response,date){
         series: [
             {
                 name: 'Doanh thu của sản phẩm đã bán',
-                // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
                 data: Object.values(ArrY)
             }
         ]
