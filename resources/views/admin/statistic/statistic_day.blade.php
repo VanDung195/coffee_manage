@@ -50,6 +50,14 @@
     </style>
 @endpush
 @section('content')
+<h1>Thống kê ngày hôm nay hoặc chọn ngày cụ thể để thống kê</h1>
+<form>
+    <div class="form-group col-2">
+        <label for="example-date">Date</label>
+        <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}">
+    </div>
+    <button onclick="submitForm(event)">Choose</button>
+</form>
 <figure class="highcharts-figure">
     <div id="container1"></div>
     <h1>Thống kê thứ 2</h1>
@@ -60,113 +68,137 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>\
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script>
-
-$(document).ready(function () {
+function submitForm(){
+    event.preventDefault();
+    let date_input = $('#date').val();
+    let date = new Date(date_input);
+    let formattedDate = date.toLocaleDateString('vi-VN');
+    // console.log(datee.toLocaleDateString('vi-VN'));
     $.ajax({
-        // type: "method",
+        type: "get",
         url: '{{ route('admin.statistic.day') }}',
-        data: "data",
+        data: {date_input},
         dataType: "json",
         success: function (response) {
-            // console.log(response);
-            // console.log(response.data);
+            console.log(response);
             let data = response.data;
             let ArrX = data.arrX;
             let ArrY = data.arrY;
-            // console.log(Object.values(ArrX));
-            Highcharts.chart('container1', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: 'Thống kê số lượng sản phẩm bán được theo ngày: '+ response.data.day,
-                    align: 'left'
-                },
-                subtitle: {
-                    text:
-                        'Hồ Văn Dũng đã làm',
-                    align: 'left'
-                },
-                xAxis: {
-                    categories: Object.keys(ArrX),
-                    crosshair: true,
-                    accessibility: {
-                        description: 'Countries'
-                    }
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: 'Số lượng sản phẩm bán ra'
-                    }
-                },
-                tooltip: {
-                    valueSuffix: ' sản phẩm'
-                },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
-                series: [
-                    {
-                        name: 'Số lượng sản phẩm đã bán',
-                        // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
-                        data: Object.values(ArrX)
-                    }
-                ]
-            });
-
-
-            Highcharts.chart('container2', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: 'Thống kê doanh thu ngày: '+ response.data.day,
-                    align: 'left'
-                },
-                subtitle: {
-                    text:
-                        'HAHAHAHAHAHA',
-                    align: 'left'
-                },
-                xAxis: {
-                    categories: Object.keys(ArrY),
-                    crosshair: true,
-                    accessibility: {
-                        description: 'Countries'
-                    }
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: 'Doanh thu của sản phẩm'
-                    }
-                },
-                tooltip: {
-                    valueSuffix: ' VND'
-                },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
-                series: [
-                    {
-                        name: 'Doanh thu của sản phẩm đã bán',
-                        // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
-                        data: Object.values(ArrY)
-                    }
-                ]
-            });
+            let today = data.day;
+            getChart1(ArrX,response,formattedDate);
+            getChart2(ArrY,response,formattedDate);
+        }
+    });
+}
+$(document).ready(function () {
+    // let date = $('#date').val();
+    let date_input = $('#date').val();
+    let date = new Date(date_input);
+    let formattedDate = date.toLocaleDateString('vi-VN');
+    $.ajax({
+        url: '{{ route('admin.statistic.day') }}',
+        dataType: "json",
+        success: function (response) {
+            let data = response.data;
+            let ArrX = data.arrX;
+            let ArrY = data.arrY;
+            getChart1(ArrX,response,formattedDate);
+            getChart2(ArrY,response,formattedDate);
         }
     });
 });
 
+function getChart1(ArrX, response,date){
+    Highcharts.chart('container1', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Thống kê số lượng sản phẩm bán được theo ngày: ' + date,
+            align: 'left'
+        },
+        subtitle: {
+            text:
+                'hahahahahahaahahahahaah',
+            align: 'left'
+        },
+        xAxis: {
+            categories: Object.keys(ArrX),
+            crosshair: true,
+            accessibility: {
+                description: 'Countries'
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Số lượng sản phẩm bán ra'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' sản phẩm'
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [
+            {
+                name: 'Số lượng sản phẩm đã bán',
+                // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
+                data: Object.values(ArrX)
+            }
+        ]
+    });
+}
+function getChart2(ArrY,response,date){
+    Highcharts.chart('container2', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Thống kê doanh thu ngày: ' + date,
+            align: 'left'
+        },
+        subtitle: {
+            text:
+                'HAHAHAHAHAHA',
+            align: 'left'
+        },
+        xAxis: {
+            categories: Object.keys(ArrY),
+            crosshair: true,
+            accessibility: {
+                description: 'Countries'
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Doanh thu của sản phẩm'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' VND'
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [
+            {
+                name: 'Doanh thu của sản phẩm đã bán',
+                // data: [406292, 260000, 107000, 68300, 27500, 14500, 15444]
+                data: Object.values(ArrY)
+            }
+        ]
+    });
+}
 </script>
 @endpush
