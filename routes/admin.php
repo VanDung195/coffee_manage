@@ -25,3 +25,4 @@ Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
 // );
 Route::get('/statistic_day', [StatisticController::class, 'statistic_day_i'])->name('statistic.day_i');
 Route::get('/thong_ke', [StatisticController::class, 'statistic_day'])->name('statistic.day');
+Route::get('/statistic_month', [StatisticController::class, 'statistic_month_i'])->name('statistic.month_i');
