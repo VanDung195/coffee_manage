@@ -36,7 +36,7 @@ Route::get('/index',[TableController::class, 'index'])->name('table');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'process_login'])->name('process_login');
 Route::get('/register', [AuthController::class, 'register'])->name('register')->middleware(AdminMiddleware::class);
-Route::post('/register', [AuthController::class, 'process_register'])->name('process_register');
+Route::post('/register', [AuthController::class, 'process_register'])->name('process_register')->middleware(AdminMiddleware::class);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
