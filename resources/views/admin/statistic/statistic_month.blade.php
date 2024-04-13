@@ -52,7 +52,7 @@
 @section('content')
 <div class="form-group">
     <label for="example-month">Month</label>
-    <input class="form-control" id="date" type="month" name="month" value="{{ date('Y-m') }}">
+    <input class="form-control col-2" id="date" type="month" name="month" value="{{ date('Y-m') }}">
 </div>
 <button onclick="ev()">Choose</button>
 <figure class="highcharts-figure">
@@ -75,7 +75,10 @@
 <script>
 function ev(){
     let date_input = $('#date').val();
-    console.log(date_input);
+    let [year, month] = date_input.split('-');
+    let formattedDate = `${month}/${year}`;
+    console.log(formattedDate);
+    // console.log(date_input);
     $.ajax({
         type: "get",
         url: '{{ route('admin.statistic.month') }}',
@@ -91,7 +94,7 @@ function ev(){
                 arrDetail.push(each);
                 console.log(each);
             })
-            getChart_1(arr,arrDetail);
+            getChart_1(arr,arrDetail,formattedDate);
             // console.log(response);
         }
     });
@@ -105,6 +108,10 @@ function ev(){
             // data: "data",
             dataType: "json",
             success: function (response) {
+                let date_input = $('#date').val();
+                let [year, month] = date_input.split('-');
+                let formattedDate = `${month}/${year}`;
+                console.log(formattedDate);
                 // console.log(response.data.arr1);
                 let data = response.data.arr1;
                 let arr = Object.values(data);
@@ -121,19 +128,19 @@ function ev(){
                 })
                 // console.log(arrDetail);
 
-                getChart_1(arr,arrDetail);
+                getChart_1(arr,arrDetail,formattedDate);
             }
         });
     });
 
-    function getChart_1(arr, arrDetail){
+    function getChart_1(arr, arrDetail, formattedDate){
         Highcharts.chart('container', {
             chart: {
                 type: 'column'
             },
             title: {
                 align: 'left',
-                text: 'Số lượng sản phẩm bán ra trong tháng: +'
+                text: 'Số lượng sản phẩm bán ra trong tháng: '+ formattedDate,
             },
             subtitle: {
                 align: 'left',
