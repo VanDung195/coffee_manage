@@ -50,6 +50,11 @@
     </style>
 @endpush
 @section('content')
+<div class="form-group">
+    <label for="example-month">Month</label>
+    <input class="form-control" id="date" type="month" name="month" value="{{ date('Y-m') }}">
+</div>
+<button onclick="ev()">Choose</button>
 <figure class="highcharts-figure">
     <div id="container"></div>
     <p class="highcharts-description">
@@ -68,6 +73,31 @@
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
 <script>
+function ev(){
+    let date_input = $('#date').val();
+    console.log(date_input);
+    $.ajax({
+        type: "get",
+        url: '{{ route('admin.statistic.month') }}',
+        data: {date_input},
+        dataType: "json",
+        success: function (response) {
+            let data = response.data.arr1;
+            let arr = Object.values(data);
+            let data2 = response.data.arr2;
+            const arrDetail = [];
+            Object.values(data2).forEach((each)=>{
+                each.data = Object.values(each.data);
+                arrDetail.push(each);
+                console.log(each);
+            })
+            getChart_1(arr,arrDetail);
+            // console.log(response);
+        }
+    });
+}
+
+
     $(document).ready(function () {
         $.ajax({
             // type: "method",
@@ -75,9 +105,88 @@
             // data: "data",
             dataType: "json",
             success: function (response) {
-                console.log(response);
+                // console.log(response.data.arr1);
+                let data = response.data.arr1;
+                let arr = Object.values(data);
+                // console.log(arr);
+
+                let data2 = response.data.arr2;
+                // let arrDetail = Object.values(data2);
+                const arrDetail = [];
+                Object.values(data2).forEach((each)=>{
+                    // console.log(Object.values(each.data));
+                    each.data = Object.values(each.data);
+                    arrDetail.push(each);
+                    console.log(each);
+                })
+                // console.log(arrDetail);
+
+                getChart_1(arr,arrDetail);
             }
         });
     });
+
+    function getChart_1(arr, arrDetail){
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                align: 'left',
+                text: 'Số lượng sản phẩm bán ra trong tháng: +'
+            },
+            subtitle: {
+                align: 'left',
+                text: 'Click vào cột để hiển thị chi tiết'
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: 'Số lượng sản phẩm được bán'
+                }
+
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.f}'
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">Sản phẩm</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.f}</b> <br/>'
+            },
+
+            series: [
+                {
+                    name: 'Products',
+                    colorByPoint: true,
+                    data: arr
+                }
+            ],
+            drilldown: {
+                breadcrumbs: {
+                    position: {
+                        align: 'right'
+                    }
+                },
+                series: arrDetail
+            }
+        });
+    }
 </script>
 @endpush
