@@ -55,7 +55,8 @@
         <label for="example-date">Date</label>
         <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}">
     </div>
-    <button onclick="submitForm(event)">Choose</button>
+    <button class="btn btn-primary" onclick="submitForm(event)">Choose</button>
+    <p class="form-control col-2" id="total-price"></p>
     <figure class="highcharts-figure">
         <div id="container1"></div>
         <h1>Thống kê thứ 2</h1>
@@ -86,6 +87,10 @@ function submitForm(){
             let today = data.day;
             getChart1(ArrX,response,formattedDate);
             getChart2(ArrY,response,formattedDate);
+
+            let total_price = response.data.total_price;
+            let p_total_price = document.getElementById('total-price');
+            p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';
         }
     });
 }
@@ -98,11 +103,16 @@ $(document).ready(function () {
         url: '{{ route('admin.statistic.day') }}',
         dataType: "json",
         success: function (response) {
+            // console.log(response);
             let data = response.data;
             let ArrX = data.arrX;
             let ArrY = data.arrY;
             getChart1(ArrX,response,formattedDate);
             getChart2(ArrY,response,formattedDate);
+            
+            let total_price = response.data.total_price;
+            let p_total_price = document.getElementById('total-price');
+            p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';
         }
     });
 });
