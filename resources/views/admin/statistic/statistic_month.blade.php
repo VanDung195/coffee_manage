@@ -54,14 +54,13 @@
     <label for="example-month">Month</label>
     <input class="form-control col-2" id="date" type="month" name="month" value="{{ date('Y-m') }}">
 </div>
-<button onclick="ev()">Choose</button>
+<button class="btn btn-primary" onclick="ev()">Choose</button>
+<p class="form-control col-2" id="total-price"></p>
 <figure class="highcharts-figure">
     <div id="container"></div>
-    <p class="highcharts-description">
-        Chart showing browser market shares. Clicking on individual columns
-        brings up more detailed data. This chart makes use of the drilldown
-        feature in Highcharts to easily switch between datasets.
-    </p>
+</figure>
+<figure class="highcharts-figure">
+    <div id="container2"></div>
 </figure>
 @endsection
 @push('js')
@@ -71,6 +70,8 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+{{-- script chart2 --}}
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
 
 <script>
 function ev(){
@@ -95,10 +96,17 @@ function ev(){
                 console.log(each);
             })
             getChart_1(arr,arrDetail,formattedDate);
-            // console.log(response);
+
+            //chart2
+            let arrX = Object.keys(response.data.arrChart2);
+            let arrY = Object.values(response.data.arrChart2);
+            getChart2(arrX,arrY,formattedDate);
+
+            let total_price = response.data.total_price;
+            let p_total_price = document.getElementById('total-price');
+            p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';
         }
     });
-}
 
 
     $(document).ready(function () {
@@ -108,15 +116,19 @@ function ev(){
             // data: "data",
             dataType: "json",
             success: function (response) {
+                // console.log(response);
                 let date_input = $('#date').val();
                 let [year, month] = date_input.split('-');
                 let formattedDate = `${month}/${year}`;
                 console.log(formattedDate);
-                // console.log(response.data.arr1);
                 let data = response.data.arr1;
                 let arr = Object.values(data);
-                // console.log(arr);
+                
+                //chart2
+                let arrX = Object.keys(response.data.arrChart2);
+                let arrY = Object.values(response.data.arrChart2);
 
+                //data arr2 (chart1)
                 let data2 = response.data.arr2;
                 // let arrDetail = Object.values(data2);
                 const arrDetail = [];
@@ -126,9 +138,13 @@ function ev(){
                     arrDetail.push(each);
                     console.log(each);
                 })
-                // console.log(arrDetail);
 
                 getChart_1(arr,arrDetail,formattedDate);
+                getChart2(arrX,arrY,formattedDate);
+
+                let total_price = response.data.total_price;
+                let p_total_price = document.getElementById('total-price');
+                p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';
             }
         });
     });
@@ -192,6 +208,56 @@ function ev(){
                     }
                 },
                 series: arrDetail
+            }
+        });
+    }
+    function getChart2(arrX, arrY, formattedDate)
+    {
+        Highcharts.chart('container2', {
+            title: {
+                text: 'Doanh thu của tháng: ' + formattedDate,
+                align: 'left'
+            },
+
+            // subtitle: {
+            //     text: 'By Job Category. Source: <a href="https://irecusa.org/programs/solar-jobs-census/" target="_blank">IREC</a>.',
+            //     align: 'left'
+            // },
+
+            yAxis: {
+                title: {
+                    text: 'Tổng tiền' 
+                }
+            },
+
+            xAxis: {
+                categories: arrX
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+            series: [{
+                name: 'Doanh thu',
+                data: arrY
+            }],
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
             }
         });
     }
