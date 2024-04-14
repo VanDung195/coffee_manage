@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\TestController;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'test']);
@@ -23,8 +24,10 @@ Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
 //         Route::get('/statistic', [StatisticController::class, 'statistic_day'])->name('day');
 //     }
 // );
-//Statistic
-Route::get('/statistic_day', [StatisticController::class, 'statistic_day_i'])->name('statistic.day_i');
-Route::get('/thong_ke', [StatisticController::class, 'statistic_day'])->name('statistic.day');
-Route::get('/statistic_month', [StatisticController::class, 'statistic_month_i'])->name('statistic.month_i');
-Route::get('/tk', [StatisticController::class, 'statistic_month'])->name('statistic.month');
+//Thống kê
+Route::middleware([AdminMiddleware::class])->group(function(){
+    Route::get('/statistic_day', [StatisticController::class, 'statistic_day_i'])->name('statistic.day_i');
+    Route::get('/thong_ke', [StatisticController::class, 'statistic_day'])->name('statistic.day');
+    Route::get('/statistic_month', [StatisticController::class, 'statistic_month_i'])->name('statistic.month_i');
+    Route::get('/tk', [StatisticController::class, 'statistic_month'])->name('statistic.month');
+});
