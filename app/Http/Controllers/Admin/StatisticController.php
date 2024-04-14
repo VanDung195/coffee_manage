@@ -45,6 +45,7 @@ class StatisticController extends Controller
         // dd($menu_items);
         $arrX = [];
         $arrY = [];
+        $total_price = 0.0;
         foreach($menu_items_name as $data) 
         {
             $arrX[$data] = 0;
@@ -54,11 +55,14 @@ class StatisticController extends Controller
         {
             $arrX[$each['name']] = (int)$each['quantity'];
             $arrY[$each['name']] = (float)$each['total_price'];
+            $total_price += (float)$each['total_price'];
         }
+        // dd($total_price);
         return $this->successResponse([
             'arrX' => $arrX,
             'arrY' => $arrY,
             'day' => $today,
+            'total_price' => $total_price,
         ]);
         // return view('admin.statistic.statistic_day', [
         //     'arrX' => $arrX,
@@ -160,15 +164,20 @@ class StatisticController extends Controller
 
         $menu_items = MenuItem::query()->pluck('name', 'id');
 
-        $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, date_format(invoices.created_at, "%e-%m") as ngaytao,sum(invoice_details.quantity) as soluong')
+        $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, date_format(invoices.created_at, "%e-%m") as ngaytao,sum(invoice_details.quantity) as soluong,
+        sum(invoice_details.quantity*menu_items.price) as total_price')
             ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
             ->join('menu_items', 'invoice_details.menu_item_id', '=', 'menu_items.id')
             ->whereBetween('invoices.created_at', [$start_date, $end_date])
             ->groupBy('masanpham', 'tensanpham', 'ngaytao')
             ->get();
+        // dd($invoices->toArray());s
 
+            //arrChart1
         $arr = [];
         $arr2 = [];
+        //arrChart2
+        $arrChart2 = [];
 
         foreach ($menu_items as $id => $name) {
             $arr[$id] = [
@@ -183,27 +192,51 @@ class StatisticController extends Controller
             ];
         }
 
+        // foreach($invoices as $each)
+        // {
+        //     $arr[$each['masanpham']] = [
+        //         'name' => $each['tensanpham'],
+        //         'y' => 0,
+        //         'drilldown' => $each['masanpham'],
+        //     ];
+        //     $arr2[$each['masanpham']] = [
+        //         'name' => $each['tensanpham'],
+        //         'id' => $each['masanpham'],
+        //         'data' => [],
+        //     ];
+        // }
+        // dd($arr,$arr2);
         $start_day = date('j', strtotime($start_date));
         $end_day = date('t', strtotime($end_date));
         $month = date('m', strtotime($date));
 
+        //set default values (0)
         foreach ($arr2 as $menu_item_id => &$item) {
             for ($i = $start_day; $i <= $end_day; $i++) {
                 $key = $i . '-' . $month;
                 $item['data'][$key] = [$key, 0];
+
+                //chart2
+                $arrChart2[$key] = 0;
             }
         }
-
+        $total_price = 0.0;
         foreach ($invoices as $invoice) {
             $menu_item_id = $invoice['masanpham'];
             $key = $invoice['ngaytao'];
             $arr[$menu_item_id]['y'] += (int)$invoice['soluong'];
             $arr2[$menu_item_id]['data'][$key] = [$key, (int)$invoice['soluong']];
+
+            $arrChart2[$key] += (float)$invoice['total_price'];
+            $total_price += (float)$invoice['total_price'];
         }
+        // dd($arrChart2);
 
         return $this->successResponse([
             'arr1' => array_values($arr),
             'arr2' => array_values($arr2),
+            'arrChart2' => $arrChart2,
+            'total_price' => $total_price,
         ]);
     }
 
