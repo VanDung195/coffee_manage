@@ -1,61 +1,17 @@
 @extends('layout.master')
 @push('css')
-    <style>
-        .highcharts-figure,
-        .highcharts-data-table table {
-            min-width: 310px;
-            max-width: 800px;
-            margin: 1em auto;
-        }
-
-        #container {
-            height: 400px;
-        }
-
-        .highcharts-data-table table {
-            font-family: Verdana, sans-serif;
-            border-collapse: collapse;
-            border: 1px solid #ebebeb;
-            margin: 10px auto;
-            text-align: center;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .highcharts-data-table caption {
-            padding: 1em 0;
-            font-size: 1.2em;
-            color: #555;
-        }
-
-        .highcharts-data-table th {
-            font-weight: 600;
-            padding: 0.5em;
-        }
-
-        .highcharts-data-table td,
-        .highcharts-data-table th,
-        .highcharts-data-table caption {
-            padding: 0.5em;
-        }
-
-        .highcharts-data-table thead tr,
-        .highcharts-data-table tr:nth-child(even) {
-            background: #f8f8f8;
-        }
-
-        .highcharts-data-table tr:hover {
-            background: #f1f7ff;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/hightcharts.css') }}">
 @endpush
 @section('content')
 <div class="form-group">
-    <label for="example-month">Month</label>
+    <label for="example-month">Chọn tháng để thống kê</label>
     <input class="form-control col-2" id="date" type="month" name="month" value="{{ date('Y-m') }}">
 </div>
 <button class="btn btn-primary" onclick="ev()">Choose</button>
-<p class="form-control col-2" id="total-price"></p>
+<div class="form-group" style="margin-top:20px;">
+    <label>Tổng doanh thu của tháng: </label>
+    <p class="form-control col-2" id="total-price"></p>
+</div>
 <figure class="highcharts-figure">
     <div id="container"></div>
 </figure>
@@ -74,40 +30,40 @@
 <script src="https://code.highcharts.com/modules/series-label.js"></script>
 
 <script>
-function ev(){
-    let date_input = $('#date').val();
-    let [year, month] = date_input.split('-');
-    let formattedDate = `${month}/${year}`;
-    console.log(formattedDate);
-    // console.log(date_input);
-    $.ajax({
-        type: "get",
-        url: '{{ route('admin.statistic.month') }}',
-        data: {date_input},
-        dataType: "json",
-        success: function (response) {
-            let data = response.data.arr1;
-            let arr = Object.values(data);
-            let data2 = response.data.arr2;
-            const arrDetail = [];
-            Object.values(data2).forEach((each)=>{
-                each.data = Object.values(each.data);
-                arrDetail.push(each);
-                console.log(each);
-            })
-            getChart_1(arr,arrDetail,formattedDate);
+    function ev(){
+        let date_input = $('#date').val();
+        let [year, month] = date_input.split('-');
+        let formattedDate = `${month}/${year}`;
+        console.log(formattedDate);
+        // console.log(date_input);
+        $.ajax({
+            type: "get",
+            url: '{{ route('admin.statistic.month') }}',
+            data: {date_input},
+            dataType: "json",
+            success: function (response) {
+                let data = response.data.arr1;
+                let arr = Object.values(data);
+                let data2 = response.data.arr2;
+                const arrDetail = [];
+                Object.values(data2).forEach((each)=>{
+                    each.data = Object.values(each.data);
+                    arrDetail.push(each);
+                    console.log(each);
+                })
+                getChart_1(arr,arrDetail,formattedDate);
 
-            //chart2
-            let arrX = Object.keys(response.data.arrChart2);
-            let arrY = Object.values(response.data.arrChart2);
-            getChart2(arrX,arrY,formattedDate);
+                //chart2
+                let arrX = Object.keys(response.data.arrChart2);
+                let arrY = Object.values(response.data.arrChart2);
+                getChart2(arrX,arrY,formattedDate);
 
-            let total_price = response.data.total_price;
-            let p_total_price = document.getElementById('total-price');
-            p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';
-        }
-    });
-
+                let total_price = response.data.total_price;
+                let p_total_price = document.getElementById('total-price');
+                p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';
+            }
+        });
+    }
 
     $(document).ready(function () {
         $.ajax({
@@ -116,7 +72,6 @@ function ev(){
             // data: "data",
             dataType: "json",
             success: function (response) {
-                // console.log(response);
                 let date_input = $('#date').val();
                 let [year, month] = date_input.split('-');
                 let formattedDate = `${month}/${year}`;
