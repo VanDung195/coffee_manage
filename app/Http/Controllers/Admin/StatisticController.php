@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ResponseTrait;
 use App\Models\Invoice;
-use App\Models\InvoiceDetail;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-use function PHPUnit\Framework\isNull;
 
 class StatisticController extends Controller
 {
@@ -42,7 +39,6 @@ class StatisticController extends Controller
                 ->whereDate('created_at', $today)
                 ->groupBy('year', 'month', 'day','menu_items.name')
                 ->get();
-        // dd($menu_items);
         $arrX = [];
         $arrY = [];
         $total_price = 0.0;
@@ -57,20 +53,12 @@ class StatisticController extends Controller
             $arrY[$each['name']] = (float)$each['total_price'];
             $total_price += (float)$each['total_price'];
         }
-        // dd($total_price);
         return $this->successResponse([
             'arrX' => $arrX,
             'arrY' => $arrY,
             'day' => $today,
             'total_price' => $total_price,
         ]);
-        // return view('admin.statistic.statistic_day', [
-        //     'arrX' => $arrX,
-        //     'arrY' => $arrY,
-        //     'day' => $today,
-        //     'exists' => $exists,
-        // ]);
-        // dd(1);
     }
     public function statistic_month_i() 
     {
@@ -162,7 +150,7 @@ class StatisticController extends Controller
         $start_date = date('Y-m-d', strtotime("$date-01"));
         $end_date = date('Y-m-t', strtotime("$date-01"));
 
-        $menu_items = MenuItem::query()->pluck('name', 'id');
+        
 
         $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, date_format(invoices.created_at, "%e-%m") as ngaytao,sum(invoice_details.quantity) as soluong,
         sum(invoice_details.quantity*menu_items.price) as total_price')
@@ -171,23 +159,38 @@ class StatisticController extends Controller
             ->whereBetween('invoices.created_at', [$start_date, $end_date])
             ->groupBy('masanpham', 'tensanpham', 'ngaytao')
             ->get();
-        // dd($invoices->toArray());s
 
-            //arrChart1
+        //arrChart1
         $arr = [];
         $arr2 = [];
         //arrChart2
         $arrChart2 = [];
 
-        foreach ($menu_items as $id => $name) {
-            $arr[$id] = [
-                'name' => $name,
+        //Thay vì làm cách này sẽ tốn thêm 1 câu truy vấn thì làm cách dưới
+        // $menu_items = MenuItem::query()->pluck('name', 'id');
+        // foreach ($menu_items as $id => $name) {
+        //     $arr[$id] = [
+        //         'name' => $name,
+        //         'y' => 0,
+        //         'drilldown' => $id,
+        //     ];
+        //     $arr2[$id] = [
+        //         'name' => $name,
+        //         'id' => $id,
+        //         'data' => [],
+        //     ];
+        // }
+
+        $menu_items = getAndCacheMenuItems();
+        foreach ($menu_items as $each) {
+            $arr[$each['id']] = [
+                'name' => $each['name'],
                 'y' => 0,
-                'drilldown' => $id,
+                'drilldown' => $each['id'],
             ];
-            $arr2[$id] = [
-                'name' => $name,
-                'id' => $id,
+            $arr2[$each['id']] = [
+                'name' => $each['name'],
+                'id' => $each['id'],
                 'data' => [],
             ];
         }
@@ -215,7 +218,6 @@ class StatisticController extends Controller
             for ($i = $start_day; $i <= $end_day; $i++) {
                 $key = $i . '-' . $month;
                 $item['data'][$key] = [$key, 0];
-
                 //chart2
                 $arrChart2[$key] = 0;
             }
@@ -239,5 +241,12 @@ class StatisticController extends Controller
             'total_price' => $total_price,
         ]);
     }
-
-}
+    public function statistic_year_i()
+    {
+        return view('admin.statistic.statistic_year');
+    }
+    public function statistic_year()
+    {
+        dd(1);
+    }
+}   
