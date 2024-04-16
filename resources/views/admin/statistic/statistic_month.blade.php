@@ -76,13 +76,9 @@
                 let [year, month] = date_input.split('-');
                 let formattedDate = `${month}/${year}`;
                 console.log(formattedDate);
-                let data = response.data.arr1;
-                let arr = Object.values(data);
                 
-                //chart2
-                let arrX = Object.keys(response.data.arrChart2);
-                let arrY = Object.values(response.data.arrChart2);
-
+                let data = response.data.arr1; 
+                let arr = Object.values(data);
                 //data arr2 (chart1)
                 let data2 = response.data.arr2;
                 // let arrDetail = Object.values(data2);
@@ -93,8 +89,11 @@
                     arrDetail.push(each);
                     console.log(each);
                 })
-
                 getChart_1(arr,arrDetail,formattedDate);
+
+                //chart2
+                let arrX = Object.keys(response.data.arrChart2);
+                let arrY = Object.values(response.data.arrChart2);
                 getChart2(arrX,arrY,formattedDate);
 
                 let total_price = response.data.total_price;
