@@ -214,7 +214,7 @@ class StatisticController extends Controller
         $month = date('m', strtotime($date));
 
         //set default values (0)
-        foreach ($arr2 as $menu_item_id => &$item) {
+        foreach ($arr2 as $menu_item_id => $item) {
             for ($i = $start_day; $i <= $end_day; $i++) {
                 $key = $i . '-' . $month;
                 $item['data'][$key] = [$key, 0];
@@ -245,8 +245,65 @@ class StatisticController extends Controller
     {
         return view('admin.statistic.statistic_year');
     }
-    public function statistic_year()
+    public function statistic_year(Request $request)
     {
-        dd(1);
+        // $year = $request->input('date_input', date('Y'));
+        $year = date('Y');
+        $start_month = 1;
+        $end_month = 12;
+
+        $invoices = Invoice::selectRaw('menu_items.id as masanpham, date_format(invoices.created_at, "%m") as thang,
+                sum(invoice_details.quantity) as soluong, sum(invoices.total_price) as tongtien')
+                ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
+                ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                ->whereYear('invoices.created_at', $year)
+                ->groupBy('masanpham', 'thang')
+                ->get();
+
+        // dd($sql);
+        $arr1 = [];
+        $arr2 = [];
+
+        $menu_items = getAndCacheMenuItems();
+        foreach($menu_items as $each) 
+        {
+            $arr1[$each['id']] = [
+                'name' => $each['name'],
+                'y' => 0,
+                'drilldown' => $each['id'],
+            ];
+            $arr2[$each['id']] = [
+                'name' => $each['name'],
+                'id' => $each['id'],
+                'data' => [],
+            ];
+        }
+        // dd($arr2);
+        foreach($arr2 as $items => $item)
+        {
+            // dd($item);
+            for($i = $start_month; $i <= $end_month; $i++)
+            {
+                //Gán vào mảng ở vị trí data, tạo một mảng mới có số $i và trong mảng đấy gán 2 giá trị
+                $item['data'][$i] = [$i, 0];
+                // dd($item);
+            }    
+        }
+        // dd($invoices->toArray());
+        foreach($invoices as $invoice)
+        {
+            $menu_item_id = $invoice['masanpham'];
+            $key = (int)$invoice['thang'];
+            $arr1[$menu_item_id]['y'] += (int)$invoice['soluong'];
+            // dd($arr1);
+            $arr2[$menu_item_id]['data'][$key] = [$key, (int)$invoice['soluong']];
+        }
+        // dd(array_values($arr1));
+
+        return $this->successResponse([
+            'arr1' => array_values($arr1),
+            'arr2' => array_values($arr2),
+        ]);
+
     }
 }   
