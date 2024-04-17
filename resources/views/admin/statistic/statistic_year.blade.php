@@ -3,13 +3,18 @@
     <link rel="stylesheet" href="{{ asset('css/hightcharts.css') }}">
 @endpush
 @section('content')
+<div class="form-group">
+    {{-- <input class="form-control col-2" type="number" min="1900" max="2099" step="1" value="{{ date('Y') }}" /> --}}
+    {{-- <input class="form-control col-2" id="year" type="year" name="year" value="{{ date('Y') }}"> --}}
+    <div class="form-group">
+        <label for="example-number">Năm</label>
+        <input class="form-control col-1" id="year" type="number" placeholder="YYYY" min="2023" max="{{ date('Y') }}" value="{{ date('Y') }}"> 
+    </div>
+</div>
+<button class="btn btn-primary" onclick="ev()">Choose</button>
 <figure class="highcharts-figure">
     <div id="container"></div>
-    <p class="highcharts-description">
-        Chart showing browser market shares. Clicking on individual columns
-        brings up more detailed data. This chart makes use of the drilldown
-        feature in Highcharts to easily switch between datasets.
-    </p>
+    <div id="container2"></div>
 </figure>
 @endsection
 @push('js')
@@ -19,16 +24,50 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-
 <script>
-    function getChart1(arr1, arrDetail){
+    // document.querySelector("input[type=number]")
+    // .oninput = e => console.log(new Date(e.target.valueAsNumber, 0, 1))
+
+    
+</script>
+<script>
+    function ev()
+    {
+        let year = $('#year').val();
+        $.ajax({
+            type: "get",
+            url: '{{ route('admin.statistic.year') }}',
+            data: {year},
+            dataType: "json",
+            success: function (response) {
+                // console.log(year);
+                let data1 = response.data.arr1;
+                let arr1 = Object.values(data1);
+                
+                let data2 = response.data.arr2;
+                let arr2 = Object.values(data2);
+
+                const arrDetail = [];
+                arr2.forEach((each)=>{
+                    each.data = Object.values(each.data);
+                    arrDetail.push(each);
+                });
+                getChart1(arr1,arrDetail,year);
+
+                let arrX = Object.keys(response.data.arrChart2);
+                let arrY = Object.values(response.data.arrChart2);
+                getChart2(arrX,arrY,year);
+            }
+        });
+    }
+    function getChart1(arr1, arrDetail, year){
         Highcharts.chart('container', {
             chart: {
                 type: 'column'
             },
             title: {
                 align: 'left',
-                text: 'Số lượng sản phẩm bán ra trong tháng: ',
+                text: 'Số lượng sản phẩm đã bán ra trong năm: ' + year,
             },
             subtitle: {
                 align: 'left',
@@ -44,7 +83,7 @@
             },
             yAxis: {
                 title: {
-                    text: 'Số lượng sản phẩm được bán'
+                    text: 'Số lượng'
                 }
 
             },
@@ -83,6 +122,56 @@
             }
         });
     }
+    function getChart2(arrX, arrY,year)
+    {
+        Highcharts.chart('container2', {
+            title: {
+                text: 'Doanh thu của năm: '+year,
+                align: 'left'
+            },
+
+            // subtitle: {
+            //     text: 'By Job Category. Source: <a href="https://irecusa.org/programs/solar-jobs-census/" target="_blank">IREC</a>.',
+            //     align: 'left'
+            // },
+
+            yAxis: {
+                title: {
+                    text: 'Số tiền' 
+                }
+            },
+
+            xAxis: {
+                categories: arrX
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+            series: [{
+                name: 'Doanh thu',
+                data: arrY
+            }],
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+        });
+    }
     $(document).ready(function () {
         $.ajax({
             type: "get",
@@ -90,6 +179,7 @@
             // data: "data",
             dataType: "json",
             success: function (response) {
+                let year = $('#year').val();
                 // console.log(response);
                 let data1 = response.data.arr1;
                 let arr1 = Object.values(data1);
@@ -103,7 +193,12 @@
                     arrDetail.push(each);
                 });
 
-                getChart1(arr1,arrDetail);
+                getChart1(arr1,arrDetail,year);
+
+                let arrX = Object.keys(response.data.arrChart2);
+                let arrY = Object.values(response.data.arrChart2);
+
+                getChart2(arrX,arrY,year);
             }
         });
     });
