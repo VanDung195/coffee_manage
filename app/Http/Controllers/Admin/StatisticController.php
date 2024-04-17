@@ -247,8 +247,9 @@ class StatisticController extends Controller
     }
     public function statistic_year(Request $request)
     {
-        // $year = $request->input('date_input', date('Y'));
-        $year = date('Y');
+        $year = $request->input('year', date('Y'));
+        // $year = date('Y');
+        // dd($year);
         $start_month = 1;
         $end_month = 12;
 
@@ -259,11 +260,11 @@ class StatisticController extends Controller
                 ->whereYear('invoices.created_at', $year)
                 ->groupBy('masanpham', 'thang')
                 ->get();
-
         // dd($sql);
         $arr1 = [];
         $arr2 = [];
 
+        $arrChart2 = [];
         $menu_items = getAndCacheMenuItems();
         foreach($menu_items as $each) 
         {
@@ -281,14 +282,18 @@ class StatisticController extends Controller
         // dd($arr2);
         foreach($arr2 as $items => $item)
         {
-            // dd($item);
             for($i = $start_month; $i <= $end_month; $i++)
             {
+                // dd($items, $item);
                 //Gán vào mảng ở vị trí data, tạo một mảng mới có số $i và trong mảng đấy gán 2 giá trị
-                $item['data'][$i] = [$i, 0];
-                // dd($item);
+                // $item['data'][$i] = [$i, 0];
+                $arr2[$item['id']]['data'][$i] = [$i,0];
+                // dd($item['data'][$i]);
+
+                $arrChart2[$i] = 0;
             }    
         }
+        // dd($arr2);
         // dd($invoices->toArray());
         foreach($invoices as $invoice)
         {
@@ -297,12 +302,16 @@ class StatisticController extends Controller
             $arr1[$menu_item_id]['y'] += (int)$invoice['soluong'];
             // dd($arr1);
             $arr2[$menu_item_id]['data'][$key] = [$key, (int)$invoice['soluong']];
-        }
-        // dd(array_values($arr1));
 
+            $arrChart2[$key] += (int)$invoice['tongtien'];
+        }
+        // dd($arrChart2);
+        // dd(array_values($arr1));
+        // dd($arr2);
         return $this->successResponse([
             'arr1' => array_values($arr1),
             'arr2' => array_values($arr2),
+            'arrChart2' => $arrChart2,
         ]);
 
     }
