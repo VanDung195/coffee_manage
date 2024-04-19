@@ -32,4 +32,6 @@ Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
     Route::get('/tk', [StatisticController::class, 'statistic_month'])->name('statistic.month');
     Route::get('/statistic_year', [StatisticController::class, 'statistic_year_i'])->name('statistic.year_i');
     Route::get('/', [StatisticController::class, 'statistic_year'])->name('statistic.year');
+    Route::get('/statistic_date_range', [StatisticController::class, 'statistic_date_range_i'])->name('statistic.date_range_i');
+    Route::get('/', [StatisticController::class, 'statistic_date_range'])->name('statistic.range');
 // });
