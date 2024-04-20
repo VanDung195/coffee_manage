@@ -8,7 +8,12 @@
     {{-- <input class="form-control col-2" id="year" type="year" name="year" value="{{ date('Y') }}"> --}}
     <div class="form-group">
         <label for="example-number">Năm</label>
-        <input class="form-control col-1" id="year" type="number" placeholder="YYYY" min="2023" max="{{ date('Y') }}" value="{{ date('Y') }}"> 
+        {{-- <input class="form-control col-1" id="year" type="number" placeholder="YYYY" min="2023" max="{{ date('Y') }}" value="{{ date('Y') }}">  --}}
+        <select name="" id="year" class="form-control col-1">
+            @for ($i = date('Y'); $i >= 2022; $i--)
+                <option value="{{ $i }}">{{ $i }}</option>         
+            @endfor
+        </select>
     </div>
 </div>
 <button class="btn btn-primary" onclick="ev()">Choose</button>
