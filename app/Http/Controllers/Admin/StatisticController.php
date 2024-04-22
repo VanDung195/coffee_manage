@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ResponseTrait;
 use App\Models\Invoice;
 use App\Models\MenuItem;
+use DateTime;
 use Illuminate\Http\Request;
 
 
@@ -18,7 +19,7 @@ class StatisticController extends Controller
     public function statistic_day(Request $request){
         // $today = date('Y-m-d');
         // $today = $request->all() ? $request->all() : date('Y-m-d');
-        $today = $request->input('date_input', date('Y-m-d'));
+        $day = $request->input('date_input', date('Y-m-d'));
 
         // if($request->all() == null) {
         //     $today =  date('Y-m-d');
@@ -36,7 +37,7 @@ class StatisticController extends Controller
                                         sum(invoice_details.quantity*menu_items.price) as total_price')
                 ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                 ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
-                ->whereDate('created_at', $today)
+                ->whereDate('created_at', $day)
                 ->groupBy('year', 'month', 'day','menu_items.name')
                 ->get();
         $arrX = [];
@@ -56,7 +57,7 @@ class StatisticController extends Controller
         return $this->successResponse([
             'arrX' => $arrX,
             'arrY' => $arrY,
-            'day' => $today,
+            'day' => $day,
             'total_price' => $total_price,
         ]);
     }
@@ -305,14 +306,123 @@ class StatisticController extends Controller
 
             $arrChart2[$key] += (int)$invoice['tongtien'];
         }
-        // dd($arrChart2);
         // dd(array_values($arr1));
-        // dd($arr2);
         return $this->successResponse([
             'arr1' => array_values($arr1),
             'arr2' => array_values($arr2),
             'arrChart2' => $arrChart2,
         ]);
+    }
+    public function statistic_date_range_i()
+    {
+        return view('admin.statistic.statistic_date_range');
+    }
+    public function statistic_date_range(Request $request)
+    {
+        $start_date = $request->input('start_date', '2024-3-1');
+        $end_date = $request->input('end_date', date('Y-n-j'));
+        $end_date_formatted = date('Y-n-j', strtotime($end_date . ' +1 day'));
+        $number_of_days = (strtotime($end_date) - strtotime($start_date)) / (60*60*24);
 
+        //arr chart 1
+        $arrX = [];
+        //arrchart drilldown
+        $arr1 = [];
+        $arr2 = [];
+        $menu_items = getAndCacheMenuItems();
+        //set default value (0)
+        foreach ($menu_items as $each) {
+            //chart1
+            // $arrX[$each['name']] = 0;
+
+            //drilldown chart
+            $arr1[$each['id']] = [
+                'name' => $each['name'],
+                'y' => 0,
+                'drilldown' => $each['id'] 
+            ];
+
+            $arr2[$each['id']] = [
+                'name' => $each['name'],
+                'id' => $each['id'],
+                'data' => [],
+            ];
+            
+        }  
+        if($number_of_days <= 10)
+        {
+            $data = Invoice::selectRaw('year(created_at) as year, month(created_at) as month, 
+                                    day(created_at) as day,menu_items.name,menu_items.id as id,sum(invoice_details.quantity) as quantity, 
+                                    sum(invoice_details.quantity*menu_items.price) as total_price')
+                        ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
+                        ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                        ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
+                        ->groupBy('year', 'month', 'day','menu_items.name', 'id')
+                        ->get();
+            foreach ($arr2 as $key => $value) {
+                // $arrX[$each['name']] += (int)$each['quantity'];
+                $current_date = $start_date;
+                while($current_date <= $end_date)
+                {   
+                    // dd($current_date);
+                    $arr2[$value['id']]['data'][$current_date] = [$current_date, 0];
+                    $current_date = date('Y-n-j', strtotime($current_date . ' +1 day'));
+                }
+            }
+            foreach($data as $each)
+            {
+                $menu_item_id = $each['id'];
+                $key = $each['year'] . '-' . $each['month'] . '-' . $each['day'];
+                $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
+                $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
+            }
+            // dd($arr2);
+            return $this->successResponse([
+                // 'arrX' => $arrX,
+                'arr1' => $arr1,
+                'arr2' => $arr2,
+            ]);
+        }
+
+        //có thể đổi sang month(invoices.created_at) để không có số 0 ở đằng trước 
+        $data = Invoice::selectRaw('menu_items.id as id, date_format(invoices.created_at, "%m-%Y") as month,
+                sum(invoice_details.quantity) as quantity, sum(invoices.total_price) as total_price')
+                ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
+                ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
+                ->groupBy('id', 'month')
+                ->get();
+
+        $start_date_timestamp = strtotime($start_date);
+        $end_date_timestamp = strtotime($end_date);
+
+        $start_month = new DateTime(date('Y-m-d', $start_date_timestamp));
+        $start_month = $start_month->format('m-Y');
+
+        $end_month = new DateTime(date('Y-m-d', $end_date_timestamp));
+        $end_month = $end_month->format('m-Y');
+
+        // dd($end_month);
+        foreach ($arr2 as $key => $value) {
+            $current_month = $start_month;
+            while($current_month <= $end_month)
+            {
+                $arr2[$value['id']]['data'][$current_month] = [$current_month, 0];
+                $current_month = (new DateTime("01-$current_month"))->modify('+1 month')->format('m-Y');
+                echo $current_month . '  ';
+            }
+            dd();
+        }
+        foreach($data as $each)
+        {
+            $menu_item_id = $each['id'];
+            $key = $each['month'];
+            $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
+            $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
+        }
+        return $this->successResponse([
+            'arr1' => $arr1,
+            'arr2' => $arr2,
+        ]);
     }
 }   
