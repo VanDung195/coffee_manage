@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -8,7 +7,6 @@ use App\Models\Invoice;
 use App\Models\MenuItem;
 use DateTime;
 use Illuminate\Http\Request;
-
 
 class StatisticController extends Controller
 {
@@ -280,7 +278,6 @@ class StatisticController extends Controller
                 'data' => [],
             ];
         }
-        // dd($arr2);
         foreach($arr2 as $items => $item)
         {
             for($i = $start_month; $i <= $end_month; $i++)
@@ -347,10 +344,10 @@ class StatisticController extends Controller
                 'id' => $each['id'],
                 'data' => [],
             ];
-            
-        }  
-        if($number_of_days <= 10)
+        }
+        if($number_of_days <= 100)
         {
+            //đổi sang dateformat của câu truy vấn dưới cho đồng bộ
             $data = Invoice::selectRaw('year(created_at) as year, month(created_at) as month, 
                                     day(created_at) as day,menu_items.name,menu_items.id as id,sum(invoice_details.quantity) as quantity, 
                                     sum(invoice_details.quantity*menu_items.price) as total_price')
@@ -364,7 +361,6 @@ class StatisticController extends Controller
                 $current_date = $start_date;
                 while($current_date <= $end_date)
                 {   
-                    // dd($current_date);
                     $arr2[$value['id']]['data'][$current_date] = [$current_date, 0];
                     $current_date = date('Y-n-j', strtotime($current_date . ' +1 day'));
                 }
@@ -376,53 +372,73 @@ class StatisticController extends Controller
                 $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
                 $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
             }
-            // dd($arr2);
             return $this->successResponse([
                 // 'arrX' => $arrX,
                 'arr1' => $arr1,
                 'arr2' => $arr2,
             ]);
         }
-
-        //có thể đổi sang month(invoices.created_at) để không có số 0 ở đằng trước 
-        $data = Invoice::selectRaw('menu_items.id as id, date_format(invoices.created_at, "%m-%Y") as month,
-                sum(invoice_details.quantity) as quantity, sum(invoices.total_price) as total_price')
-                ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
-                ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
-                ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
-                ->groupBy('id', 'month')
-                ->get();
-
-        $start_date_timestamp = strtotime($start_date);
-        $end_date_timestamp = strtotime($end_date);
-
-        $start_month = new DateTime(date('Y-m-d', $start_date_timestamp));
-        $start_month = $start_month->format('m-Y');
-
-        $end_month = new DateTime(date('Y-m-d', $end_date_timestamp));
-        $end_month = $end_month->format('m-Y');
-
-        // dd($end_month);
-        foreach ($arr2 as $key => $value) {
-            $current_month = $start_month;
-            while($current_month <= $end_month)
-            {
-                $arr2[$value['id']]['data'][$current_month] = [$current_month, 0];
-                $current_month = (new DateTime("01-$current_month"))->modify('+1 month')->format('m-Y');
-                echo $current_month . '  ';
-            }
-            dd();
-        }
-        foreach($data as $each)
+        if($number_of_days <= 2000)
         {
-            $menu_item_id = $each['id'];
-            $key = $each['month'];
-            $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
-            $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
+            //có thể đổi sang month(invoices.created_at) để không có số 0 ở đằng trước 
+            $data = Invoice::selectRaw('menu_items.id as id, date_format(invoices.created_at, "%m-%Y") as month,
+            sum(invoice_details.quantity) as quantity, sum(invoices.total_price) as total_price')
+            ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
+            ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+            ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
+            ->groupBy('id', 'month')
+            ->get();
+            $start_date_timestamp = strtotime($start_date);
+            $end_date_timestamp = strtotime($end_date);
+
+            $start_month = new DateTime(date('Y-m-d', $start_date_timestamp));
+            $start_month = $start_month->format('m-Y');
+
+            $end_month = new DateTime(date('Y-m-d', $end_date_timestamp));
+            $end_month = $end_month->format('m-Y'); 
+
+            //Tối ưu lại hoặc clean code sau
+            list($thang_start, $nam_start) = explode('-', $start_month);
+            list($thang_end, $nam_end) = explode('-', $end_month);
+
+            //convert to integer
+            $thang_start = intval($thang_start);
+            $nam_start = intval($nam_start);
+            $thang_end = intval($thang_end);
+            $nam_end = intval($nam_end);
+            foreach($arr2 as $items => $item)
+            {
+                $thang_start_1 = $thang_start;
+                $nam_start_1 = $nam_start;
+                $thang_end_1 = $thang_end;
+                $nam_end_1 = $nam_end;
+                while($nam_start_1 < $nam_end_1 || ($nam_start_1 === $nam_end_1 && $thang_start_1 <= $thang_end_1))
+                {
+                    $formatted_thang = ($thang_start_1 < 10) ? "0$thang_start_1" : $thang_start_1;
+                    $key = $formatted_thang . '-' . $nam_start_1;
+                    // echo $key . '        ';
+                    $arr2[$item['id']]['data'][$key] = [$key,0];
+                    $thang_start_1++;
+                    if($thang_start_1 > 12)
+                    {
+                        $thang_start_1 = 1;
+                        $nam_start_1++;
+                    }
+                }
+            }
+            foreach($data as $each)
+            {
+                $menu_item_id = $each['id'];
+                $key = $each['month'];
+                $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
+                $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
+            }
+            return $this->successResponse([
+                'arr1' => $arr1,
+                'arr2' => $arr2,
+            ]);
         }
-        return $this->successResponse([
-            'arr1' => $arr1,
-            'arr2' => $arr2,
-        ]);
+
+
     }
 }   
