@@ -17,6 +17,10 @@
     </div>
 </div>
 <button class="btn btn-primary" onclick="ev()">Choose</button>
+<div class="form-group" style="margin-top:20px;">
+    <label>Tổng doanh thu của tháng: </label>
+    <p class="form-control col-2" id="total-price"></p>
+</div>
 <figure class="highcharts-figure">
     <div id="container"></div>
     <div id="container2"></div>
@@ -62,6 +66,10 @@
                 let arrX = Object.keys(response.data.arrChart2);
                 let arrY = Object.values(response.data.arrChart2);
                 getChart2(arrX,arrY,year);
+
+                let total_price = response.data.total_price;
+                let p_total_price = document.getElementById('total-price');
+                p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VND';
             }
         });
     }
@@ -204,6 +212,10 @@
                 let arrY = Object.values(response.data.arrChart2);
 
                 getChart2(arrX,arrY,year);
+
+                let total_price = response.data.total_price;
+                let p_total_price = document.getElementById('total-price');
+                p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VND';
             }
         });
     });
