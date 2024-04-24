@@ -70,7 +70,7 @@
                             <a href="{{ route('admin.statistic.year_i') }}">Thống kê theo năm</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.statistic.date_range_i') }}">Thống kê theo khoảng thời gian (chưa làm)</a>
+                            <a href="{{ route('admin.statistic.date_range_i') }}">Thống kê theo khoảng thời gian</a>
                         </li>
                     </ul>
                 </li>
