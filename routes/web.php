@@ -27,12 +27,14 @@ Route::get('/test', [TestController::class, 'test']);
 Route::get('/test2', [TestController::class, 'test2'])->name('test2');
 Route::get('/test3', [TestController::class, 'test3']);
 Route::get('/testApi', [InvoiceApiController::class, 'index']);
-Route::get('/', [InvoiceApiController::class, 'index'])->name('api.invoices');
+
+Route::get('/api', [InvoiceApiController::class, 'index'])->name('api.invoices');
 Route::get('/update', [TableController::class, 'update'])->name('table.update');
 
 // Route::get('/index',[TableController::class, 'index'])->name('table')->middleware(AdminMiddleware::class);
 Route::get('/index',[TableController::class, 'index'])->name('table');
 
+Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'process_login'])->name('process_login');
 Route::get('/register', [AuthController::class, 'register'])->name('register')->middleware(AdminMiddleware::class);
