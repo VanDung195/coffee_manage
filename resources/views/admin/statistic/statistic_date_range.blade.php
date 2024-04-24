@@ -6,14 +6,18 @@
     <div class="form-row">
         <div class="form-group col-2">
             <label for="">Từ</label>
-            <input type="date" id="from" class="form-control" value="2024-03-01">
-        </div>
+            <input type="date" id="from" class="form-control" value="2024-03-15">
+            </div>
         <div class="form-group col-2">
             <label>Đến</label>
             <input type="date" id="to" class="form-control" value="{{ date('Y-m-d') }}">
         </div>
     </div>
-    <button onclick="ev()">Choose</button>
+    <button class="btn btn-primary" onclick="ev()">Choose</button>
+    <div class="form-group" style="margin-top:20px;">
+        <label>Tổng doanh thu của tháng: </label>
+        <p class="form-control col-2" id="total-price"></p>
+    </div>
     <figure class="highcharts-figure">
         {{-- <div id="container"></div>
         <p class="highcharts-description">
@@ -23,11 +27,16 @@
             The chart is making use of the axis crosshair feature, to highlight
             the hovered country.
         </p> --}}
+        <div id="container1"></div>
+        <p class="highcharts-description">
+            Biểu đồ thống kê số lượng sản phẩm đã bán trong 1 khoảng thời gian
+        </p>
         <div id="container2"></div>
         <p class="highcharts-description">
             Biểu đồ thống kê số lượng sản phẩm đã bán trong 1 khoảng thời gian
         </p>
     </figure>
+    <p id="nowarp" style="display: none;">asdsd</p>
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -38,7 +47,16 @@
 {{-- drilldown chart --}}
 <script src="https://code.highcharts.com/modules/data.js"></script>
 <script src="https://code.highcharts.com/modules/drilldown.js"></script>
-
+<script>
+    fetch('https://cloudflare.com/cdn-cgi/trace')
+        .then(r => r.text())
+        .then(text => {
+            if(text.includes('warp=on'))
+            {
+                document.getElementById('nowarp').style.display = 'block';
+            }
+        })
+</script>
     <script>
         function ev()
         {
@@ -50,6 +68,7 @@
                 data: {start_date,end_date},
                 dataType: "json",
                 success: function (response) {
+                    console.log(response.data.arr2);
                     // let data = response.data;
                     // let ArrX = data.arrX;
                     // getChart2(ArrX);
@@ -67,11 +86,20 @@
                     })
 
                     getChart1(arr1,arrDetail);
+
+                    let arrX = Object.keys(response.data.arrLine);
+                    let arrY = Object.values(response.data.arrLine);
+                    getChart2(arrX, arrY);
+                    console.log(123);
+
+                    let total_price = response.data.total_price;
+                    let p_total_price = document.getElementById('total-price');
+                    p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VND';
                 }
             });
         }
         function getChart1(arr1, arrDetail){
-        Highcharts.chart('container2', {
+        Highcharts.chart('container1', {
             chart: {
                 type: 'column'
             },
@@ -132,6 +160,51 @@
             }
         });
     }
+
+    function getChart2(arrX, arrY)
+    {
+        Highcharts.chart('container2', {
+            title: {
+                text: 'Doanh thu của tháng: ' + 'cc',
+                align: 'left'
+            },
+            yAxis: {
+                title: {
+                    text: 'Tổng tiền' 
+                }
+            },
+
+            xAxis: {
+                categories: arrX
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+            series: [{
+                name: 'Doanh thu',
+                data: arrY
+            }],
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+        });
+    }
         // function getChart2(ArrX){
         //     Highcharts.chart('container', {
         //         chart: {
@@ -186,7 +259,6 @@
                     // let data = response.data;
                     // let ArrX = data.arrX;
                     // getChart2(ArrX);
-
                     let data1 = response.data.arr1;
                     let arr1 = Object.values(data1);
                     
@@ -198,10 +270,19 @@
                         each.data = Object.values(each.data);
                         arrDetail.push(each);
                     })
-
                     getChart1(arr1,arrDetail);
+
+                    let arrX = Object.keys(response.data.arrLine);
+                    let arrY = Object.values(response.data.arrLine);
+                    getChart2(arrX, arrY);
+
+                    let total_price = response.data.total_price;
+                    let p_total_price = document.getElementById('total-price');
+                    p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VND';
                 }
             });
         });
+
+        
     </script>
 @endpush
