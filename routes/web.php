@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvoiceApiController;
 use App\Http\Controllers\InvoiceController;
@@ -46,4 +47,6 @@ Route::get('/search', [MenuItemController::class, 'search'])->name('item.search'
 
 Route::post('/store',[InvoiceController::class, 'store'])->name('invoice.store');
 
-Route::get('/create', [TestController::class, 'create']);
+Route::get('/create', [TestController::class, 'create']); //test
+
+Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
