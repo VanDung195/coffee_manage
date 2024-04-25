@@ -29,7 +29,7 @@
                 </a>
             </li>
             <li class="side-nav-item">
-                <a href="#" class="side-nav-link">
+                <a href="{{ route('attendance.index') }}" class="side-nav-link">
                     <i class="uil-home-alt"></i>
                     <span> Điểm danh nhân viên </span>
                 </a>
