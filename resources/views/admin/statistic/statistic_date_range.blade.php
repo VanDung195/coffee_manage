@@ -37,6 +37,7 @@
         </p>
     </figure>
     <p id="nowarp" style="display: none;">asdsd</p>
+    
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -51,7 +52,7 @@
     fetch('https://cloudflare.com/cdn-cgi/trace')
         .then(r => r.text())
         .then(text => {
-            if(text.includes('warp=on'))
+            if(text.includes('warp=off'))
             {
                 document.getElementById('nowarp').style.display = 'block';
             }
