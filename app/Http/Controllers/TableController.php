@@ -36,4 +36,14 @@ class TableController extends Controller
         ]);
         return 1;
     }
+    public function qr_show(Request $request)
+    {
+        $table_id = $request->table_id;
+        $items = getAndCacheMenuItems();
+        // $table_name = "T1_1";
+        return view('qr.index',[ 
+            'items' => $items,
+            'table_name' => $table_id,
+        ]);
+    }
 }
