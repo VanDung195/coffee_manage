@@ -8,6 +8,7 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TestController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,3 +51,7 @@ Route::post('/store',[InvoiceController::class, 'store'])->name('invoice.store')
 Route::get('/create', [TestController::class, 'create']); //test
 
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+
+Route::get('/qr_order/{table_id}', [TableController::class, 'qr_show'])->name('qr.show');
+
+Route::get('test_view', [TestController::class, 'test_view']);
