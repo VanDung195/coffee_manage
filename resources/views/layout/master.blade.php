@@ -6,6 +6,7 @@
     <meta content="Coderthemes" name="author">
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/app-creative-dark.min.css') }}" rel="stylesheet" type="text/css">
+    @vite(['resources/js/app.js'])
     @stack('css')
 </head>
 <body class="show">
