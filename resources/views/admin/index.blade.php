@@ -2,16 +2,16 @@
 @push('css')
 <style>
     .btn-table{
-        width: 50px;
-        height: 50px;
+        width: 70px;
+        height: 70px;
         background-color: black;
         border: 1px solid black;
         margin: 50px;
         color: rgb(14, 225, 52);
     }
     .btn-show-invoice-detail {
-        width: 50px;
-        height: 50px;
+        width: 70px;
+        height: 70px;
         background-color: black;
         border: 1px solid black;
         margin: 50px;
@@ -37,27 +37,48 @@
     .form-test{
         color: red;
     }
+
+    #left{
+        width: 50%;
+        float: left;
+    }
+    #right{
+        width: 50%;
+        float: right;
+        background-color: rgb(75, 32, 134);
+    }
 </style>
 
 @endpush
 @section('content')
-@foreach ($tables as $table)
-{{-- @if ($table->status == 'Trong')
-    
-@else
-    
-@endif --}}
-<div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
-    <button class="btn-table" data-table-id="{{ $table->name }}">
-        {{ $table->name }}
-    </button>
+<div id="left">
+    @foreach ($tables as $table)
+        <div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
+            <button class="btn-table" data-table-id="{{ $table->name }}">
+                {{ $table->name }}
+            </button>
+        </div>
+        <div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
+            <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('#invoice_detail_{{ $table->name }}')">
+                {{$table->name}}
+            </button>
+        </div>
+    @endforeach
+        <div class="show-table" id="show_table_unknow" style="display: block;float: left;">
+            <button class="btn-table" data-table-id="unknow">
+                unknow
+            </button>
+        </div>
+        <div class="show-table-detail" id="show_detail_unknow" style="display: none;float: left;">
+            <button class="btn-show-invoice-detail" data-table-id="unknow" onclick="showInvoiceDetail('#invoice_detail_unknow')">
+                unknow
+            </button>
+        </div>
 </div>
-<div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
-    <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}" onclick="showInvoiceDetail('#invoice_detail_{{ $table->name }}')">
-        {{$table->name}}
-    </button>
+<div id="right">
+    <h1>asdasdssasdasd</h1>
 </div>
-@endforeach
+
 
 {{-- Div chứa modal invoice detail --}}
 <div id="append_modal_invoice_detail">
