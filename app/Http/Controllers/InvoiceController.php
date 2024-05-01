@@ -18,6 +18,8 @@ class InvoiceController extends Controller
     use ResponseTrait;
     public function store(StoreRequest $request)
     {
+
+        /*
         //Nếu tạo hoá đơn bằng qr code thì sẽ lưu vào session 
         if(isset($request->is_qr_code))
         {
@@ -105,9 +107,11 @@ class InvoiceController extends Controller
             } catch (\Throwable $th) {
                 dd($th);
             }
-        }
+        }*/
 
         
+
+
         try {
             $tableId = $request->input('table-id');    
             // dd($tableId);
@@ -226,11 +230,11 @@ class InvoiceController extends Controller
                 return $this->successResponse([
                     'table_id' => $tableId,
                     'index' => $index,
-                    'invoice_details' => $invoice_details,
+                    'details' => $invoice_details,
                     'total_price' => $total_price,
-                    'created_at' => $now->format('d/m/Y'),
-                    'checkin_time' => $now->format('H:i'),
-                    'checkout_time' => $now->format('H:i'),
+                    'created_at' => $now->format('Y:m:d H:i:s'),
+                    'checkin_time' => $now->format('H:i:s'),
+                    'checkout_time' => $now->format('H:i:s'),
                     'is_paid' => $request->is_paid,
                 ], $message);
             }
