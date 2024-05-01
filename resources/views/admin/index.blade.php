@@ -1,54 +1,9 @@
 @extends('layout.master')
 @push('css')
 <style>
-    .btn-table{
-        width: 70px;
-        height: 70px;
-        background-color: black;
-        border: 1px solid black;
-        margin: 50px;
-        color: rgb(14, 225, 52);
-    }
-    .btn-show-invoice-detail {
-        width: 70px;
-        height: 70px;
-        background-color: black;
-        border: 1px solid black;
-        margin: 50px;
-        color: red;
-    }
-    .btn-update-quantity {
-        padding: 5px 10px;
-        background-color: #f8f9fa;
-        border: none;
-        color: #333;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-update-quantity:hover {
-        background-color: #e2e6ea;
-    }
-
-    .btn-update-quantity:active {
-        background-color: #dae0e5;
-    }
-    .form-test{
-        color: red;
-    }
-
-    #left{
-        width: 50%;
-        float: left;
-    }
-    #right{
-        width: 50%;
-        float: right;
-        background-color: rgb(75, 32, 134);
-    }
+   
 </style>
-
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
 @section('content')
 <div id="left">
@@ -64,19 +19,58 @@
             </button>
         </div>
     @endforeach
-        <div class="show-table" id="show_table_unknow" style="display: block;float: left;">
-            <button class="btn-table" data-table-id="unknow">
-                unknow
-            </button>
-        </div>
-        <div class="show-table-detail" id="show_detail_unknow" style="display: none;float: left;">
-            <button class="btn-show-invoice-detail" data-table-id="unknow" onclick="showInvoiceDetail('#invoice_detail_unknow')">
-                unknow
-            </button>
-        </div>
 </div>
 <div id="right">
-    <h1>asdasdssasdasd</h1>
+    <div class="header">
+        <h1>Quản Lý Hoá Đơn</h1>
+    </div>
+
+    
+    {{-- <table class="order-table">
+        <tr>
+            <th>ID</th>
+            <th>Sản phẩm</th>
+            <th>Giá</th>
+            <th>SL</th>
+            <th>Tong tien</th>
+            <th>Thành công</th>
+        </tr>
+        //đây là chỗ tôi muốn thêm order_table, hi
+        <tr>
+            <td class="set-row" rowspan="1">296332349<br>16/03 03:10</td>
+            <td>Bàn chải điện Huawei Lebooo Smart Sonic Star Diamond - Trắng</td>
+            <td class="price">399.000₫</td>
+            <td>1</td>
+            <td class="set-row" rowspan="1">1</td>
+            <td class="set-row" rowspan="1" class="status-success">Thành công</td>
+        </tr>
+        <tr>
+            <td class="set-row" rowspan="3">204858587<br>17:24 28/09</td>
+            <td>
+                Combo Cáp Lightning Remax + Sạc Baseus cho Iphone sạc nhanh 20W - Trắng
+            </td>
+            <td class="price">199.000₫</td>
+            <td>1</td>
+            <td class="set-row" rowspan="3">123</td>
+            <td class="set-row" rowspan="3" class="status-success">Chap nhan</td>
+        </tr>
+        <tr>
+            <td>
+                Combo Cáp Lightning Remax + Sạc Baseus cho Iphone sạc nhanh 20W - Đen
+            </td>
+            <td class="price">199.000₫</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>
+                Combo Type-C Cáp Remax + Sạc Baseus cho Android sạc nhanh 20W -Đen
+            </td>
+            <td class="price">1.088.000₫</td>
+            <td>1</td>
+        </tr>
+    </table> --}}
+    
+
 </div>
 
 
@@ -122,7 +116,7 @@
                             >
                             -
                         </button>
-                        <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
+                        <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: none;border:none;height:30px;width:42px;float: left;" readonly>
                         <button
                         type="button"
                         class="btn-update-quantity"
@@ -174,13 +168,31 @@
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+checkboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            console.log("Checkbox được chọn: " + this.id);
+        } else {
+            console.log("Checkbox bị hủy chọn: " + this.id);
+        }
+    });
+});
+function test(t){
+    console.log(t);
+    let testt = document.getElementById(t);
+    // testt.setAttribute("disabled", "");
+}
+function table_invoice(response)
+{
+
+}
 $(document).ready(function () {
     $.ajax({
         url: '{{ route('api.invoices') }}',
         dataType: 'json',
         success: function (response) {
             // console.log(response.data[0].total_price);
-
             //invoice
             console.log(response.data);
             let divapi = document.createElement("div");
@@ -261,6 +273,104 @@ $(document).ready(function () {
                 // document.getElementById("append_modal_invoice_detail").appendChild(divapi);
                 // console.log('thanh cong');
             })
+
+            
+            //Hoá đơn test
+            //-----------------------
+            // let order_table = `
+            // <table class="order-table">
+            //     <tr>
+            //         <th>ID</th>
+            //         <th>Sản phẩm</th>
+            //         <th>Giá</th>
+            //         <th>SL</th>
+            //         <th>Tong tien</th>
+            //         <th>Thành công</th>
+            //     </tr>
+            //     <tr>
+            // `;
+            // response.data.forEach(function(item, index){
+            //     console.log(item);
+            //     let rowsspanCount = 0;
+            //     rowsspanCount = Math.max(item.details.length, 1);
+            //     order_table += `
+            //         <td class="set-row" rowspan="${rowsspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
+            //     `;
+            //     item.details.forEach(function(item,index){
+            //         order_table += `
+            //         <td>${item.menu_items.name}</td>
+            //         <td class="price">${item.menu_items.price}</td>
+            //         <td>${item.quantity}</td>
+            //         `;
+            //     })
+            //     order_table += `
+            //         <td class="set-row" rowspan="${rowsspanCount}">${item.total_price}</td>
+            //         <td class="set-row" class="status-success" rowspan="${rowsspanCount}">Thành công</td>
+            //     </tr>
+            //     `;
+            // })
+            // order_table += `
+            //     </tr>
+            // </table>
+            // `;  ------------------
+            let order_table = `
+                <table class="order-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>SL</th>
+                        <th>Tổng tiền</th>
+                        <th>Duyệt</th>
+                        <th>Xuất</th>
+                        <th>Xoá</th>
+                    </tr>
+            `;
+
+            response.data.forEach(function(item, index){
+                console.log(item);
+                let rowspanCount = Math.max(item.details.length, 1);
+                order_table += `<tr>`;
+                order_table += `
+                    <td border="1" class="set-row" rowspan="${rowspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
+                `;
+                let count = 1;
+                item.details.forEach(function(detail, index){
+                    if(count != 1) {
+                        order_table += `<tr>`;
+                    }
+                    order_table += `
+                        <td>${detail.menu_items.name}</td>
+                        <td class="price">${detail.menu_items.price}</td>
+                        <td>${detail.quantity}</td>
+                    `;
+                    if(count == 1) {
+                        order_table += `
+                            <td class="set-row" rowspan="${rowspanCount}">${item.total_price.toLocaleString('vi-VN')}</td>
+                            <td class="set-row" rowspan="${rowspanCount}">
+                                <input type="checkbox" id="switch_${item.table_id}" data-switch="success"/>
+                                <label onclick="test('switch_${item.table_id}')" id="check" for="switch_${item.table_id}" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
+                            </td>
+                            <td rowspan="${rowspanCount}"> 
+                                <button class="btn btn-success btn-sm">Xuất HD</button>
+                            </td>
+                            <td rowspan="${rowspanCount}">
+                                <button class="btn btn-danger btn-sm">Xoá</button>
+                            </td>
+                        `;
+                    }
+                    order_table += `</tr>`;
+                    count++;
+                });
+            });
+            order_table += `
+                </table>
+            `;
+            let div_table = document.createElement("div");
+            div_table.innerHTML = order_table;
+            div_table.classList.add("form-group");
+            document.getElementById("right").appendChild(div_table);
+            console.log(order_table);
         },
         error: function (error) {
             console.log(error);
@@ -286,9 +396,10 @@ $(document).ready(function () {
                 let show_table = 'show_table_'+ table_id;
                 let show_detail = 'show_detail_'+table_id;
                 let index = response.data.index;
-                let invoice_item = response.data.invoice_details;
-                
+                let invoice_item = response.data.details;
+                let data = response.data;
                 console.log(response.data);
+
                 let modal_invoice = `
                     <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
@@ -301,6 +412,13 @@ $(document).ready(function () {
                                     <h3>Bàn số: ${table_id}</h3>
                                     
                 `;
+                
+                let rowspanCount = Math.max(response.data.details.length, 1);
+                let order_table = `
+                <tr>
+                <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
+                `;
+                let count = 1;
                 invoice_item.forEach(function(item, index) {
                     modal_invoice += `
                     <div class="items form-row">
@@ -322,7 +440,36 @@ $(document).ready(function () {
                         </div>
                     </div>
                     `;
+
+                    if(count != 1)
+                    {
+                        order_table += `<tr>`;
+                    }
+                    order_table += `
+                        <td>${item['name']}</td>
+                        <td class="price">${item['price']}</td>
+                        <td>${item['price']}</td>
+                    `;
+                    if(count == 1)
+                    {
+                        order_table += `
+                            <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
+                            <td class="set-row" rowspan="${rowspanCount}">
+                                <input type="checkbox" id="switch_${data.table_id}" data-switch="success"/>
+                                <label onclick="test('switch_${data.table_id}')" id="check" for="switch_${data.table_id}" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
+                            </td>
+                            <td rowspan="${rowspanCount}"> 
+                                <button class="btn btn-success btn-sm">Xuất HD</button>
+                            </td>
+                            <td rowspan="${rowspanCount}">
+                                <button class="btn btn-danger btn-sm">Xoá</button>
+                            </td>
+                        `;
+                    }
+                    order_table += `</tr>`;
+                    count++;
                 });
+                //end foreach
                 modal_invoice += `
                     <div class="form-row" style="margin-top: 30px;">
                         <div class="form-group col-5" id="div-paid">
@@ -355,6 +502,15 @@ $(document).ready(function () {
                 //show_table la cai nut de mo invoice and invoice detail
                 document.getElementById(show_table).style.display = 'none';
                 document.getElementById(show_detail).style.display = 'block';
+
+                //inner order table 
+                let targetRow = document.querySelector('.order-table tr:first-child');
+                    targetRow.insertAdjacentHTML('afterend', order_table);
+
+                //thêm vào cuối
+                // let existing_table = document.querySelector(".order-table");
+                // existing_table.insertAdjacentHTML('beforeend', order_table);
+
 
                 $('#modal-invoice').modal('toggle');
 
@@ -570,62 +726,65 @@ $(document).ready(function () {
             
         })
         
-                //Append item 
+        //Append item 
         var addBtn = document.getElementById('append');
         addBtn.addEventListener('click', function(){
             console.log(1);
 
             let div = document.createElement("div");
             div.innerHTML = `
-            <div class="form-group col-5 class="div-select">
-            <label for="">Món</label>
-            <select name="id[]" class="select-item">
-            <option value="0" data-price="0" selected>Chọn món</option>
-            @foreach ($items as $item)
-            <option value="{{$item->id}}" data-price="{{ $item->price }}">
-            {{ $item->name }}
-            </option>
-            @endforeach
-            </select>
-            </div>
-            <div class="form-group" style="margin-left: 42px;width:135px;">
-            <label for="">Quantity (Min: 1)</label>
-            <br>
-            <button
-            type="button"
-            class="btn-update-quantity"
-            data-type='0'
-            style="float: left"
-            disabled
-            >
-            -
-            </button>
-            <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
-            <button
-            type="button"
-            class="btn-update-quantity"
-            data-type='1'
-            style="float: left;"
-            disabled
-            >
-            +
-            </button>
-            </div>
-            <div class="form-group col-3">
-            <span class="span-sum">
-            <label>Price</label>
-            <input type="text" id="price" class="price form-control" value=0 readonly>
-            </span>
-            </div>
-            <div class="form-group col-1">
-            <label>Delete</label>
-            <button
-            style="background-color: red"
-            type="button"
-            class="btn-delete"
-            >X</button>
-            </div>
+                <div class="form-group col-5 class="div-select">
+                    <label for="">Món</label>
+                    <select name="id[]" class="select-item">
+                        <option value="0" data-price="0" selected>Chọn món</option>
+                        @foreach ($items as $item)
+                        <option value="{{$item->id}}" data-price="{{ $item->price }}">
+                            {{ $item->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group" style="margin-left: 42px;width:135px;">
+                    <label for="">Quantity (Min: 1)</label>
+                    <br>
+                    <button
+                        type="button"
+                        class="btn-update-quantity"
+                        data-type='0'
+                        style="float: left"
+                        disabled
+                    >
+                        -
+                    </button>
+                    <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
+                    <button
+                        type="button"
+                        class="btn-update-quantity"
+                        data-type='1'
+                        style="float: left;"
+                        disabled
+                    >
+                        +
+                    </button>
+                </div>
+                <div class="form-group col-3">
+                    <span class="span-sum">
+                        <label>Price</label>
+                        <input type="text" id="price" class="price form-control" value=0 readonly>
+                    </span>
+                </div>
+                <div class="form-group col-1">
+                    <label>Delete</label>
+                    <button
+                        style="background-color: red"
+                        type="button"
+                        class="btn-delete"
+                    >
+                        X
+                    </button>
+                </div>
             `;
+
             div.classList.add("form-row")
             div.classList.add("item")
                 // document.getElementById('form').appendChild(div);
