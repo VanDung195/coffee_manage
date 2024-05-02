@@ -1,0 +1,142 @@
+.btn-table{
+    width: 70px;
+    height: 70px;
+    background-color: black;
+    border: 1px solid black;
+    margin: 50px;
+    color: rgb(14, 225, 52);
+}
+.btn-show-invoice-detail {
+    width: 70px;
+    height: 70px;
+    background-color: black;
+    border: 1px solid black;
+    margin: 50px;
+    color: red;
+}
+.btn-update-quantity {
+    padding: 5px 10px;
+    background-color: #f8f9fa;
+    border: none;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-update-quantity:hover {
+    background-color: #e2e6ea;
+}
+
+.btn-update-quantity:active {
+    background-color: #dae0e5;
+}
+.form-test{
+    color: red;
+}
+
+#left{
+    width: 40%;
+    float: left;
+}
+#right{
+    width: 60%;
+    float: right;
+}
+
+/* //////// */
+/* body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-table th,
+.order-table td {
+    border: 1px solid none;
+    padding: 8px;
+    text-align: left;
+}
+
+.order-table th {
+    background-color: none;
+    color: white;
+}
+
+.order-table tr:nth-child(even) {
+    background-color: none;
+}
+
+.order-table tr:hover {
+    background-color: none;
+}
+
+.status-success {
+    color: green;
+}
+
+.product-image {
+    width: 50px;
+    height: auto;
+}
+
+.price {
+    color: #FF5722;
+}
+
+.header {
+    background-color: none;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+#data {
+    overflow: auto;
+    width: 110px;
+  height: 110px;
+}  */
+
+.header {
+    text-align: center;
+}
+#check{
+    margin-left: 20px;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+}
+
+.order-table th, .order-table td {
+    padding: 12px;
+    /* text-align: left; */
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-table th {
+    background-color: #4b4a4a;
+    font-weight: bold;
+}
+
+.order-table .set-row {
+    text-align: center;
+}
+
+.order-table .price {
+    /* text-align: right; */
+    text-align: center;
+}
+
+.order-table .status-success {
+    color: green;
+}
