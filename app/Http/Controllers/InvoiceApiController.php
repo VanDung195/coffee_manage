@@ -26,8 +26,14 @@ class InvoiceApiController extends Controller
             $query->select('id', 'name','price');
         }])
         ->whereIn('id', $table_invoice_id)
+        ->orderBy('created_at', 'desc')
         ->get()
         ->toArray();
+        // dd($invoices);
+        // $session_invoice = session()->get('invoice');
+        // foreach($invoices as $item)
+        // {   
+        // }
         // dd($invoices);
         $message = 'Get api thanh cong';
         return $this->successResponse($invoices,$message);
