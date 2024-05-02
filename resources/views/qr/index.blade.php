@@ -288,60 +288,40 @@
 
             let div = document.createElement("div");
             div.innerHTML = `
-            <div class="form-group col-5 class="div-select">
-            <label for="">Món</label>
-            <select name="id[]" class="select-item">
-            <option value="0" data-price="0" selected>Chọn món</option>
-            @foreach ($items as $item)
-            <option value="{{$item->id}}" data-price="{{ $item->price }}">
-            {{ $item->name }}
-            </option>
-            @endforeach
-            </select>
-            </div>
-            <div class="form-group" style="margin-left: 42px;width:135px;">
-            <label for="">Số lượng (Min: 1)</label>
-            <br>
-            <button
-            type="button"
-            class="btn-update-quantity"
-            data-type='0'
-            style="float: left"
-            disabled
-            >
-            -
-            </button>
-            <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
-            <button
-            type="button"
-            class="btn-update-quantity"
-            data-type='1'
-            style="float: left;"
-            disabled
-            >
-            +
-            </button>
-            </div>
-            <div class="form-group col-3">
-            <span class="span-sum">
-            <label>Giá</label>
-            <input type="text" id="price" class="price form-control" value=0 readonly>
-            </span>
-            </div>
-            <div class="form-group col-1">
-            <label>Delete</label>
-            <button
-            style="background-color: red"
-            type="button"
-            class="btn-delete"
-            >X</button>
-            </div>
+                <div class="form-group col-5 div-select">
+                    <label for="">Món</label>
+                    <select name="id[]" class="select-item">
+                        <option value="0" data-price="0" selected>Chọn món</option>
+                        @foreach ($items as $item)
+                            <option value="{{$item->id}}" data-price="{{ $item->price }}">
+                                {{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group" style="margin-left: 42px;width:135px;">
+                    <label for="">Số lượng (Min: 1)</label>
+                    <br>
+                    <button type="button" class="btn-update-quantity" data-type='0' style="float: left" disabled>-</button>
+                    <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
+                    <button type="button" class="btn-update-quantity" data-type='1' style="float: left;" disabled>+</button>
+                </div>
+                <div class="form-group col-3">
+                    <span class="span-sum">
+                        <label>Giá</label>
+                        <input type="text" id="price" class="price form-control" value=0 readonly>
+                    </span>
+                </div>
+                <div class="form-group col-1">
+                    <label>Delete</label>
+                    <button type="button" class="btn-delete btn-danger">X</button>
+                </div>
             `;
-            div.classList.add("form-row")
-            div.classList.add("item")
-                // document.getElementById('form').appendChild(div);
+
+            div.classList.add("form-row");
+            div.classList.add("item");
             document.getElementById('append-item').appendChild(div);
-            $(".form-row .select-item").select2({tag: true});
+            $(".form-row .select-item").select2({ tag: true });
             envent();
         })
 
