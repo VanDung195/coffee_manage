@@ -69,8 +69,6 @@
             <td>1</td>
         </tr>
     </table> --}}
-    
-
 </div>
 
 
@@ -167,7 +165,14 @@
 @endsection
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
+@vite(['resources/js/app.js'])
+<script type="module">
+    window.Echo.channel('order-channel')
+        .listen('InvoicePlaced', (e) => {
+            console.log(e);
+
+        })
+
 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
 checkboxes.forEach(function(checkbox) {
     checkbox.addEventListener('change', function() {
@@ -250,7 +255,7 @@ $(document).ready(function () {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="deleteInvoice('${table_id_api}')" class="btn btn-danger">Xoá hoá đơn</button>
+                    <button type="button" onclick="deleteInvoice('${table_id_api}', 'modal_invoice')" class="btn btn-danger">Xoá hoá đơn</button>
                     <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
                 </div>
                 </div>
@@ -330,14 +335,14 @@ $(document).ready(function () {
             response.data.forEach(function(item, index){
                 console.log(item);
                 let rowspanCount = Math.max(item.details.length, 1);
-                order_table += `<tr>`;
+                order_table += `<tr class="order_table_class_${item.table_id}">`;
                 order_table += `
                     <td border="1" class="set-row" rowspan="${rowspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
                 `;
                 let count = 1;
                 item.details.forEach(function(detail, index){
                     if(count != 1) {
-                        order_table += `<tr>`;
+                        order_table += `<tr class="order_table_class_${item.table_id}">`;
                     }
                     order_table += `
                         <td>${detail.menu_items.name}</td>
@@ -355,7 +360,7 @@ $(document).ready(function () {
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
                             <td rowspan="${rowspanCount}">
-                                <button class="btn btn-danger btn-sm">Xoá</button>
+                                <button onclick="deleteInvoice('${item.table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
                             </td>
                         `;
                     }
@@ -415,8 +420,8 @@ $(document).ready(function () {
                 
                 let rowspanCount = Math.max(response.data.details.length, 1);
                 let order_table = `
-                <tr>
-                <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
+                <tr class="order_table_class_${table_id}">
+                    <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
                 `;
                 let count = 1;
                 invoice_item.forEach(function(item, index) {
@@ -443,12 +448,12 @@ $(document).ready(function () {
 
                     if(count != 1)
                     {
-                        order_table += `<tr>`;
+                        order_table += `<tr class="order_table_class_${table_id}">`;
                     }
                     order_table += `
                         <td>${item['name']}</td>
                         <td class="price">${item['price']}</td>
-                        <td>${item['price']}</td>
+                        <td>${item['quantity']}</td>
                     `;
                     if(count == 1)
                     {
@@ -462,7 +467,7 @@ $(document).ready(function () {
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
                             <td rowspan="${rowspanCount}">
-                                <button class="btn btn-danger btn-sm">Xoá</button>
+                                <button onclick="deleteInvoice('${table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
                             </td>
                         `;
                     }
@@ -482,7 +487,7 @@ $(document).ready(function () {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="deleteInvoice('${table_id}')" class="btn btn-danger">Xoá hoá đơn</button>
+                    <button type="button" onclick="deleteInvoice('${table_id}', 'modal_invoice')" class="btn btn-danger">Xoá hoá đơn</button>
                     <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
                 </div>
                 </div>
@@ -532,29 +537,45 @@ $(document).ready(function () {
     function closeModal() {
         $('#modal-invoice').modal('toggle');
     }
-    function deleteInvoice(table_id) {
+    function deleteInvoice(table_name,type) {
         //table_name (table_id)
-        let table_name = table_id;
+        // let table_name = table_id;
+        console.log(type);
         $.ajax({
             type: 'get',
             url: '{{ route('table.update') }}',
             data: {table_name},
             success: function (response) {
-                let modal_invoice = "#invoice_detail_"+table_name;
-                $(modal_invoice).modal('toggle');
+                
 
-                let div_invoice = "div_invoice_detail_"+table_id;
+                let modal_invoice = "#invoice_detail_"+table_name;
+                if(type == 'modal_invoice')
+                {
+                    $(modal_invoice).modal('toggle');
+                }
+
+                let div_invoice = "div_invoice_detail_"+table_name;
                 let divR = document.getElementById(div_invoice);
                 divR.remove();
 
-                let btn_show_table = "show_table_"+table_id;
-                let btn_show_invoice_detail = "show_detail_"+table_id;
+                let btn_show_table = "show_table_"+table_name;
+                let btn_show_invoice_detail = "show_detail_"+table_name;
                 // let test = document.getElementById(btn_show_table);
                 // let test2 = document.getElementById(btn_show_invoice_detail);
                 // console.log(test2);
                 document.getElementById(btn_show_table).style.display = 'block';
                 document.getElementById(btn_show_invoice_detail).style.display = 'none';
 
+                // <div class=" fade show"></div>
+                let modal_bg = document.getElementsByClassName('modal-backdrop');
+                modal_bg.remove;
+
+                //remove tr table
+                let elements = document.querySelectorAll('.order_table_class_'+table_name);
+                elements.forEach(function(element){
+                    console.log(element);
+                    element.remove();
+                })
                 console.log('thanh cmn cong roi');
             }
         });
