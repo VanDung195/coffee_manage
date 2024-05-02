@@ -14,23 +14,23 @@ class InvoicePlaced implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $tableId;
-    public $invoiceDetails;
-    public $totalPrice;
-    public $createdAt;
-    public $checkinTime;
-    public $checkoutTime;
-    public $isPaid;
+    public $table_id;
+    public $details;
+    public $total_price;
+    public $created_at;
+    public $checkin_time;
+    public $checkout_time;
+    public $is_paid;
 
-    public function __construct($tableId, $invoiceDetails, $totalPrice, $createdAt, $checkinTime, $checkoutTime, $isPaid)
+    public function __construct($table_id, $details, $total_price, $created_at, $checkin_time, $checkout_time, $is_paid)
     {
-        $this->tableId = $tableId;
-        $this->invoiceDetails = $invoiceDetails;
-        $this->totalPrice = $totalPrice;
-        $this->createdAt = $createdAt;
-        $this->checkinTime = $checkinTime;
-        $this->checkoutTime = $checkoutTime;
-        $this->isPaid = $isPaid;
+        $this->table_id = $table_id;
+        $this->details = $details;
+        $this->total_price = $total_price;
+        $this->created_at = $created_at;
+        $this->checkin_time = $checkin_time;
+        $this->checkout_time = $checkout_time;
+        $this->is_paid = $is_paid;
     }
     // public function __construct($invoice_detail)
     // {
