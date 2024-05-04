@@ -119,9 +119,8 @@
 </form>  --}}
 
 
-<form action="{{ route('invoice.store') }}" method="POST" id="form-create">
+<form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
     @csrf
-    <input type="hidden" name="is_qr_code" value="1">
     <div class="form-row">
         <label for="">Bàn số</label>
         <input type="text" class="form-control" name="table-id" id="table-id" readonly value="{{ $table_name }}">
