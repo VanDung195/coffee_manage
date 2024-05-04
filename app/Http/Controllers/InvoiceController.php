@@ -18,12 +18,8 @@ class InvoiceController extends Controller
     use ResponseTrait;
     public function store(StoreRequest $request)
     {
-
-        /*
-        //Nếu tạo hoá đơn bằng qr code thì sẽ lưu vào session 
-        if(isset($request->is_qr_code))
+        if(true)
         {
-            
             try {
                 $tableId = $request->input('table-id');   
                 $allData = $request->all();
@@ -40,7 +36,16 @@ class InvoiceController extends Controller
                 }
                 $now = Carbon::now('Asia/Bangkok');
                 if((int)$request->is_paid == 1) {
-                    // $invoice_id = 1;
+                    $invoice = Invoice::create([
+                        'created_at' => $now->format('Y:m:d H:i:s'),
+                        'checkin_time' => $now->format('H:i:s'),
+                        'checkout_time' => $now->format('H:i:s'),
+                        'total_price' => $total_price,
+                        'table_id' => $tableId,
+                    ]);
+                    $invoice_id = $invoice->id;
+
+
                     foreach ($ItemsId as $index => $id) {
                         $quantity = $allData['quantity'][$index];
     
@@ -48,7 +53,16 @@ class InvoiceController extends Controller
                         $thanh_tien = $quantity * $price;
     
                         $item = MenuItem::query()
-                                ->where('id', $id)->first();
+                        ->where('id', $id)->first();
+                        InvoiceDetail::create([
+                            'invoice_id' => $invoice_id,
+                            'menu_item_id' => $id,
+                            'quantity' => $quantity,
+                        ]);
+                        Table::where('name',$tableId)->update([
+                            'status' => TableStausEnum::getKey(0),
+                            'invoice_id' => $invoice_id,
+                        ]);
                         $invoice_details[] = [
                             'id' => $id,
                             'name' => $item->name,
@@ -58,12 +72,11 @@ class InvoiceController extends Controller
                         ];
                     }
                     
-                    $indexQ = Table::query()->where('name',$tableId)->first();
                     // Table::where('name',$tableId)->update([
                     //     'status' => TableStausEnum::getKey(0),
                         // 'invoice_id' => $invoice_id,
                     // ]);
-                    $index = $indexQ->stt;
+
                     // $message = 'Thanh cong roi nhe!';
                     // return $this->successResponse([
                     //     'table_id' => $tableId,
@@ -75,43 +88,50 @@ class InvoiceController extends Controller
                     //     'checkout_time' => $now->format('H:i'),
                     //     'is_paid' => $request->is_paid,
                     // ], $message);
-                    event(new InvoicePlaced(
-                        $tableId,
-                        $invoice_details,
-                        $total_price,
-                        $now->format('d/m/Y'),
-                        $now->format('H:i'),
-                        $now->format('H:i'),
-                        $request->is_paid
-                    ));
+                    
                     // event(new InvoicePlaced($invoice_details));
                     // broadcast(new InvoicePlaced($invoice_details));
-                    
                     if(!session()->has('invoice')){
                         session()->put('invoice', []);
                     }
-
+                    $invoice = session()->get('invoice');
+                    //thêm 1 trường hợp nữa đó là nếu trong csdl bàn đó bận rồi thì không cho đặt
+                    // if(!empty($invoice[$tableId]))
+                    // {
+                    //     return $this->errorResponse('Bàn đã được đặt, vui lòng kiểm tra lại!');
+                    //     dd('error');
+                    // }
                     $invoice[$tableId] = [
                         'table_id' => $tableId,
-                        'invoice_details' => $invoice_details,
+                        'details' => $invoice_details,
                         'total_price' => $total_price,
-                        'created_at' => $now->format('d/m/Y'),
-                        'checkin_time' => $now->format('H:i'),
-                        'checkout_time' => $now->format('H:i'),
+                        'created_at' => $now->format('Y:m:d H:i:s'),
+                        'checkin_time' => $now->format('H:i:s'),
+                        'checkout_time' => $now->format('H:i:s'),
                     ];
+                    session()->put('invoice', $invoice);
+                    // dd(session()->get('invoice'));
+                    
+                    $message = 'Thanh cong roi nhe!';
+                    return $this->successResponse([
+                        'table_id' => $tableId,
+                        'details' => $invoice_details,
+                        'total_price' => $total_price,
+                        'created_at' => $now->format('Y:m:d H:i:s'),
+                        'checkin_time' => $now->format('H:i:s'),
+                        'checkout_time' => $now->format('H:i:s'),
+                        'is_paid' => $request->is_paid,
+                    ], $message);
 
-                    session()->put('cart', $invoice);
-                    // return view('qr.success');
-                    return $this->successResponse(1);
                 }
             } catch (\Throwable $th) {
                 dd($th);
             }
-        }*/
+        }
 
         
-
-
+        dd();
+        // Cái này là khi thu ngân lập hoá đơn và chọn trả trước
         try {
             $tableId = $request->input('table-id');    
             // dd($tableId);
@@ -219,17 +239,17 @@ class InvoiceController extends Controller
                     // dd($quantity, $price);
                 }
                 
-                $indexQ = Table::query()->where('name',$tableId)->first();
+                // $indexQ = Table::query()->where('name',$tableId)->first();
                 Table::where('name',$tableId)->update([
                     'status' => TableStausEnum::getKey(0),
                     'invoice_id' => $invoice_id,
                 ]);
-                $index = $indexQ->stt;
+                // $index = $indexQ->stt;
                 // dd($index);
                 $message = 'Thanh cong roi nhe!';
                 return $this->successResponse([
                     'table_id' => $tableId,
-                    'index' => $index,
+                    // 'index' => $index,
                     'details' => $invoice_details,
                     'total_price' => $total_price,
                     'created_at' => $now->format('Y:m:d H:i:s'),
@@ -258,4 +278,69 @@ class InvoiceController extends Controller
         }
     }
 
+    //tạo thêm 1 hàm store giành cho qr code để tránh có người xoá input hidden dẫn đến
+    //chạy vào hàm store của thu ngân
+    public function store_qr(StoreRequest $request)
+    {
+        try {
+            $tableId = $request->input('table-id');   
+            $allData = $request->all();
+            $ItemsId = $allData['id'];
+            $menuItems = MenuItem::query()
+                        ->whereIn('id',$ItemsId)->get();
+            $menuNames = MenuItem::query()->whereIn('id',$ItemsId)->pluck('name');
+            $menuItemsMap = $menuItems->keyBy('id')->toArray();
+            $total_price = 0;
+            foreach($ItemsId as $index => $id) {
+                $quantity = $allData['quantity'][$index];
+                $price = $menuItemsMap[$id]['price'];
+                $total_price += $quantity * $price;
+            }
+            $now = Carbon::now('Asia/Bangkok');
+            foreach ($ItemsId as $index => $id) {
+                $quantity = $allData['quantity'][$index];
+
+                $price = isset($menuItemsMap[$id]['price']) ? $menuItemsMap[$id]['price'] : 0;
+                $thanh_tien = $quantity * $price;
+
+                $item = MenuItem::query()
+                        ->where('id', $id)->first();
+                $invoice_details[] = [
+                    'id' => $id,
+                    'name' => $item->name,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                    'thanh_tien' => $thanh_tien,
+                ];
+            }
+            if(!session()->has('invoice')){
+                session()->put('invoice', []);
+            }
+            $invoice = session()->get('invoice');
+            
+            $invoice[$tableId] = [
+                'table_id' => $tableId,
+                'details' => $invoice_details,
+                'total_price' => $total_price,
+                'created_at' => $now->format('Y:m:d H:i:s'),
+                'checkin_time' => $now->format('H:i:s'),
+                'checkout_time' => $now->format('H:i:s'),
+            ];
+            session()->put('invoice', $invoice);
+            event(new InvoicePlaced(
+                $tableId,
+                $invoice_details,
+                $total_price,
+                $now->format('Y:m:d H:i:s'),
+                $now->format('H:i:s'),
+                $now->format('H:i:s'),
+                $request->is_paid
+            ));
+
+            return $this->successResponse(1);
+                
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+    }
 }
