@@ -149,13 +149,14 @@ class StatisticController extends Controller
         $start_date = date('Y-m-d', strtotime("$date-01"));
         $end_date = date('Y-m-t', strtotime("$date-01"));
 
-        
+        $month = date('m', strtotime($date));
 
         $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, date_format(invoices.created_at, "%e-%m") as ngaytao,sum(invoice_details.quantity) as soluong,
-        sum(invoice_details.quantity*menu_items.price) as total_price')
+        sum(invoice_details.quantity*menu_items.price) as total_price, sum(invoices.total_price) as total_price_t')
             ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
             ->join('menu_items', 'invoice_details.menu_item_id', '=', 'menu_items.id')
-            ->whereBetween('invoices.created_at', [$start_date, $end_date])
+            // ->whereBetween('invoices.created_at', [$start_date, $end_date])
+            ->whereMonth('invoices.created_at', '=', $month)
             ->groupBy('masanpham', 'tensanpham', 'ngaytao')
             ->get();
 
@@ -253,7 +254,7 @@ class StatisticController extends Controller
         $end_month = 12;
 
         $invoices = Invoice::selectRaw('menu_items.id as masanpham, date_format(invoices.created_at, "%m") as thang,
-                sum(invoice_details.quantity) as soluong, sum(invoices.total_price) as tongtien')
+                sum(invoice_details.quantity) as soluong, sum(invoices.total_price) as tongtien_t, sum(invoice_details.quantity*menu_items.price) as tongtien')
                 ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                 ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
                 ->whereYear('invoices.created_at', $year)
