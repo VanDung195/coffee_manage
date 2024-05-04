@@ -167,11 +167,50 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 @vite(['resources/js/app.js'])
 <script type="module">
-    window.Echo.channel('order-channel')
-        .listen('InvoicePlaced', (e) => {
-            console.log(e);
+window.Echo.channel('order-channel')
+        .listen('InvoicePlaced', (event) => {
+            console.log(event);
+            
+            let formatTotalPrice = event.total_price.toLocaleString('vi-VN');
+            let rowspanCount = Math.max(event.details.length, 1);
+
+            let order_table = `
+                <tr class="order_table_class_${event.table_id}">
+                    <td border="1" class="set-row" rowspan="${rowspanCount}">${event.table_id}<br>${event.checkin_time}<br>${event.created_at}</td>
+                `;
+            let count = 1;
+            event.details.forEach(function(item, index){
+                if(count != 1)
+                {
+                    order_table += `<tr class="order_table_class_${event.table_id}">`;
+                }
+                order_table += `
+                    <td>${item['name']}</td>
+                    <td class="price">${item['price']}</td>
+                    <td>${item['quantity']}</td>
+                `;
+                if(count == 1)
+                {
+                    order_table += `
+                        <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
+                        <td rowspan="${rowspanCount}"> 
+                            <button class="btn btn-success btn-sm">Xuất HD</button>
+                        </td>
+                        <td rowspan="${rowspanCount}">
+                            <button onclick="deleteInvoice('${event.table_id}','order_table_session')" class="btn btn-danger btn-sm">Xoá</button>
+                        </td>
+                    `;
+                }
+                order_table += `</tr>`;
+                count++;
+            });
+
+            let targetRow = document.querySelector('.order-table tr:first-child');
+            targetRow.insertAdjacentHTML('afterend', order_table);
 
         })
+</script>
+<script>
 
 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
 checkboxes.forEach(function(checkbox) {
@@ -326,7 +365,6 @@ $(document).ready(function () {
                         <th>Giá</th>
                         <th>SL</th>
                         <th>Tổng tiền</th>
-                        <th>Duyệt</th>
                         <th>Xuất</th>
                         <th>Xoá</th>
                     </tr>
@@ -352,10 +390,6 @@ $(document).ready(function () {
                     if(count == 1) {
                         order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${item.total_price.toLocaleString('vi-VN')}</td>
-                            <td class="set-row" rowspan="${rowspanCount}">
-                                <input type="checkbox" id="switch_${item.table_id}" data-switch="success"/>
-                                <label onclick="test('switch_${item.table_id}')" id="check" for="switch_${item.table_id}" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
-                            </td>
                             <td rowspan="${rowspanCount}"> 
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
@@ -384,6 +418,7 @@ $(document).ready(function () {
     });
 });
     function submitForm() {
+        console.log(111111);
         const obj = $("#form-create");
         let formData = new FormData(obj[0]);
         console.log(formData);
@@ -460,9 +495,6 @@ $(document).ready(function () {
                         order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
                             <td class="set-row" rowspan="${rowspanCount}">
-                                <input type="checkbox" id="switch_${data.table_id}" data-switch="success"/>
-                                <label onclick="test('switch_${data.table_id}')" id="check" for="switch_${data.table_id}" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
-                            </td>
                             <td rowspan="${rowspanCount}"> 
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
@@ -500,9 +532,6 @@ $(document).ready(function () {
 
                 div2.classList.add("form-group");
                 div2.setAttribute("id","div_invoice_detail_"+table_id);
-                // divabc.innerHTML = modal_invoice;
-                // let divabc = document.getElementById("modal-invoice-detail");
-                // divabc.appendChild(modal_invoice);
                 document.getElementById("append_modal_invoice_detail").appendChild(div2);
                 //show_table la cai nut de mo invoice and invoice detail
                 document.getElementById(show_table).style.display = 'none';
@@ -530,16 +559,12 @@ $(document).ready(function () {
         $("#modal-invoice").modal("show");
     }
     function showInvoiceDetail(table_name){
-        console.log(table_name);
-        // let modal_name = "#invoice_detail_" + table_name;
         $(table_name).modal("show");
     }
     function closeModal() {
         $('#modal-invoice').modal('toggle');
     }
     function deleteInvoice(table_name,type) {
-        //table_name (table_id)
-        // let table_name = table_id;
         console.log(type);
         $.ajax({
             type: 'get',
@@ -560,9 +585,6 @@ $(document).ready(function () {
 
                 let btn_show_table = "show_table_"+table_name;
                 let btn_show_invoice_detail = "show_detail_"+table_name;
-                // let test = document.getElementById(btn_show_table);
-                // let test2 = document.getElementById(btn_show_invoice_detail);
-                // console.log(test2);
                 document.getElementById(btn_show_table).style.display = 'block';
                 document.getElementById(btn_show_invoice_detail).style.display = 'none';
 
@@ -579,42 +601,12 @@ $(document).ready(function () {
                 console.log('thanh cmn cong roi');
             }
         });
-
-
-
-
-
-        // console.log(table_id);
-        // let modal_invoice = "#invoice_detail_"+table_id;
-        // // console.log(table_id);
-        // $(modal_invoice).modal('toggle');
-        // console.log(1231232131231231231736173127361863187);
-        // let div_invoice = "div_invoice_detail_"+table_id;
-        // let test = document.getElementById(div_invoice);
-        // test.remove();
-        // console.log(test);
-
-
-        // $(div_invoice).remove();
-        // let btn_show_table = "show_table_"+table_id;
-        // let btn_show_invoice_detail = "show_detail_"+table_id;
-        // let element = document.getElementById(div_invoice);
-        // element.remove();
-        // document.getElementById(btn_show_table).style.display = 'block';
-        // document.getElementById(btn_show_invoice_detail).style.display = 'none';
-
-        // // let modal_invoice = '#invoice_detail_'+table_id;
-        // // console.log(modal_invoice);
-        // let modal_invoice = document.getElementById("invoice_detail_"+table_id);
-        // console.log(modal_invoice);
     }
     function updateRowTotal(formRow) {
         let quantity = parseInt(formRow.find('.quantity').val());
         let price = formRow.find(".select-item").find(":selected").data("price");
         let sum = price * quantity;
         formRow.find(".price").val(sum.toLocaleString('vi-VN'));
-            // console.log(1);
-            // Cập nhật tổng tiền của tất cả sản phẩm
         updateTotalPrice();
     }
 
@@ -647,78 +639,20 @@ $(document).ready(function () {
 
         //reset modal khi đóng modal
         $('#modal-invoice').on('hidden.bs.modal', function(){
-                // $("#search").val('');
-
             $(this).find('form').trigger('reset');
             $(".select-item").select2({tag: true});
-            ///Cũ méo ổn
-            // $(".btn-update-quantity").attr('disabled', false);
-
             let parentDiv = document.getElementById('append-item');
             let childDiv = parentDiv.getElementsByClassName('form-row');
             while(childDiv.length > 0) {
                 parentDiv.removeChild(childDiv[0]);
             }
-            // $("#price").val('');
-            // $(".quantity").val('1');
-            //     // $('#select-item option:selected').removeAttr('selected');
-            // $(".select-item option:selected").each(function(){
-            //     $(this).removeAttr('selected');
-            // })
-            // $("#div-select select").val("0").change();
-            // $("#select-paid option:selected").each(function(){
-            //     $(this).removeAttr('selected');
-            // })
-            // $("#div-paid select").val('0').change();
         });
-            // $('.delete-test').on('click', function(){
-            //     let parentDiv = document.getElementById('append-item');
-            //     let childDiv = parentDiv.getElementsByClassName('form-row');
-            //     while(childDiv.length > 0) {
-            //         parentDiv.removeChild(childDiv[0]);
-            //     }
-            // })
-            // $('#modal-cpmpany').on('hidden.bs.modal', function () {
-            //     // $(this).find('form').trigger('reset');
-            //     $("#select-item option:selected").each(function(){
-            //         $(this).removeAttr('selected');
-            //     })
-            //     $("#div-select select").val("0").change();
-
-            //     $("$modal-invoice").html("");
-        
-        
-            // })
-            // $('.select-item').on('change',function(){
-            //     $(".btn-update-quantity").attr('disabled', false);
-            //     $(".quantity").val('1');
-            //     let price = $(this).find(":selected").data("price");
-            //     let quantity = parseInt(document.getElementById('quantity').value);
-            //     let sum = price * quantity;
-            //     $("#price").val(sum);
-            // });
-
         $(".form-row .select-item").on('change', function(){
-                    // $(".btn-update-quantity").attr('disabled', false);
             let formRow = $(this).closest('.form-row');
             let quantityInput = formRow.find('.quantity').val('1');
             let btnUpdateQuantity = formRow.find('.btn-update-quantity');
             btnUpdateQuantity.attr('disabled', false);
-
-                    // // quantityInput.val('1');  OLD
-                    // let quantity = parseInt(quantityInput.val());
-                    // // let price = $(this).find(":selected").data("price");
-                    // // let sum = price * quantity;
-                    // // $("#price").val(sum);
-                    // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                    // let sum = price * quantity;
-                    // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
-                    // $(this).closest('.form-row').find("#price").val(sum);
             updateRowTotal(formRow);
-            
-                    // let totalPrice = formRow.find('#price').val();
-                    // console.log(totalPrice);
-                    // getTotal($(this).closest('form-row'));
         });
         
 
@@ -738,9 +672,6 @@ $(document).ready(function () {
                 quantity += 1;
                 quantityInput.val(quantity);
             }
-                // console.log(quantity);
-                // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                // let sum = price * quantity;
                 // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
                 // $(this).closest('.form-row').find("#price").val(sum);
             updateRowTotal(formRow);
@@ -808,7 +739,6 @@ $(document).ready(function () {
 
             div.classList.add("form-row")
             div.classList.add("item")
-                // document.getElementById('form').appendChild(div);
             document.getElementById('append-item').appendChild(div);
             $(".form-row .select-item").select2({tag: true});
             envent();
@@ -817,25 +747,6 @@ $(document).ready(function () {
 
         function envent()
         {
-                // $('.form-row:last-child .select-item').on('change',function(){
-                //     // let parent = $("#div-select").parent();
-                //     // let child = parent.find($('#div-select'));
-                //     // console.log(child);
-                //     let quantityInput = $(".quantity").closest('.form-row').find('.quantity');
-                //     let priceInput = $(".price").closest('.form-row').find('.price');
-                //     let btnUpdate = $(".btn-update-quantity").closest('.form-row').find('.quantity');
-                //     // $(".btn-update-quantity").attr('disabled', false);
-                //     // $(".quantity").val('1');
-                //     // $(".price").val('0')
-                //     quantityInput.val('1');
-                //     priceInput.val('0');
-                //     btnUpdate.attr('disabled', false);
-
-                //     let price = $(this).find(":selected").data("price");
-                //     let quantity = parseInt(document.getElementById('quantity').value);
-                //     let sum = price * quantity;
-                //     $("#price").val(sum);
-                // });
             $(".form-row .select-item").on('change', function(){
                     // $(".btn-update-quantity").attr('disabled', false);
                 let formRow = $(this).closest('.form-row');
@@ -867,10 +778,6 @@ $(document).ready(function () {
                     quantity += 1;
                     quantityInput.val(quantity);
                 }
-                    // let price = $(this).closest('.form-row').find(".select-item").find(":selected").data("price");
-                    // let sum = price * quantity;
-                    // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
-                        // $(this).closest('.form-row').find("#price").val(sum);
                 updateRowTotal(formRow);
             });
 
@@ -880,25 +787,6 @@ $(document).ready(function () {
                 updateTotalPrice();
             })
         } 
-
-
-                    //livesearch
-                    // $('#search').on('keyup', function(){
-                    //     $value = $(this).val();
-                    //     console.log(1);
-                    //     $.ajax({
-                    //         type: 'get',
-                    //         url: '{{ route('item.search') }}',
-                    //         data: {'search': $value},
-                    //         success: function (response) {
-                    //             console.log(response);
-                    //             $('tbody').html(response.data);
-                    //         },
-                    //         error: function (response) {
-                    //             console.log(12312);
-                    //         }
-                    //     });
-                    // })
     });
 
 </script>
