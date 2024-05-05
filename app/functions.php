@@ -3,6 +3,7 @@
 use App\Enums\SystemCacheEnum;
 use App\Enums\UserRoleEnum;
 use App\Models\MenuItem;
+use App\Models\Table;
 
 if(!function_exists('getAndCacheMenuItems')){
     function getAndCacheMenuItems(): object
@@ -13,6 +14,20 @@ if(!function_exists('getAndCacheMenuItems')){
             function(){
                 $items = MenuItem::query()->get();
                 return $items;
+            }
+        );
+    }
+}
+if(!function_exists('getAndCacheTableName')){
+    function getAndCacheTableName()
+    {
+        return cache()->remember(
+            SystemCacheEnum::TABLE_NAMES,
+            84000*30,
+            function()
+            {
+                $tables = Table::query()->get();
+                return $tables;
             }
         );
     }
