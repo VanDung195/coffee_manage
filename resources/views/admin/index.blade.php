@@ -26,7 +26,7 @@
     </div>
 
     
-    {{-- <table class="order-table">
+    {{-- <table class="order-table_test">
         <tr>
             <th>ID</th>
             <th>Sản phẩm</th>
@@ -69,6 +69,7 @@
             <td>1</td>
         </tr>
     </table> --}}
+    
 </div>
 
 
@@ -231,6 +232,29 @@ function table_invoice(response)
 {
 
 }
+
+//khong cho thu phong (perfect)
+window.addEventListener('wheel', function(event) {
+    if (event.ctrlKey === true || event.metaKey) {
+        event.preventDefault();
+    }
+}, { passive: false });
+/*
+// Ngăn chặn sự kiện thu phóng trên Firefox
+window.addEventListener('DOMMouseScroll', function(event) {
+    if (event.ctrlKey === true || event.metaKey) {
+        event.preventDefault();
+    }
+}, { passive: false });
+
+// Ngăn chặn sự kiện thu phóng trên IE/Edge
+window.addEventListener('keydown', function(event) {
+    if (event.ctrlKey === true || event.metaKey) {
+        event.preventDefault();
+    }
+}, { passive: false });
+*/
+
 $(document).ready(function () {
     $.ajax({
         url: '{{ route('api.invoices') }}',
@@ -238,14 +262,15 @@ $(document).ready(function () {
         success: function (response) {
             // console.log(response.data[0].total_price);
             //invoice
-            console.log(response.data);
+            // console.log(response.data);
             let divapi = document.createElement("div");
-            response.data.forEach(function (item, index){
+            response.data.invoices.forEach(function (item, index){
                 let table_id_api = item.table_id;
                 let show_table_api = 'show_table_'+table_id_api;
                 let show_detail_api = 'show_detail_'+table_id_api; 
                 document.getElementById(show_table_api).style.display = 'none';
                 document.getElementById(show_detail_api).style.display = 'block';
+                
                 let modal_invoice_api = `
                 <div id="invoice_detail_${table_id_api}" class="modal fade" role="dialog">
                     <div class="modal-dialog modal-lg">
@@ -366,17 +391,24 @@ $(document).ready(function () {
                         <th>SL</th>
                         <th>Tổng tiền</th>
                         <th>Xuất</th>
+                        <th>Tình trạng</th>
+                        <th>Đổi bàn</th>
                         <th>Xoá</th>
                     </tr>
             `;
-
-            response.data.forEach(function(item, index){
-                console.log(item);
+            let table_names = response.data.table_names;
+            
+            response.data.invoices.forEach(function(item, index){
+                console.log(item.table_id);
                 let rowspanCount = Math.max(item.details.length, 1);
                 order_table += `<tr class="order_table_class_${item.table_id}">`;
                 order_table += `
-                    <td border="1" class="set-row" rowspan="${rowspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
+                    <td border="1" class="set-row" rowspan="${rowspanCount}">
+                        ${item.table_id}
+                        <br>${item.checkin_time}<br>${item.created_at}
+                    </td>
                 `;
+                
                 let count = 1;
                 item.details.forEach(function(detail, index){
                     if(count != 1) {
@@ -405,11 +437,13 @@ $(document).ready(function () {
             order_table += `
                 </table>
             `;
+            console.log(response.data.table_names);
+
             let div_table = document.createElement("div");
             div_table.innerHTML = order_table;
             div_table.classList.add("form-group");
             document.getElementById("right").appendChild(div_table);
-            console.log(order_table);
+            // console.log(order_table);
         },
         error: function (error) {
             console.log(error);
@@ -494,7 +528,6 @@ $(document).ready(function () {
                     {
                         order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
-                            <td class="set-row" rowspan="${rowspanCount}">
                             <td rowspan="${rowspanCount}"> 
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
@@ -690,9 +723,9 @@ $(document).ready(function () {
                     <select name="id[]" class="select-item">
                         <option value="0" data-price="0" selected>Chọn món</option>
                         @foreach ($items as $item)
-                        <option value="{{$item->id}}" data-price="{{ $item->price }}">
-                            {{ $item->name }}
-                        </option>
+                            <option value="{{$item->id}}" data-price="{{ $item->price }}">
+                                {{ $item->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
