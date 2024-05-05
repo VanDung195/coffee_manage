@@ -12,4 +12,5 @@ use BenSampo\Enum\Enum;
 final class SystemCacheEnum extends Enum
 {
     public const MENU_ITEMS = 'menu_items';
+    public const TABLE_NAMES = 'table_names';
 }
