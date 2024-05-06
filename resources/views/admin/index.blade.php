@@ -234,11 +234,11 @@ function table_invoice(response)
 }
 
 //khong cho thu phong (perfect)
-window.addEventListener('wheel', function(event) {
-    if (event.ctrlKey === true || event.metaKey) {
-        event.preventDefault();
-    }
-}, { passive: false });
+// window.addEventListener('wheel', function(event) {
+//     if (event.ctrlKey === true || event.metaKey) {
+//         event.preventDefault();
+//     }
+// }, { passive: false });
 /*
 // Ngăn chặn sự kiện thu phóng trên Firefox
 window.addEventListener('DOMMouseScroll', function(event) {
@@ -260,9 +260,9 @@ $(document).ready(function () {
         url: '{{ route('api.invoices') }}',
         dataType: 'json',
         success: function (response) {
+            
             // console.log(response.data[0].total_price);
             //invoice
-            // console.log(response.data);
             let divapi = document.createElement("div");
             response.data.invoices.forEach(function (item, index){
                 let table_id_api = item.table_id;
@@ -285,7 +285,7 @@ $(document).ready(function () {
                 // console.log(item);
                 //invoice detail
                 item.details.forEach(function (item, index){
-                    // console.log(item.menu_items.name);
+                    // console.log(item);
                     modal_invoice_api += `
                     <div class="items form-row">
                         <div class="form-group col-6">
@@ -306,11 +306,15 @@ $(document).ready(function () {
                         </div>
                     </div>
                     `;
-                })
+                }); //end foreach
+                // console.log(item);
                 modal_invoice_api += `
                 <div class="form-row" style="margin-top: 30px;">
                         <div class="form-group col-5" id="div-paid">
-                            <input type="text" class="form-control" value="Đã thanh toán">
+                            ${item.is_paid ? 
+                                `<input type="text" class="form-control" value="Đã thanh toán">` : 
+                                `<input type="text" class="form-control" value="Chưa thanh toán">`
+                            }
                         </div> 
                         <div class="form-group col-6" style="margin-left: 60px;">
                             <h4>Tổng tiền: ${(item.total_price).toLocaleString('vi-VN')}</h4>
@@ -396,8 +400,8 @@ $(document).ready(function () {
                         <th>Xoá</th>
                     </tr>
             `;
-            let table_names = response.data.table_names;
-            
+
+            console.log(response);
             response.data.invoices.forEach(function(item, index){
                 console.log(item.table_id);
                 let rowspanCount = Math.max(item.details.length, 1);
@@ -426,9 +430,30 @@ $(document).ready(function () {
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
                             <td rowspan="${rowspanCount}">
+                                <li class="list-inline-item ml-2">
+                                    ${item.is_paid ? 
+                                    `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
+                                    `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
+                                    }
+                                </li>
+                            </td>
+                            <td rowspan="${rowspanCount}">
+                                <button onclick="" class="btn btn-danger btn-sm">Swap</button>
+                            </td>
+                            <td rowspan="${rowspanCount}">
                                 <button onclick="deleteInvoice('${item.table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
                             </td>
                         `;
+                        //cách 2 để dùng hiển thị cái badge
+                        // if (item.is_paid) {
+                        //     order_table += `
+                        //         <div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>
+                        //     `;
+                        // } else {
+                        //     order_table += `
+                        //         <div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>
+                        //     `;
+                        // }
                     }
                     order_table += `</tr>`;
                     count++;
