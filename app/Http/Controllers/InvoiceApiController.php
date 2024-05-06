@@ -29,14 +29,62 @@ class InvoiceApiController extends Controller
         ->orderBy('created_at', 'desc')
         ->get()
         ->toArray();
-        // dd($invoices);
-        // $session_invoice = session()->get('invoice');
-        // foreach($invoices as $item)
-        // {   
-        // }
-        // dd($invoices);
+        $table_names = getAndCacheTableName();
+
+        $merged_array = [];
+        $count = 0;
+        //Nếu không dùng count mà dùng $table_id thì nó sẽ biến thành một object có key => value
+        $session_invoices = session()->get('invoice');
+        foreach($session_invoices as $item)
+        {
+            $table_id = $item['table_id'];
+            $merged_array[$count] = [
+                'table_id' => $table_id,
+                'total_price' => $item['total_price'],
+                'created_at' => $item['created_at'],
+                'checkin_time' => $item['checkin_time'],
+                'checkout_time' => $item['checkout_time'],
+                'is_paid' => 0,
+                'details' => []
+            ];
+            foreach($item['details'] as $each)
+            {
+                $merged_array[$count]['details'][] = [
+                    'menu_item_id' => (int)$each['id'],
+                    'quantity' => (int)$each['quantity'],
+                    'menu_items' => [
+                        'id' => (int)$each['id'],
+                        'name' => $each['name'],
+                        'price' => $each['price'],
+                    ],
+                ];
+            }
+            $count++;
+        }
+
+        foreach($invoices as $item)
+        {
+            $table_id = $item['table_id'];
+            $merged_array[$count]= [
+                'table_id' => $table_id,
+                'total_price' => $item['total_price'],
+                'created_at' => $item['created_at'],
+                'checkin_time' => $item['checkin_time'],
+                'checkout_time' => $item['checkout_time'],
+                'is_paid' => 1,
+                'details' => $item['details']
+            ];
+            $count++;
+        }
+
         $message = 'Get api thanh cong';
-        return $this->successResponse($invoices,$message);
+        // return $this->successResponse($invoices,$message);
+        return $this->successResponse([
+            // 'invoices' => $invoices,
+            'invoices' => (array)$merged_array,
+            'table_names' => $table_names,
+        ]
+        ,$message);
     }
     
 }
