@@ -7,6 +7,9 @@
 @endpush
 @section('content')
 <div id="left">
+    <div class="header">
+        <h1>Bàn</h1>
+    </div>
     @foreach ($tables as $table)
         <div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
             <button class="btn-table" data-table-id="{{ $table->name }}">
