@@ -7,6 +7,7 @@ use App\Enums\TableStausEnum;
 use App\Models\MenuItem;
 use App\Models\Table;
 use Illuminate\Http\Request;
+use Psr\Log\NullLogger;
 
 class TableController extends Controller
 {
@@ -17,7 +18,7 @@ class TableController extends Controller
         }
         $tables = Table::query()
         ->orderBy('stt', 'asc')
-        ->paginate(10);
+        ->paginate(11);
         $items = getAndCacheMenuItems();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[ 
@@ -34,6 +35,26 @@ class TableController extends Controller
             'status' => TableStausEnum::getKey(1),
             'invoice_id' => 0,
         ]);
+
+        // $key_to_delete = null;
+        // foreach ($invoices as $key => $value) {
+        //     if($value['table_id'] === $request->table_name)
+        //     {
+        //         $key_to_delete = $key;
+        //         break;
+        //     }
+        // }
+        // if($key_to_delete != null)
+        // {
+        //     unset($invoices[$key_to_delete]);
+        // }
+        $invoices = session()->get('invoice');
+        if(isset($invoices[$request->table_name]))
+        {
+            unset($invoices[$request->table_name]);
+            session()->put('invoice', $invoices);
+        }
+
         return 1;
     }
     public function qr_show(Request $request)
