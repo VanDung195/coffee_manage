@@ -3,7 +3,7 @@
     height: 70px;
     background-color: black;
     border: 1px solid black;
-    margin: 50px;
+    margin: 20px;
     color: rgb(14, 225, 52);
 }
 .btn-show-invoice-detail {
@@ -11,7 +11,7 @@
     height: 70px;
     background-color: black;
     border: 1px solid black;
-    margin: 50px;
+    margin: 20px;
     color: red;
 }
 .btn-update-quantity {
@@ -36,11 +36,11 @@
 }
 
 #left{
-    width: 40%;
+    width: 20%;
     float: left;
 }
 #right{
-    width: 60%;
+    width: 80%;
     float: right;
 }
 
