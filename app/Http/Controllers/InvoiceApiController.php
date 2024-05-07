@@ -35,31 +35,34 @@ class InvoiceApiController extends Controller
         $count = 0;
         //Nếu không dùng count mà dùng $table_id thì nó sẽ biến thành một object có key => value
         $session_invoices = session()->get('invoice');
-        foreach($session_invoices as $item)
+        if(!is_null($session_invoices))
         {
-            $table_id = $item['table_id'];
-            $merged_array[$count] = [
-                'table_id' => $table_id,
-                'total_price' => $item['total_price'],
-                'created_at' => $item['created_at'],
-                'checkin_time' => $item['checkin_time'],
-                'checkout_time' => $item['checkout_time'],
-                'is_paid' => 0,
-                'details' => []
-            ];
-            foreach($item['details'] as $each)
+            foreach($session_invoices as $item)
             {
-                $merged_array[$count]['details'][] = [
-                    'menu_item_id' => (int)$each['id'],
-                    'quantity' => (int)$each['quantity'],
-                    'menu_items' => [
-                        'id' => (int)$each['id'],
-                        'name' => $each['name'],
-                        'price' => $each['price'],
-                    ],
+                $table_id = $item['table_id'];
+                $merged_array[$count] = [
+                    'table_id' => $table_id,
+                    'total_price' => $item['total_price'],
+                    'created_at' => $item['created_at'],
+                    'checkin_time' => $item['checkin_time'],
+                    'checkout_time' => $item['checkout_time'],
+                    'is_paid' => 0,
+                    'details' => []
                 ];
+                foreach($item['details'] as $each)
+                {
+                    $merged_array[$count]['details'][] = [
+                        'menu_item_id' => (int)$each['id'],
+                        'quantity' => (int)$each['quantity'],
+                        'menu_items' => [
+                            'id' => (int)$each['id'],
+                            'name' => $each['name'],
+                            'price' => $each['price'],
+                        ],
+                    ];
+                }
+                $count++;
             }
-            $count++;
         }
 
         foreach($invoices as $item)
