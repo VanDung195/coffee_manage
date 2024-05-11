@@ -140,19 +140,26 @@
 
             </div>
             <div class="form-row" style="margin-top: 30px;">
-                <div class="form-group col-5" id="div-paid">
+                <div class="form-group col-3" id="div-paid">
+                    <label for="">Trạng thái thanh toán</label>
                     <select name="is_paid" id="select_paid" class="form-control">
                         <option value="0">Chưa thanh toán</option>
                         <option value="1" selected>Đã thanh toán</option>
                     </select>
                 </div> 
-                <div class="form-group col-2" style="margin-left: 60px;">
-                    <h4>Tổng tiền: </h4>
-                </div>
-                <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
+                <div class="form-group col-3" style="margin-top: 5px;margin-left:0px;">
                     <span class="fl-right" style="margin-bottom: 20px;">
-                        <input type="text" id="total-price" value="0" class="form-control" readonly>
+                        <label for="">Tổng tiền</label>
+                        <input type="number" id="total-price" value="0" class="form-control" readonly>
                     </span>
+                </div>
+                <div class="form-group col-3">
+                    <label for="">Số tiền khách trả</label>
+                    <input class="form-control" type="number" name="" id="customer-payment">
+                </div>
+                <div class="form-group col-3">
+                    <label for="">Tiền thừa</label>
+                    <input class="form-control" type="text" name="" id="remaining-money" readonly>
                 </div>
             </div>
             {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
@@ -257,7 +264,24 @@ window.addEventListener('keydown', function(event) {
     }
 }, { passive: false });
 */
+// let customer_payment = document.getElementById('customer_payment');
+// customer_payment.addEventListener('keyup', function(){
 
+// });
+$("#customer-payment").on('keyup', function(){
+    let total_price = document.getElementById('total-price').value;
+    let customer_payment = document.getElementById('customer-payment').value;
+    // console.log(parseFloat(total_price) * 1000);
+    $.ajax({
+        type: "get",
+        url: '{{ route('invoice.update') }}',
+        data: {total_price: total_price, customer_payment: customer_payment},
+        dataType: "json",
+        success: function (response) {
+            console.log(response);
+        }
+    });
+});
 $(document).ready(function () {
     $.ajax({
         url: '{{ route('api.invoices') }}',
@@ -400,6 +424,8 @@ $(document).ready(function () {
                         <th>Xuất</th>
                         <th>Tình trạng</th>
                         <th>Đổi bàn</th>
+                        <th>Tiền</th>
+                        <th>Thừa</th>
                         <th>Xoá</th>
                     </tr>
             `;
@@ -430,7 +456,7 @@ $(document).ready(function () {
                         order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${item.total_price.toLocaleString('vi-VN')}</td>
                             <td rowspan="${rowspanCount}"> 
-                                <button class="btn btn-success btn-sm">Xuất HD</button>
+                                <button class="btn btn-success btn-sm">Xuất</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
@@ -442,6 +468,12 @@ $(document).ready(function () {
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <button onclick="" class="btn btn-danger btn-sm">Swap</button>
+                            </td>
+                            <td rowspan="${rowspanCount}'">
+                                100k
+                            </td>
+                            <td rowspan="${rowspanCount}'">
+                                200k
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <button onclick="deleteInvoice('${item.table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
@@ -514,7 +546,6 @@ $(document).ready(function () {
                                     <h3>Bàn số: ${table_id}</h3>
                                     
                 `;
-                
                 let rowspanCount = Math.max(response.data.details.length, 1);
                 let order_table = `
                 <tr class="order_table_class_${table_id}">
@@ -558,6 +589,17 @@ $(document).ready(function () {
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
                             <td rowspan="${rowspanCount}"> 
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
+                            </td>
+                            <td rowspan="${rowspanCount}">
+                                <li class="list-inline-item ml-2">
+                                    ${item.is_paid ? 
+                                    `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
+                                    `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
+                                    }
+                                </li>
+                            </td>
+                            <td rowspan="${rowspanCount}">
+                                <button onclick="" class="btn btn-danger btn-sm">Swap</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <button onclick="deleteInvoice('${table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
