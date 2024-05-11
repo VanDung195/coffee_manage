@@ -48,6 +48,7 @@ Route::get('/search', [MenuItemController::class, 'search'])->name('item.search'
 
 Route::post('/6635bb17c246e2',[InvoiceController::class, 'store'])->name('invoice.store');
 Route::post('/store_qr', [InvoiceController::class, 'store_qr'])->name('invoice.store_qr');
+Route::get('/update_tot', [InvoiceController::class, 'update'])->name('invoice.update');
 
 Route::get('/create', [TestController::class, 'create']); //test
 
