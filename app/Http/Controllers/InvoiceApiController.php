@@ -20,17 +20,20 @@ class InvoiceApiController extends Controller
         $table_invoice_id = Table::query()
                                     ->where('invoice_id', '<>', 0)
                                     ->pluck('invoice_id')->toArray();
+        //ORM (Object-Relational Mapping)
         $invoices = Invoice::with(['details' => function($query) {
             $query->select('invoice_id', 'menu_item_id', 'quantity');
         }, 'details.menuItems' => function($query) {
             $query->select('id', 'name','price');
         }])
+        // ->select('id','customer_payment', 'remaining_money')
         ->whereIn('id', $table_invoice_id)
         ->orderBy('created_at', 'desc')
         ->get()
         ->toArray();
         $table_names = getAndCacheTableName();
 
+        // dd($invoices);
         $merged_array = [];
         $count = 0;
         //Nếu không dùng count mà dùng $table_id thì nó sẽ biến thành một object có key => value
