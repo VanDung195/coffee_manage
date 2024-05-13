@@ -17,6 +17,8 @@ class Invoice extends Model
         'checkin_time',
         'checkout_time',
         'total_price',
+        'customer_payment',
+        'remaining_money',
         'table_id',
     ];
 
