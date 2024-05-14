@@ -32,64 +32,106 @@
                 {{ $table->name }}
             </button>
         </div>
+
+        <div id="modal-invoice-{{ $table->name }}" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Tạo hoá đơn</h4>
+                        <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
+                            @csrf
+                            <button type="button" class="test-btn">test</button>
+                            <input type="text" class="form-control" name="table-id" id="table-id" value="{{ $table->name }}" readonly>
+                            <div class="item form-row" id="item">
+                                <div class="div-select form-group col-5" id="div-select">
+                                    <label for="">Món</label>
+                                    <select name="id[]" class="select-item">
+                                        <option selected>Chọn món</option>
+                                        @foreach ($items as $item)
+                                            <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                                {{ $item->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-left: 42px;width:135px;">
+                                    <label for="">Số lượng (Min: 1)</label>
+                                    <br>
+                                    <button type="button" class="btn-update-quantity" data-type='0' style="float: left"
+                                        disabled>
+                                        -
+                                    </button>
+                                    <input type="text" id="quantity" name="quantity[]" class="quantity form-control"
+                                        value="0"
+                                        style="background-color: none;border:none;height:30px;width:42px;float: left;" readonly>
+                                    <button type="button" class="btn-update-quantity" data-type='1' style="float: left;"
+                                        disabled>
+                                        +
+                                    </button>
+                                </div>
+                                <div class="form-group col-3">
+                                    <span class="span-sum">
+                                        <label>Giá</label>
+                                        <input type="text" id="price" class="price form-control" value="0" readonly>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="append-item">
+                            {{-- # Đổi id thành class ở đây --}}
+                            </div>
+                            <div class="form-row" style="margin-top: 30px;">
+                                <div class="form-group col-3" id="div-paid">
+                                    <label for="">Trạng thái thanh toán: </label>
+                                    <select name="is_paid" id="select_paid" class="form-control">
+                                        <option value="0">Chưa thanh toán</option>
+                                        <option value="1" selected>Đã thanh toán</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-3" style="margin-left:0px;">
+                                    {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
+                                    <label for="">Tổng tiền: </label>
+                                    <input type="text" id="total-price" value="0" class="form-control" readonly>
+                                    {{-- </span> --}}
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="">Số tiền khách trả: </label>
+                                    <input class="form-control" type="number" name="customer_payment" id="customer-payment"
+                                        placeholder="VD: 1 = 1.000VND">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="">Tiền thừa: </label>
+                                    <p class="form-control" id="remaining-money">0</p>
+                                    {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
+                                </div>
+                            </div>
+                            {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
+                            <button type="button" class="append btn btn-block btn-lg btn-fill btn-danger">Thêm
+                                món</button>
+                        </form>
+                        <br>
+        
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btn-submit-invoice" type="button" onclick="submitForm()" class="btn btn-success">Tạo
+                            hoá đơn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endforeach
 </div>
 <div id="right">
     <div class="header">
         <h1>Quản Lý Hoá Đơn</h1>
     </div>
-
-
-    {{-- <table class="order-table_test">
-    <tr>
-        <th>ID</th>
-        <th>Sản phẩm</th>
-        <th>Giá</th>
-        <th>SL</th>
-        <th>Tong tien</th>
-        <th>Thành công</th>
-    </tr>
-    //đây là chỗ tôi muốn thêm order_table, hi
-    <tr>
-        <td class="set-row" rowspan="1">296332349<br>16/03 03:10</td>
-        <td>Bàn chải điện Huawei Lebooo Smart Sonic Star Diamond - Trắng</td>
-        <td class="price">399.000₫</td>
-        <td>1</td>
-        <td class="set-row" rowspan="1">1</td>
-        <td class="set-row" rowspan="1" class="status-success">Thành công</td>
-    </tr>
-    <tr>
-        <td class="set-row" rowspan="3">204858587<br>17:24 28/09</td>
-        <td>
-            Combo Cáp Lightning Remax + Sạc Baseus cho Iphone sạc nhanh 20W - Trắng
-        </td>
-        <td class="price">199.000₫</td>
-        <td>1</td>
-        <td class="set-row" rowspan="3">123</td>
-        <td class="set-row" rowspan="3" class="status-success">Chap nhan</td>
-    </tr>
-    <tr>
-        <td>
-            Combo Cáp Lightning Remax + Sạc Baseus cho Iphone sạc nhanh 20W - Đen
-        </td>
-        <td class="price">199.000₫</td>
-        <td>1</td>
-    </tr>
-    <tr>
-        <td>
-            Combo Type-C Cáp Remax + Sạc Baseus cho Android sạc nhanh 20W -Đen
-        </td>
-        <td class="price">1.088.000₫</td>
-        <td>1</td>
-    </tr>
-</table> --}}
-
 </div>
-
 
 {{-- Div chứa modal invoice detail --}}
 <div id="append_modal_invoice_detail">
-
 </div>
 
 <!-- Modal botstrap -->
@@ -180,6 +222,7 @@
             </div>
         </div>
     </div>
+</div>
 @endsection
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -670,7 +713,6 @@
                     // let existing_table = document.querySelector(".order-table");
                     // existing_table.insertAdjacentHTML('beforeend', order_table);
 
-
                     $('#modal-invoice').modal('toggle');
 
                 },
@@ -689,7 +731,7 @@
             $(table_name).modal("show");
         }
 
-        function closeModal() {
+        function close_modal() {
             $('#modal-invoice').modal('toggle');
         }
 
@@ -733,26 +775,45 @@
             });
         }
 
+        $('.test-btn').on('click', function(event){
+            let form_body = $(this).closest('.form-body');
+            let modal_content = form_body.closest('.moda;-content');
+            // let root_node = $(this).closet('.modal-body');
+            let child_node = modal_content.find('.item');
+            console.log(child_node);
+        });
+
         function updateRowTotal(formRow) {
             let quantity = parseInt(formRow.find('.quantity').val());
             let price = formRow.find(".select-item").find(":selected").data("price");
             let sum = price * quantity;
             formRow.find(".price").val(sum.toLocaleString('vi-VN'));
-            updateTotalPrice();
-        }
 
-        function updateTotalPrice() {
+            // let modal_content = quantity.find(".modal-content");
+            let root_node = formRow.closest("modal-content");
+            console.log(root_node.find('.item'));
+            console.log(12312312312312312312312312312312);
+            updateTotalPrice(root_node);
+        }
+        function updateTotalPrice(modal_content) {
             console.log('updateTotalPrice');
+            // let formRow = $(this).closest('.form-row');
+            // let type = parseInt($(this).data('type'));
+            // let quantityInput = $(this).closest('.form-row').find('.quantity');
+            // let item = form_row.find('.item');
+            let item  = modal_content.find('.item');
+            console.log(item);
+            console.log($('.item'));
             let total = 0;
-            $(".item").each(function() {
+            item.each(function() {
+            // $(".item").each(function() {
                 let quantity = parseInt($(this).find('.quantity').val());
                 let price = $(this).find(".select-item").find(":selected").data("price");
                 let totalPrice = quantity * price;
                 total += price * quantity;
             })
-            // console.log(total);
-            total_price_global = total;
-            console.log(total_price_global);
+            console.log(total);
+            // console.log(total_price_global);
             $("#total-price").val(total.toLocaleString('vi-VN'));
         }
         $(document).ready(function() {
@@ -760,30 +821,31 @@
                 tag: true
             });
             $('.btn-table').click(function() {
-                var tableId = $(this).data('table-id');
-                $("#table-id").val(tableId);
-                $("#price").val('0')
-                $(".quantity").val('0')
-                $("#modal-invoice").modal("show");
+                var table_id = $(this).data('table-id');
+                $("#table-id").val(table_id);
+                var modal_inoice = "#modal-invoice-"+table_id;
+                $(modal_inoice).modal("show");
 
             })
             $('.btn-close').click(function() {
                 $("#modal-invoice").modal('toggle');
                 $("#search").val('');
+
             })
 
             //reset modal khi đóng modal
-            $('#modal-invoice').on('hidden.bs.modal', function() {
-                $(this).find('form').trigger('reset');
-                $(".select-item").select2({
-                    tag: true
-                });
-                let parentDiv = document.getElementById('append-item');
-                let childDiv = parentDiv.getElementsByClassName('form-row');
-                while (childDiv.length > 0) {
-                    parentDiv.removeChild(childDiv[0]);
-                }
-            });
+            // $('#modal-invoice').on('hidden.bs.modal', function() {
+            //     $(this).find('form').trigger('reset');
+            //     $(".select-item").select2({
+            //         tag: true
+            //     });
+            //     let parentDiv = document.getElementById('append-item');
+            //     let childDiv = parentDiv.getElementsByClassName('form-row');
+            //     while (childDiv.length > 0) {
+            //         parentDiv.removeChild(childDiv[0]);
+            //     }
+            //     document.getElementById('remaining-money').textContent = "0";
+            // });
             $(".form-row .select-item").on('change', function() {
                 let formRow = $(this).closest('.form-row');
                 let quantityInput = formRow.find('.quantity').val('1');
@@ -814,74 +876,80 @@
 
             })
 
-            //Append item 
-            var addBtn = document.getElementById('append');
-            addBtn.addEventListener('click', function() {
-                console.log(1);
-
+            $('.append').on('click', function()
+            {
                 let div = document.createElement("div");
                 div.innerHTML = `
-            <div class="form-group col-5 class="div-select">
-                <label for="">Món</label>
-                <select name="id[]" class="select-item">
-                    <option value="0" data-price="0" selected>Chọn món</option>
-                    @foreach ($items as $item)
-                        <option value="{{ $item->id }}" data-price="{{ $item->price }}">
-                            {{ $item->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group" style="margin-left: 42px;width:135px;">
-                <label for="">Quantity (Min: 1)</label>
-                <br>
-                <button
-                    type="button"
-                    class="btn-update-quantity"
-                    data-type='0'
-                    style="float: left"
-                    disabled
-                >
-                    -
-                </button>
-                <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
-                <button
-                    type="button"
-                    class="btn-update-quantity"
-                    data-type='1'
-                    style="float: left;"
-                    disabled
-                >
-                    +
-                </button>
-            </div>
-            <div class="form-group col-3">
-                <span class="span-sum">
-                    <label>Price</label>
-                    <input type="text" id="price" class="price form-control" value=0 readonly>
-                </span>
-            </div>
-            <div class="form-group col-1">
-                <label>Delete</label>
-                <button
-                    style="background-color: red"
-                    type="button"
-                    class="btn-delete"
-                >
-                    X
-                </button>
-            </div>
-        `;
+                <div class="form-group col-5 class="div-select">
+                    <label for="">Món</label>
+                    <select name="id[]" class="select-item">
+                        <option value="0" data-price="0" selected>Chọn món</option>
+                        @foreach ($items as $item)
+                            <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                {{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group" style="margin-left: 42px;width:135px;">
+                    <label for="">Quantity (Min: 1)</label>
+                    <br>
+                    <button
+                        type="button"
+                        class="btn-update-quantity"
+                        data-type='0'
+                        style="float: left"
+                        disabled
+                    >
+                        -
+                    </button>
+                    <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
+                    <button
+                        type="button"
+                        class="btn-update-quantity"
+                        data-type='1'
+                        style="float: left;"
+                        disabled
+                    >
+                        +
+                    </button>
+                </div>
+                <div class="form-group col-3">
+                    <span class="span-sum">
+                        <label>Price</label>
+                        <input type="text" id="price" class="price form-control" value=0 readonly>
+                    </span>
+                </div>
+                <div class="form-group col-1">
+                    <label>Delete</label>
+                    <button
+                        style="background-color: red"
+                        type="button"
+                        class="btn-delete"
+                    >
+                        X
+                    </button>
+                </div>
+                `;
 
+                let modal_body = $(this).closest('.modal-body');
                 div.classList.add("form-row")
                 div.classList.add("item")
-                document.getElementById('append-item').appendChild(div);
+                modal_body.find('.append-item').append(div);
+                // document.getElementById('append-item').appendChild(div);
                 $(".form-row .select-item").select2({
                     tag: true
                 });
                 envent();
             })
-
+            /*
+            let add_btns = document.getElementsByClassName('append');
+            Array.from(add_btns).forEach(function(add_btn) {
+                add_btn.addEventListener('click', function() {
+                    console.log(123123123123);
+                });
+            });*/
+            
 
             function envent() {
                 $(".form-row .select-item").on('change', function() {
