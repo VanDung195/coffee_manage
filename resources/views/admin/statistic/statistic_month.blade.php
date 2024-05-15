@@ -77,9 +77,9 @@
                 let formattedDate = `${month}/${year}`;
                 console.log(formattedDate);
                 
+                //data arr2 (chart1)
                 let data = response.data.arr1; 
                 let arr = Object.values(data);
-                //data arr2 (chart1)
                 let data2 = response.data.arr2;
                 // let arrDetail = Object.values(data2);
                 const arrDetail = [];
