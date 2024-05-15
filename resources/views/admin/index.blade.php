@@ -34,7 +34,7 @@
         </div>
 
         <div id="modal-invoice-{{ $table->name }}" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-container modal-dialog modal-lg">
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
@@ -44,9 +44,8 @@
                     <div class="modal-body">
                         <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
                             @csrf
-                            <button type="button" class="test-btn">test</button>
                             <input type="text" class="form-control" name="table-id" id="table-id" value="{{ $table->name }}" readonly>
-                            <div class="item form-row" id="item">
+                            <div class="item form-row">
                                 <div class="div-select form-group col-5" id="div-select">
                                     <label for="">Món</label>
                                     <select name="id[]" class="select-item">
@@ -94,17 +93,17 @@
                                 <div class="form-group col-3" style="margin-left:0px;">
                                     {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
                                     <label for="">Tổng tiền: </label>
-                                    <input type="text" id="total-price" value="0" class="form-control" readonly>
+                                    <input type="text" value="0" class="total-price form-control" readonly>
                                     {{-- </span> --}}
                                 </div>
                                 <div class="form-group col-3">
                                     <label for="">Số tiền khách trả: </label>
-                                    <input class="form-control" type="number" name="customer_payment" id="customer-payment"
-                                        placeholder="VD: 1 = 1.000VND">
+                                    <input class="customer-payment form-control" type="number" name="customer_payment" class="customer-payment"
+                                        placeholder="VD: 1 = 1.000 VND">
                                 </div>
                                 <div class="form-group col-3">
                                     <label for="">Tiền thừa: </label>
-                                    <p class="form-control" id="remaining-money">0</p>
+                                    <p class="remaining-money form-control">0</p>
                                     {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
                                 </div>
                             </div>
@@ -113,10 +112,10 @@
                                 món</button>
                         </form>
                         <br>
-        
                     </div>
                     <div class="modal-footer">
-                        <button id="btn-submit-invoice" type="button" onclick="submitForm()" class="btn btn-success">Tạo
+                        <button class="btn-submit-invoice btn btn-primary" type="button" onclick="submitForm()">Reset hoá đơn</button>
+                        <button class="btn-submit-invoice btn btn-success" type="button" onclick="submitForm()">Tạo
                             hoá đơn</button>
                     </div>
                 </div>
@@ -281,16 +280,6 @@
             });
         });
 
-        function test(t) {
-            console.log(t);
-            let testt = document.getElementById(t);
-            // testt.setAttribute("disabled", "");
-        }
-
-        function table_invoice(response) {
-
-        }
-
         //khong cho thu phong (perfect)
         // window.addEventListener('wheel', function(event) {
         //     if (event.ctrlKey === true || event.metaKey) {
@@ -317,11 +306,11 @@
 
         // });
         let total_price_global = 0;
-        $("#customer-payment").on('keyup', function() {
-            let total_price_global;
-            let total_price = document.getElementById('total-price').value;
-            let customer_payment = document.getElementById('customer-payment').value;
-
+        $(".customer-payment").on('keyup', function() {
+            let modal_body = $(this).closest('.modal-body');
+            let total_price = modal_body.find('.total-price').val();
+            let customer_payment = $(this).val();
+            
             $.ajax({
                 type: "get",
                 url: '{{ route('invoice.update') }}',
@@ -331,21 +320,18 @@
                 },
                 dataType: "json",
                 success: function(response) {
-                    console.log(response);
-                    document.getElementById('remaining-money').innerHTML = response.data.toLocaleString(
-                        'vi-VN');
-                    document.getElementById('btn-submit-invoice').disabled = false;
+                    modal_body.find('.remaining-money').html(response.data.toLocaleString('vi-VN'));
+                    modal_body.closest('.modal-container').find('.btn-submit-invoice').disabled = false;
+                    // document.getElementById('remaining-money').innerHTML = response.data.toLocaleString(
+                    //     'vi-VN');
                 },
                 error: function() {
-                    document.getElementById('remaining-money').innerHTML = "NULL";
-                    document.getElementById('btn-submit-invoice').disabled = true;
+                    modal_body.find('.remaining-money').html('NULL');
+                    modal_body.closest('.modal-container').find('.btn-submit-invoice').disabled = false;
                 }
             });
         });
 
-        function disabled_button() {
-
-        }
         $(document).ready(function() {
             $.ajax({
                 url: '{{ route('api.invoices') }}',
@@ -745,7 +731,6 @@
                 },
                 success: function(response) {
 
-
                     let modal_invoice = "#invoice_detail_" + table_name;
                     if (type == 'modal_invoice') {
                         $(modal_invoice).modal('toggle');
@@ -776,26 +761,43 @@
         }
 
         $('.test-btn').on('click', function(event){
-            let form_body = $(this).closest('.form-body');
-            let modal_content = form_body.closest('.moda;-content');
-            // let root_node = $(this).closet('.modal-body');
-            let child_node = modal_content.find('.item');
-            console.log(child_node);
+            let modal_body = $(this).closest('.modal-body');
+            let item = modal_body.find('.item');
+            let total_price = 0;
+
+            item.each(function(key, value){
+                let quantity = parseInt(($(value).find('.quantity')).val());
+                let price = $(value).find('.select-item').find(':selected').data('price');
+                let total = price * quantity;
+                total_price += total;
+            });
+            modal_body.find('.total-price').val(total_price.toLocaleString('vi-VN'));
         });
 
-        function updateRowTotal(formRow) {
+        function updateRowTotal(formRow, modalBody) {
             let quantity = parseInt(formRow.find('.quantity').val());
             let price = formRow.find(".select-item").find(":selected").data("price");
             let sum = price * quantity;
             formRow.find(".price").val(sum.toLocaleString('vi-VN'));
 
-            // let modal_content = quantity.find(".modal-content");
-            let root_node = formRow.closest("modal-content");
-            console.log(root_node.find('.item'));
-            console.log(12312312312312312312312312312312);
-            updateTotalPrice(root_node);
+            let modal_body = modalBody;
+            updateTotalPrice(modal_body);
         }
-        function updateTotalPrice(modal_content) {
+        function updateTotalPrice(modal_body) {
+            // let modal_body = $(this).closest('.modal-body');
+            let item = modal_body.find('.item');
+            let total_price = 0;
+
+            item.each(function(key, value){
+                let quantity = parseInt(($(value).find('.quantity')).val());
+                let price = $(value).find('.select-item').find(':selected').data('price');
+                let total = price * quantity;
+                total_price += total;
+            });
+            modal_body.find('.total-price').val(total_price.toLocaleString('vi-VN'));
+
+
+            /*
             console.log('updateTotalPrice');
             // let formRow = $(this).closest('.form-row');
             // let type = parseInt($(this).data('type'));
@@ -805,8 +807,8 @@
             console.log(item);
             console.log($('.item'));
             let total = 0;
-            item.each(function() {
-            // $(".item").each(function() {
+            // item.each(function() {
+            $(".item").each(function() {
                 let quantity = parseInt($(this).find('.quantity').val());
                 let price = $(this).find(".select-item").find(":selected").data("price");
                 let totalPrice = quantity * price;
@@ -814,7 +816,7 @@
             })
             console.log(total);
             // console.log(total_price_global);
-            $("#total-price").val(total.toLocaleString('vi-VN'));
+            $("#total-price").val(total.toLocaleString('vi-VN'));*/
         }
         $(document).ready(function() {
             $(".select-item").select2({
@@ -851,7 +853,9 @@
                 let quantityInput = formRow.find('.quantity').val('1');
                 let btnUpdateQuantity = formRow.find('.btn-update-quantity');
                 btnUpdateQuantity.attr('disabled', false);
-                updateRowTotal(formRow);
+
+                let modal_body = $(this).closest('.modal-body');
+                updateRowTotal(formRow, modal_body);
             });
 
 
@@ -872,7 +876,8 @@
                 }
                 // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
                 // $(this).closest('.form-row').find("#price").val(sum);
-                updateRowTotal(formRow);
+                let modal_body = $(this).closest('.modal-body');
+                updateRowTotal(formRow, modal_body);
 
             })
 
@@ -968,7 +973,8 @@
                     // let sum = price * quantity;
                     // // Sử dụng closest để tìm đến các phần tử trong cùng một form-row
                     // $(this).closest('.form-row').find("#price").val(sum);
-                    updateRowTotal(formRow);
+                    let modal_body = $(this).closest('.modal-body');
+                    updateRowTotal(formRow, modal_body);
                 });
                 // Sự kiện cho nút tăng giảm trong form-row mới
                 $(".form-row:last-child .btn-update-quantity").on('click', function() {
@@ -983,13 +989,16 @@
                         quantity += 1;
                         quantityInput.val(quantity);
                     }
-                    updateRowTotal(formRow);
+                    let modal_body = $(this).closest('.modal-body');
+                    updateRowTotal(formRow, modal_body);
                 });
 
                 $(".form-row .btn-delete").on('click', function() {
                     let divDelete = $(this).closest('.form-row');
                     divDelete.remove();
-                    updateTotalPrice();
+
+                    let modal_body = $(this).closest('.modal_body');
+                    updateTotalPrice(modal_body);
                 })
             }
         });
