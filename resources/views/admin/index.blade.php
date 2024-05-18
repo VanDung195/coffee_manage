@@ -12,6 +12,9 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+        select {
+    overflow-y: auto;
+}
     </style>
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
@@ -49,7 +52,7 @@
                                 <div class="div-select form-group col-5" id="div-select">
                                     <label for="">Món</label>
                                     <select name="id[]" class="select-item">
-                                        <option selected>Chọn món</option>
+                                        <option value="0" selected>Chọn món</option>
                                         @foreach ($items as $item)
                                             <option value="{{ $item->id }}" data-price="{{ $item->price }}">
                                                 {{ $item->name }}
@@ -279,6 +282,20 @@
                     console.log("Checkbox bị hủy chọn: " + this.id);
                 }
             });
+        });
+        //đảm bảo DOM content được load trước khi thêm sự kiện (chắc không cần)
+        document.addEventListener('DOMContentLoaded', function(){
+
+        });
+
+        $('.select-item').on('change', function() {
+            var selectedValue = $(this).val();
+            var defaultOption = $(this).find('option:contains("Chọn món")');
+            if (selectedValue !== "0") {
+                defaultOption.prop('disabled', true);
+            } else {
+                defaultOption.prop('disabled', false); 
+            }
         });
 
         //khong cho thu phong (perfect)
@@ -693,10 +710,10 @@
 
                 let div2 = document.createElement("div");
                 div2.innerHTML = modal_invoice;
-
                 div2.classList.add("form-group");
                 div2.setAttribute("id", "div_invoice_detail_" + table_id);
                 document.getElementById("append_modal_invoice_detail").appendChild(div2);
+                
                 //show_table la cai nut de mo invoice and invoice detail
                 document.getElementById(show_table).style.display = 'none';
                 document.getElementById(show_detail).style.display = 'block';
@@ -705,16 +722,23 @@
                 let targetRow = document.querySelector('.order-table tr:first-child');
                 targetRow.insertAdjacentHTML('afterend', order_table);
 
-                //reset modal after creating invoice  modal-invoice-close
+                //reset modal after tạo invoice  modal-invoice-close
                 modal_invoice_close.find('form').trigger('reset');
-                // $(this).find('form').trigger('reset');
                 let parent_div =  modal_invoice_close.find('.append-item');
                 let child_div = parent_div.find('.form-row');
-                let parentDiv = document.getElementById('append-item');
-                let childDiv = parentDiv.getElementsByClassName('form-row');
-                while (childDiv.length > 0) {
-                    parentDiv.removeChild(childDiv[0]);
+                let select_item = modal_invoice_close.find('.select-item');
+                select_item.select2({
+                    tag: true
+                });
+                //2 cách để xoá
+                for (let index = 0; index < child_div.length; index++) {
+                    child_div.get(index).remove();
                 }
+                // while (child_div.length > 0) {
+                //     child_div.get(0).remove(); 
+                //     child_div = parent_div.find('.form-row'); 
+                // }
+
                 document.getElementById('remaining-money').textContent = "0";
 
                 //thêm vào cuối
@@ -723,7 +747,6 @@
 
                 // $(this).closest('.modal-invoice').modal('toggle');
                 // $('#modal-invoice').modal('toggle');
-
                 },
                 error: function(response) {
                     console.log(3232);
@@ -753,16 +776,16 @@
                     table_name
                 },
                 success: function(response) {
-
+                    //delete invoice detail modal
                     let modal_invoice = "#invoice_detail_" + table_name;
                     if (type == 'modal_invoice') {
                         $(modal_invoice).modal('toggle');
                     }
-
                     let div_invoice = "div_invoice_detail_" + table_name;
                     let divR = document.getElementById(div_invoice);
                     divR.remove();
 
+                    //switch tu red button to green button
                     let btn_show_table = "show_table_" + table_name;
                     let btn_show_invoice_detail = "show_detail_" + table_name;
                     document.getElementById(btn_show_table).style.display = 'block';
