@@ -21,10 +21,15 @@ class InvoiceController extends Controller
 
     public function store(StoreRequest $request): JsonResponse
     {
+        // dd($request->all());
         try {
             $tableId = $request->input('table-id');
             $allData = $request->all();
             $ItemsId = $allData['id'];
+            if(in_array('0', $ItemsId))
+            {
+                return $this->errorResponse('Không được để trống món!');
+            }
             $menuItems = MenuItem::query()
                 ->whereIn('id', $ItemsId)->get();
             $menuNames = MenuItem::query()->whereIn('id', $ItemsId)->pluck('name');
@@ -93,7 +98,7 @@ class InvoiceController extends Controller
                     ];
                 }
                 
-                $message = 'Thanh cong roi nhe!';
+                $message = 'Tạo hoá đơn thành công!';
                 return $this->successResponse([
                     'table_id' => $tableId,
                     'details' => $invoice_details,
@@ -103,7 +108,7 @@ class InvoiceController extends Controller
                     'checkout_time' => $now->format('H:i:s'),
                     'customer_payment' => $customer_payment,
                     'remaining_money' => $remaining_money,
-                    'is_paid' => $request->is_paid,
+                    'is_paid' => (int)$request->is_paid,
                 ], $message);
             }
             // event(new InvoicePlaced($invoice_details));
