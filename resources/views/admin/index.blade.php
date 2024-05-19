@@ -12,9 +12,9 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
-        select {
-    overflow-y: auto;
-}
+        .jq-toast-single {
+            font-size: 16px; /* Điều chỉnh kích thước font theo ý muốn */
+        }
     </style>
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
@@ -102,7 +102,7 @@
                                 <div class="form-group col-3">
                                     <label for="">Số tiền khách trả: </label>
                                     <input class="customer-payment form-control" type="number" name="customer_payment" class="customer-payment"
-                                        placeholder="VD: 1 = 1.000 VND">
+                                        placeholder="VD: 1 = 1.000 VND" inputmode="numeric">
                                 </div>
                                 <div class="form-group col-3">
                                     <label for="">Tiền thừa: </label>
@@ -607,7 +607,6 @@
                     let data = response.data;
                     // console.log(response.data);
                     modal_invoice_close.modal('toggle');
-
                     let modal_invoice = `
                     <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
@@ -622,40 +621,44 @@
                 `;
                         let rowspanCount = Math.max(response.data.details.length, 1);
                         let order_table = `
-                <tr class="order_table_class_${table_id}">
-                    <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
-                `;
-                        let count = 1;
-                        invoice_item.forEach(function(item, index) {
-                            modal_invoice += `
-                    <div class="items form-row">
-                        <div class="form-group col-6">
-                            <label>Tên món: </label>
-                            <input type="text" class="form-control" value="${item['name']}">
-                        </div>
-                        <div class="form-group col-2">
-                            <label>Số lượng: </label>
-                            <input type="text" class="form-control" id="" value="${item['quantity']}">
-                        </div>
-                        <div class="form-group col-2">
-                            <label>Giá: </label>
-                            <input type="text" class="form-control" value="${item['price'].toLocaleString('vi-VN')}" name="" id="">
-                        </div>
-                        <div class="form-group col-2">
-                            <label>Thành tiền: </label>
-                            <input type="text" class="form-control" value="${item['thanh_tien'].toLocaleString('vi-VN')}" name="" id="">
-                        </div>
-                    </div>
-                    `;
+                        <tr class="order_table_class_${table_id}">
+                            <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
+                        `;
 
+                        console.log(response.data.is_paid, 'asdasdasdasdadsa');
+                        let count = 1;
+                        //foreach of details
+                        invoice_item.forEach(function(item, index) {
+                            console.log(item);
+                            modal_invoice += `
+                                <div class="items form-row">
+                                    <div class="form-group col-6">
+                                        <label>Tên món: </label>
+                                        <input type="text" class="form-control" value="${item['name']}">
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label>Số lượng: </label>
+                                        <input type="text" class="form-control" id="" value="${item['quantity']}">
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label>Giá: </label>
+                                        <input type="text" class="form-control" value="${item['price'].toLocaleString('vi-VN')}" name="" id="">
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label>Thành tiền: </label>
+                                        <input type="text" class="form-control" value="${item['thanh_tien'].toLocaleString('vi-VN')}" name="" id="">
+                                    </div>
+                                </div>
+                                `;
+                            //!=modal
                             if (count != 1) {
                                 order_table += `<tr class="order_table_class_${table_id}">`;
                             }
                             order_table += `
-                        <td>${item['name']}</td>
-                        <td class="price">${item['price']}</td>
-                        <td>${item['quantity']}</td>
-                    `;
+                            <td>${item['name']}</td>
+                            <td class="price">${item['price']}</td>
+                            <td>${item['quantity']}</td>
+                        `;
                             if (count == 1) {
                                 order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
@@ -664,7 +667,7 @@
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
-                                    ${item.is_paid ? 
+                                    ${response.data.is_paid ? 
                                     `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
                                     `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
                                     }
@@ -687,25 +690,25 @@
                             order_table += `</tr>`;
                             count++;
                         });
-                        //end foreach
-                        modal_invoice += `
-                    <div class="form-row" style="margin-top: 30px;">
-                        <div class="form-group col-5" id="div-paid">
-                            <input type="text" class="form-control" value="Đã thanh toán">
-                        </div> 
-                        <div class="form-group col-6" style="margin-left: 60px;">
-                            <h4>Tổng tiền: ${formatTotalPrice}</h4>
+                            //end foreach
+                            modal_invoice += `
+                        <div class="form-row" style="margin-top: 30px;">
+                            <div class="form-group col-5" id="div-paid">
+                                <input type="text" class="form-control" value="Đã thanh toán">
+                            </div> 
+                            <div class="form-group col-6" style="margin-left: 60px;">
+                                <h4>Tổng tiền: ${formatTotalPrice}</h4>
+                            </div>
+                            
                         </div>
-                        
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="deleteInvoice('${table_id}', 'modal_invoice')" class="btn btn-danger">Xoá hoá đơn</button>
-                    <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
-                </div>
-                </div>
-                </div>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="deleteInvoice('${table_id}', 'modal_invoice')" class="btn btn-danger">Xoá hoá đơn</button>
+                        <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
                 `;
 
                 let div2 = document.createElement("div");
@@ -740,17 +743,26 @@
                 // }
 
                 document.getElementById('remaining-money').textContent = "0";
-
+                console.log(response);
+                $.toast({
+                    heading: 'Success',
+                    text: response.responseJSON.message,
+                    showHideTransition: 'slide',
+                    icon: 'success'
+                })
                 //thêm vào cuối
                 // let existing_table = document.querySelector(".order-table");
                 // existing_table.insertAdjacentHTML('beforeend', order_table);
 
-                // $(this).closest('.modal-invoice').modal('toggle');
-                // $('#modal-invoice').modal('toggle');
                 },
                 error: function(response) {
-                    console.log(3232);
-                    console.log(response);
+                    console.log(response.responseJSON.message);
+                    $.toast({
+                        heading: 'Error',
+                        text: response.responseJSON.message,
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    })
                 }
             });
         });
