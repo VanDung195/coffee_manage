@@ -12,220 +12,227 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
         .jq-toast-single {
-            font-size: 16px; /* Điều chỉnh kích thước font theo ý muốn */
+            font-size: 16px;
+            /* Điều chỉnh kích thước font theo ý muốn */
         }
     </style>
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
 @section('content')
-<div id="left">
-    <div class="header">
-        <h1>Bàn</h1>
-    </div>
-    @foreach ($tables as $table)
-        <div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
-            <button class="btn-table" data-table-id="{{ $table->name }}">
-                {{ $table->name }}
-            </button>
+    <div id="left">
+        <div class="header">
+            <h1>Bàn</h1>
         </div>
-        <div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
-            <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}"
-                onclick="showInvoiceDetail('#invoice_detail_{{ $table->name }}')">
-                {{ $table->name }}
-            </button>
-        </div>
+        @foreach ($tables as $table)
+            <div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
+                <button class="btn-table" data-table-id="{{ $table->name }}">
+                    {{ $table->name }}
+                </button>
+            </div>
+            <div class="show-table-detail" id="show_detail_{{ $table->name }}" style="display: none;float: left;">
+                <button class="btn-show-invoice-detail" data-table-id="{{ $table->name }}"
+                    onclick="showInvoiceDetail('#invoice_detail_{{ $table->name }}')">
+                    {{ $table->name }}
+                </button>
+            </div>
 
-        <div id="modal-invoice-{{ $table->name }}" class="modal-invoice modal fade" role="dialog">
-            <div class="modal-container modal-dialog modal-lg">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Tạo hoá đơn</h4>
-                        <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('invoice.store') }}" method="POST" class="form-create">
-                            @csrf
-                            <input type="text" class="form-control" name="table-id" id="table-id" value="{{ $table->name }}" readonly>
-                            <div class="item form-row">
-                                <div class="div-select form-group col-5" id="div-select">
-                                    <label for="">Món</label>
-                                    <select name="id[]" class="select-item">
-                                        <option value="0" selected>Chọn món</option>
-                                        @foreach ($items as $item)
-                                            <option value="{{ $item->id }}" data-price="{{ $item->price }}">
-                                                {{ $item->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+            <div id="modal-invoice-{{ $table->name }}" class="modal-invoice modal fade" role="dialog">
+                <div class="modal-container modal-dialog modal-lg">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Tạo hoá đơn</h4>
+                            <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('invoice.store') }}" method="POST" class="form-create">
+                                @csrf
+                                <input type="text" class="form-control" name="table-id" id="table-id"
+                                    value="{{ $table->name }}" readonly>
+                                <div class="item form-row">
+                                    <div class="div-select form-group col-5" id="div-select">
+                                        <label for="">Món</label>
+                                        <select name="id[]" class="select-item">
+                                            <option value="0" selected>Chọn món</option>
+                                            @foreach ($items as $item)
+                                                <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                                    {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="margin-left: 42px;width:135px;">
+                                        <label for="">Số lượng (Min: 1)</label>
+                                        <br>
+                                        <button type="button" class="btn-update-quantity" data-type='0'
+                                            style="float: left" disabled>
+                                            -
+                                        </button>
+                                        <input type="text" id="quantity" name="quantity[]" class="quantity form-control"
+                                            value="0"
+                                            style="background-color: none;border:none;height:30px;width:42px;float: left;"
+                                            readonly>
+                                        <button type="button" class="btn-update-quantity" data-type='1'
+                                            style="float: left;" disabled>
+                                            +
+                                        </button>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <span class="span-sum">
+                                            <label>Giá</label>
+                                            <input type="text" id="price" class="price form-control" value="0"
+                                                readonly>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="form-group" style="margin-left: 42px;width:135px;">
-                                    <label for="">Số lượng (Min: 1)</label>
-                                    <br>
-                                    <button type="button" class="btn-update-quantity" data-type='0' style="float: left"
-                                        disabled>
-                                        -
-                                    </button>
-                                    <input type="text" id="quantity" name="quantity[]" class="quantity form-control"
-                                        value="0"
-                                        style="background-color: none;border:none;height:30px;width:42px;float: left;" readonly>
-                                    <button type="button" class="btn-update-quantity" data-type='1' style="float: left;"
-                                        disabled>
-                                        +
-                                    </button>
+                                <div class="append-item">
+                                    {{-- # Đổi id thành class ở đây --}}
                                 </div>
-                                <div class="form-group col-3">
-                                    <span class="span-sum">
-                                        <label>Giá</label>
-                                        <input type="text" id="price" class="price form-control" value="0" readonly>
-                                    </span>
+                                <div class="form-row" style="margin-top: 30px;">
+                                    <div class="form-group col-3" id="div-paid">
+                                        <label for="">Trạng thái thanh toán: </label>
+                                        <select name="is_paid" id="select_paid" class="form-control">
+                                            <option value="0">Chưa thanh toán</option>
+                                            <option value="1" selected>Đã thanh toán</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-3" style="margin-left:0px;">
+                                        {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
+                                        <label for="">Tổng tiền: </label>
+                                        <input type="text" value="0" class="total-price form-control" readonly>
+                                        {{-- </span> --}}
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="">Số tiền khách trả: </label>
+                                        <input class="customer-payment form-control" type="number" name="customer_payment"
+                                            class="customer-payment" placeholder="VD: 1 = 1.000 VND" inputmode="numeric">
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="">Tiền thừa: </label>
+                                        <p class="remaining-money form-control">0</p>
+                                        {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="append-item">
-                            {{-- # Đổi id thành class ở đây --}}
-                            </div>
-                            <div class="form-row" style="margin-top: 30px;">
-                                <div class="form-group col-3" id="div-paid">
-                                    <label for="">Trạng thái thanh toán: </label>
-                                    <select name="is_paid" id="select_paid" class="form-control">
-                                        <option value="0">Chưa thanh toán</option>
-                                        <option value="1" selected>Đã thanh toán</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-3" style="margin-left:0px;">
-                                    {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
-                                    <label for="">Tổng tiền: </label>
-                                    <input type="text" value="0" class="total-price form-control" readonly>
-                                    {{-- </span> --}}
-                                </div>
-                                <div class="form-group col-3">
-                                    <label for="">Số tiền khách trả: </label>
-                                    <input class="customer-payment form-control" type="number" name="customer_payment" class="customer-payment"
-                                        placeholder="VD: 1 = 1.000 VND" inputmode="numeric">
-                                </div>
-                                <div class="form-group col-3">
-                                    <label for="">Tiền thừa: </label>
-                                    <p class="remaining-money form-control">0</p>
-                                    {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
-                                </div>
-                            </div>
-                            {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
-                            <button type="button" class="append btn btn-block btn-lg btn-fill btn-danger">Thêm
-                                món</button>
-                        </form>
-                        <br>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-submit-invoice btn btn-primary" type="button" onclick="submitForm()">Reset hoá đơn</button>
-                        {{-- <button class="btn-submit-invoice-test btn btn-primary" type="button">test</button> --}}
-                        {{-- <button class="btn-submit-invoice btn btn-success" type="button" onclick="submitForm()">Tạo hoá đơn</button> --}}
-                        <button class="btn-submit-invoice btn btn-success" type="button">Tạo hoá đơn</button>
+                                {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
+                                <button type="button" class="append btn btn-block btn-lg btn-fill btn-danger">Thêm
+                                    món</button>
+                            </form>
+                            <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-submit-invoice btn btn-primary" type="button" onclick="submitForm()">Reset
+                                hoá đơn</button>
+                            {{-- <button class="btn-submit-invoice-test btn btn-primary" type="button">test</button> --}}
+                            {{-- <button class="btn-submit-invoice btn btn-success" type="button" onclick="submitForm()">Tạo hoá đơn</button> --}}
+                            <button class="btn-submit-invoice btn btn-success" type="button">Tạo hoá đơn</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endforeach
-</div>
-<div id="right">
-    <div class="header">
-        <h1>Quản Lý Hoá Đơn</h1>
+        @endforeach
     </div>
-</div>
+    <div id="right">
+        <div class="header">
+            <h1>Quản Lý Hoá Đơn</h1>
+        </div>
+    </div>
 
-{{-- Div chứa modal invoice detail --}}
-<div id="append_modal_invoice_detail">
-</div>
+    {{-- Div chứa modal invoice detail --}}
+    <div id="append_modal_invoice_detail">
+    </div>
 
-<!-- Modal botstrap -->
-<div id="modal-invoice-bak" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Tạo hoá đơn</h4>
-                <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
-                    @csrf
-                    <input type="text" class="form-control" name="table-id" id="table-id" readonly>
-                    <div class="item form-row" id="item">
-                        <div class="div-select form-group col-5" id="div-select">
-                            <label for="">Món</label>
-                            <select name="id[]" class="select-item">
-                                <option selected>Chọn món</option>
-                                @foreach ($items as $item)
-                                    <option value="{{ $item->id }}" data-price="{{ $item->price }}">
-                                        {{ $item->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+    <!-- Modal botstrap -->
+    <div id="modal-invoice-bak" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Tạo hoá đơn</h4>
+                    <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
+                        @csrf
+                        <input type="text" class="form-control" name="table-id" id="table-id" readonly>
+                        <div class="item form-row" id="item">
+                            <div class="div-select form-group col-5" id="div-select">
+                                <label for="">Món</label>
+                                <select name="id[]" class="select-item">
+                                    <option selected>Chọn món</option>
+                                    @foreach ($items as $item)
+                                        <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-left: 42px;width:135px;">
+                                <label for="">Số lượng (Min: 1)</label>
+                                <br>
+                                <button type="button" class="btn-update-quantity" data-type='0' style="float: left"
+                                    disabled>
+                                    -
+                                </button>
+                                <input type="text" id="quantity" name="quantity[]" class="quantity form-control"
+                                    value="0"
+                                    style="background-color: none;border:none;height:30px;width:42px;float: left;"
+                                    readonly>
+                                <button type="button" class="btn-update-quantity" data-type='1' style="float: left;"
+                                    disabled>
+                                    +
+                                </button>
+                            </div>
+                            <div class="form-group col-3">
+                                <span class="span-sum">
+                                    <label>Giá</label>
+                                    <input type="text" id="price" class="price form-control" readonly>
+                                </span>
+                            </div>
                         </div>
-                        <div class="form-group" style="margin-left: 42px;width:135px;">
-                            <label for="">Số lượng (Min: 1)</label>
-                            <br>
-                            <button type="button" class="btn-update-quantity" data-type='0' style="float: left"
-                                disabled>
-                                -
-                            </button>
-                            <input type="text" id="quantity" name="quantity[]" class="quantity form-control"
-                                value="0"
-                                style="background-color: none;border:none;height:30px;width:42px;float: left;" readonly>
-                            <button type="button" class="btn-update-quantity" data-type='1' style="float: left;"
-                                disabled>
-                                +
-                            </button>
-                        </div>
-                        <div class="form-group col-3">
-                            <span class="span-sum">
-                                <label>Giá</label>
-                                <input type="text" id="price" class="price form-control" readonly>
-                            </span>
-                        </div>
-                    </div>
-                    <div id="append-item">
+                        <div id="append-item">
 
-                    </div>
-                    <div class="form-row" style="margin-top: 30px;">
-                        <div class="form-group col-3" id="div-paid">
-                            <label for="">Trạng thái thanh toán: </label>
-                            <select name="is_paid" id="select_paid" class="form-control">
-                                <option value="0">Chưa thanh toán</option>
-                                <option value="1" selected>Đã thanh toán</option>
-                            </select>
                         </div>
-                        <div class="form-group col-3" style="margin-left:0px;">
-                            {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
-                            <label for="">Tổng tiền: </label>
-                            <input type="text" id="total-price" value="0" class="form-control" readonly>
-                            {{-- </span> --}}
+                        <div class="form-row" style="margin-top: 30px;">
+                            <div class="form-group col-3" id="div-paid">
+                                <label for="">Trạng thái thanh toán: </label>
+                                <select name="is_paid" id="select_paid" class="form-control">
+                                    <option value="0">Chưa thanh toán</option>
+                                    <option value="1" selected>Đã thanh toán</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-3" style="margin-left:0px;">
+                                {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
+                                <label for="">Tổng tiền: </label>
+                                <input type="text" id="total-price" value="0" class="form-control" readonly>
+                                {{-- </span> --}}
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="">Số tiền khách trả: </label>
+                                <input class="form-control" type="number" name="customer_payment" id="customer-payment"
+                                    placeholder="VD: 1 = 1.000VND">
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="">Tiền thừa: </label>
+                                <p class="form-control" id="remaining-money">0</p>
+                                {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
+                            </div>
                         </div>
-                        <div class="form-group col-3">
-                            <label for="">Số tiền khách trả: </label>
-                            <input class="form-control" type="number" name="customer_payment" id="customer-payment"
-                                placeholder="VD: 1 = 1.000VND">
-                        </div>
-                        <div class="form-group col-3">
-                            <label for="">Tiền thừa: </label>
-                            <p class="form-control" id="remaining-money">0</p>
-                            {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
-                        </div>
-                    </div>
-                    {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
-                    <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm
-                        món</button>
-                </form>
-                <br>
+                        {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
+                        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm
+                            món</button>
+                    </form>
+                    <br>
 
-            </div>
-            <div class="modal-footer">
-                {{-- <button id="btn-submit-invoice" type="button" onclick="submitForm()" class="btn btn-success">Tạo
+                </div>
+                <div class="modal-footer">
+                    {{-- <button id="btn-submit-invoice" type="button" onclick="submitForm()" class="btn btn-success">Tạo
                     hoá đơn</button> --}}
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -284,7 +291,7 @@
             });
         });
         //đảm bảo DOM content được load trước khi thêm sự kiện (chắc không cần)
-        document.addEventListener('DOMContentLoaded', function(){
+        document.addEventListener('DOMContentLoaded', function() {
 
         });
 
@@ -294,7 +301,7 @@
             if (selectedValue !== "0") {
                 defaultOption.prop('disabled', true);
             } else {
-                defaultOption.prop('disabled', false); 
+                defaultOption.prop('disabled', false);
             }
         });
 
@@ -328,7 +335,7 @@
             let modal_body = $(this).closest('.modal-body');
             let total_price = modal_body.find('.total-price').val();
             let customer_payment = $(this).val();
-            
+
             $.ajax({
                 type: "get",
                 url: '{{ route('invoice.update') }}',
@@ -377,11 +384,11 @@
                                 <div class="modal-body">
                                     <h3>Bàn số: ${table_id_api}</h3>
                     `;
-                                // console.log(item);
-                                //invoice detail
-                                item.details.forEach(function(item, index) {
-                                    // console.log(item);
-                                    modal_invoice_api += `
+                        // console.log(item);
+                        //invoice detail
+                        item.details.forEach(function(item, index) {
+                            // console.log(item);
+                            modal_invoice_api += `
                         <div class="items form-row">
                             <div class="form-group col-6">
                                 <label>Tên món: </label>
@@ -401,9 +408,9 @@
                             </div>
                         </div>
                         `;
-                                }); //end foreach
-                                // console.log(item);
-                                modal_invoice_api += `
+                        }); //end foreach
+                        // console.log(item);
+                        modal_invoice_api += `
                     <div class="form-row" style="margin-top: 30px;">
                             <div class="form-group col-5" id="div-paid">
                                 ${item.is_paid ? 
@@ -432,7 +439,7 @@
                         diva.setAttribute("id", "div_invoice_detail_" + table_id_api);
 
                         document.getElementById("append_modal_invoice_detail").appendChild(
-                        diva);
+                            diva);
                         console.log('---------------------');
                         // divapi.innerHTML = modal_invoice_api;
                         // console.log(modal_invoice_api);
@@ -447,69 +454,70 @@
                     //Hoá đơn test
                     //-----------------------
                     // let order_table = `
-            // <table class="order-table">
-            //     <tr>
-            //         <th>ID</th>
-            //         <th>Sản phẩm</th>
-            //         <th>Giá</th>
-            //         <th>SL</th>
-            //         <th>Tong tien</th>
-            //         <th>Thành công</th>
-            //     </tr>
-            //     <tr>
-            // `;
+                // <table class="order-table">
+                //     <tr>
+                //         <th>ID</th>
+                //         <th>Sản phẩm</th>
+                //         <th>Giá</th>
+                //         <th>SL</th>
+                //         <th>Tong tien</th>
+                //         <th>Thành công</th>
+                //     </tr>
+                //     <tr>
+                // `;
                     // response.data.forEach(function(item, index){
                     //     console.log(item);
                     //     let rowsspanCount = 0;
                     //     rowsspanCount = Math.max(item.details.length, 1);
                     //     order_table += `
-            //         <td class="set-row" rowspan="${rowsspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
-            //     `;
+                //         <td class="set-row" rowspan="${rowsspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
+                //     `;
                     //     item.details.forEach(function(item,index){
                     //         order_table += `
-            //         <td>${item.menu_items.name}</td>
-            //         <td class="price">${item.menu_items.price}</td>
-            //         <td>${item.quantity}</td>
-            //         `;
+                //         <td>${item.menu_items.name}</td>
+                //         <td class="price">${item.menu_items.price}</td>
+                //         <td>${item.quantity}</td>
+                //         `;
                     //     })
                     //     order_table += `
-            //         <td class="set-row" rowspan="${rowsspanCount}">${item.total_price}</td>
-            //         <td class="set-row" class="status-success" rowspan="${rowsspanCount}">Thành công</td>
-            //     </tr>
-            //     `;
+                //         <td class="set-row" rowspan="${rowsspanCount}">${item.total_price}</td>
+                //         <td class="set-row" class="status-success" rowspan="${rowsspanCount}">Thành công</td>
+                //     </tr>
+                //     `;
                     // })
                     // order_table += `
-            //     </tr>
-            // </table>
-            // `;  ------------------
+                //     </tr>
+                // </table>
+                // `;  ------------------
                     let order_table = `
-            <table class="order-table">
-                <tr>
-                    <th>ID</th>
-                    <th>Sản phẩm</th>
-                    <th>Giá</th>
-                    <th>SL</th>
-                    <th>Tổng tiền</th>
-                    <th>Xuất</th>
-                    <th>Tình trạng</th>
-                    <th>Đổi bàn</th>
-                    <th>Tiền</th>
-                    <th>Thừa</th>
-                    <th>Xoá</th>
-                </tr>
-        `;
+                        <table class="order-table" id="order-table-id">
+                            <tr>
+                                <th>ID</th>
+                                <th>Sản phẩm</th>
+                                <th>Giá</th>
+                                <th>SL</th>
+                                <th>Tổng tiền</th>
+                                <th>Xuất</th>
+                                <th>Tình trạng</th>
+                                <th>Đổi bàn</th>
+                                <th>Tiền</th>
+                                <th>Thừa</th>
+                                <th>Xoá</th>
+                            </tr>
+                    `;
 
                     console.log(response);
+
                     response.data.invoices.forEach(function(item, index) {
-                        console.log(item.table_id);
+                        console.log(item);
                         let rowspanCount = Math.max(item.details.length, 1);
-                        order_table += `<tr class="order_table_class_${item.table_id}">`;
+                        order_table += `<tr data-status="${item.is_paid}" class="order_table_class_${item.table_id}">`;
                         order_table += `
-                <td border="1" class="set-row" rowspan="${rowspanCount}">
-                    ${item.table_id}
-                    <br>${item.checkin_time}<br>${item.created_at}
-                </td>
-            `;
+                            <td border="1" class="set-row" rowspan="${rowspanCount}">
+                                ${item.table_id}
+                                <br>${item.checkin_time}<br>${item.created_at}
+                            </td>
+                        `;
 
                         let count = 1;
                         item.details.forEach(function(detail, index) {
@@ -552,12 +560,12 @@
                                 //cách 2 để dùng hiển thị cái badge
                                 // if (item.is_paid) {
                                 //     order_table += `
-                        //         <div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>
-                        //     `;
+                            //         <div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>
+                            //     `;
                                 // } else {
                                 //     order_table += `
-                        //         <div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>
-                        //     `;
+                            //         <div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>
+                            //     `;
                                 // }
                             }
                             order_table += `</tr>`;
@@ -582,7 +590,7 @@
             });
         });
         //https://stackoverflow.com/questions/7114780/convert-jquery-element-to-html-element
-        $('.btn-submit-invoice').on('click', function(){
+        $('.btn-submit-invoice').on('click', function() {
             let modal_content = $(this).closest('.modal-content');
             let obj = modal_content.find('.form-create');
             let object = $('#form-create');
@@ -605,7 +613,7 @@
                     let index = response.data.index;
                     let invoice_item = response.data.details;
                     let data = response.data;
-                    // console.log(response.data);
+
                     modal_invoice_close.modal('toggle');
                     let modal_invoice = `
                     <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
@@ -619,18 +627,18 @@
                                     <h3>Bàn số: ${table_id}</h3>
                                     
                 `;
-                        let rowspanCount = Math.max(response.data.details.length, 1);
-                        let order_table = `
+                    let rowspanCount = Math.max(response.data.details.length, 1);
+                    let order_table = `
                         <tr class="order_table_class_${table_id}">
                             <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
                         `;
 
-                        console.log(response.data.is_paid, 'asdasdasdasdadsa');
-                        let count = 1;
-                        //foreach of details
-                        invoice_item.forEach(function(item, index) {
-                            console.log(item);
-                            modal_invoice += `
+                    console.log(response.data.is_paid, 'asdasdasdasdadsa');
+                    let count = 1;
+                    //foreach of details
+                    invoice_item.forEach(function(item, index) {
+                        console.log(item);
+                        modal_invoice += `
                                 <div class="items form-row">
                                     <div class="form-group col-6">
                                         <label>Tên món: </label>
@@ -650,24 +658,24 @@
                                     </div>
                                 </div>
                                 `;
-                            //!=modal
-                            if (count != 1) {
-                                order_table += `<tr class="order_table_class_${table_id}">`;
-                            }
-                            order_table += `
+                        //!=modal
+                        if (count != 1) {
+                            order_table += `<tr data-status="${response.data.is_paid}" class="order_table_class_${table_id}">`;
+                        }
+                        order_table += `
                             <td>${item['name']}</td>
                             <td class="price">${item['price']}</td>
                             <td>${item['quantity']}</td>
                         `;
-                            if (count == 1) {
-                                order_table += `
+                        if (count == 1) {
+                            order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
                             <td rowspan="${rowspanCount}"> 
                                 <button class="btn btn-success btn-sm">Xuất HD</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
-                                    ${response.data.is_paid ? 
+                                    ${parseInt(response.data.is_paid) ? 
                                     `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
                                     `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
                                     }
@@ -686,15 +694,18 @@
                                 <button onclick="deleteInvoice('${table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
                             </td>
                         `;
-                            }
-                            order_table += `</tr>`;
-                            count++;
-                        });
-                            //end foreach
-                            modal_invoice += `
+                        }
+                        order_table += `</tr>`;
+                        count++;
+                    });
+                    //end foreach
+                    modal_invoice += `
                         <div class="form-row" style="margin-top: 30px;">
                             <div class="form-group col-5" id="div-paid">
-                                <input type="text" class="form-control" value="Đã thanh toán">
+                                ${parseInt(response.data.is_paid) ? 
+                                    `<input type="text" class="form-control" value="Đã thanh toán">` : 
+                                    `<input type="text" class="form-control" value="Chưa thanh toán">`
+                                }
                             </div> 
                             <div class="form-group col-6" style="margin-left: 60px;">
                                 <h4>Tổng tiền: ${formatTotalPrice}</h4>
@@ -711,48 +722,75 @@
                     </div>
                 `;
 
-                let div2 = document.createElement("div");
-                div2.innerHTML = modal_invoice;
-                div2.classList.add("form-group");
-                div2.setAttribute("id", "div_invoice_detail_" + table_id);
-                document.getElementById("append_modal_invoice_detail").appendChild(div2);
-                
-                //show_table la cai nut de mo invoice and invoice detail
-                document.getElementById(show_table).style.display = 'none';
-                document.getElementById(show_detail).style.display = 'block';
+                    let div2 = document.createElement("div");
+                    div2.innerHTML = modal_invoice;
+                    div2.classList.add("form-group");
+                    div2.setAttribute("id", "div_invoice_detail_" + table_id);
+                    document.getElementById("append_modal_invoice_detail").appendChild(div2);
 
-                //inner order table 
-                let targetRow = document.querySelector('.order-table tr:first-child');
-                targetRow.insertAdjacentHTML('afterend', order_table);
+                    //show_table la cai nut de mo invoice and invoice detail
+                    document.getElementById(show_table).style.display = 'none';
+                    document.getElementById(show_detail).style.display = 'block';
 
-                //reset modal after tạo invoice  modal-invoice-close
-                modal_invoice_close.find('form').trigger('reset');
-                let parent_div =  modal_invoice_close.find('.append-item');
-                let child_div = parent_div.find('.form-row');
-                let select_item = modal_invoice_close.find('.select-item');
-                select_item.select2({
-                    tag: true
-                });
-                //2 cách để xoá
-                for (let index = 0; index < child_div.length; index++) {
-                    child_div.get(index).remove();
-                }
-                // while (child_div.length > 0) {
-                //     child_div.get(0).remove(); 
-                //     child_div = parent_div.find('.form-row'); 
-                // }
+                    //inner order table 
+                    // let targetRow = document.querySelector('.order-table tr:first-child');
+                    // targetRow.insertAdjacentHTML('beforeend', order_table);
 
-                document.getElementById('remaining-money').textContent = "0";
-                console.log(response);
-                $.toast({
-                    heading: 'Success',
-                    text: response.responseJSON.message,
-                    showHideTransition: 'slide',
-                    icon: 'success'
-                })
-                //thêm vào cuối
-                // let existing_table = document.querySelector(".order-table");
-                // existing_table.insertAdjacentHTML('beforeend', order_table);
+                    let table = document.getElementById('order-table-id');
+                    if(response.data.is_paid == 1)
+                    {
+                        let rows = table.getElementsByTagName('tr');
+                        let inserted = false;
+                        for(let i = 0; i < rows.length; i++)
+                        {
+                            if(rows[i].getAttribute('data-status') == '1')
+                            {
+                                console.log('Da vao cai dieu kien nay roi do may');
+                                // table.insertBefore(order_table, rows[i]);
+                                rows[i].insertAdjacentHTML('afterend', order_table);
+                                inserted = true;
+                                break;
+                            }
+                        }
+                        if(!inserted)
+                        {
+                            console.log(12312);
+                        }
+                    }
+                    if(response.data.is_paid == 0)
+                    {
+                        let targetRow = document.querySelector('.order-table tr:first-child');
+                        targetRow.insertAdjacentHTML('afterend', order_table);
+                    }
+
+                    //reset modal after tạo invoice  modal-invoice-close
+                    modal_invoice_close.find('form').trigger('reset');
+                    let parent_div = modal_invoice_close.find('.append-item');
+                    let child_div = parent_div.find('.form-row');
+                    let select_item = modal_invoice_close.find('.select-item');
+                    select_item.select2({
+                        tag: true
+                    });
+                    //2 cách để xoá
+                    for (let index = 0; index < child_div.length; index++) {
+                        child_div.get(index).remove();
+                    }
+                    // while (child_div.length > 0) {
+                    //     child_div.get(0).remove(); 
+                    //     child_div = parent_div.find('.form-row'); 
+                    // }
+
+                    document.getElementById('remaining-money').textContent = "0";
+                    console.log(response);
+                    $.toast({
+                        heading: 'Success',
+                        text: response.responseJSON.message,
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    })
+                    //thêm vào cuối
+                    // let existing_table = document.querySelector(".order-table");
+                    // existing_table.insertAdjacentHTML('beforeend', order_table);
 
                 },
                 error: function(response) {
@@ -818,12 +856,12 @@
             });
         }
 
-        $('.test-btn').on('click', function(event){
+        $('.test-btn').on('click', function(event) {
             let modal_body = $(this).closest('.modal-body');
             let item = modal_body.find('.item');
             let total_price = 0;
 
-            item.each(function(key, value){
+            item.each(function(key, value) {
                 let quantity = parseInt(($(value).find('.quantity')).val());
                 let price = $(value).find('.select-item').find(':selected').data('price');
                 let total = price * quantity;
@@ -841,12 +879,13 @@
             let modal_body = modalBody;
             updateTotalPrice(modal_body);
         }
+
         function updateTotalPrice(modal_body) {
             // let modal_body = $(this).closest('.modal-body');
             let item = modal_body.find('.item');
             let total_price = 0;
 
-            item.each(function(key, value){
+            item.each(function(key, value) {
                 let quantity = parseInt(($(value).find('.quantity')).val());
                 let price = $(value).find('.select-item').find(':selected').data('price');
                 let total = price * quantity;
@@ -883,7 +922,7 @@
             $('.btn-table').click(function() {
                 var table_id = $(this).data('table-id');
                 $("#table-id").val(table_id);
-                var modal_inoice = "#modal-invoice-"+table_id;
+                var modal_inoice = "#modal-invoice-" + table_id;
                 $(modal_inoice).modal("show");
 
             })
@@ -939,8 +978,7 @@
 
             })
 
-            $('.append').on('click', function()
-            {
+            $('.append').on('click', function() {
                 let div = document.createElement("div");
                 div.innerHTML = `
                 <div class="form-group col-5 class="div-select">
@@ -1012,7 +1050,7 @@
                     console.log(123123123123);
                 });
             });*/
-            
+
 
             function envent() {
                 $(".form-row .select-item").on('change', function() {
