@@ -67,10 +67,13 @@ class InvoiceController extends Controller
                 ]);
                 $invoice_id = $invoice->id;
 
-                Table::where('name', $tableId)->update([
-                    'status' => TableStausEnum::getKey(0),
-                    'invoice_id' => $invoice_id,
-                ]);
+                if($tableId != 'unknow' || $tableId != 'ta')
+                {
+                    Table::where('name', $tableId)->update([
+                        'status' => TableStausEnum::getKey(0),
+                        'invoice_id' => $invoice_id,
+                    ]);
+                }
 
                 foreach ($ItemsId as $index => $id) {
                     $quantity = $allData['quantity'][$index];
