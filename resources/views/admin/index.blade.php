@@ -671,7 +671,7 @@
                             order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
                             <td rowspan="${rowspanCount}"> 
-                                <button class="btn btn-success btn-sm">Xuất HD</button>
+                                <button class="btn btn-success btn-sm">Xuất</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
@@ -743,23 +743,26 @@
                         let inserted = false;
                         for(let i = 0; i < rows.length; i++)
                         {
-                            if(rows[i].getAttribute('data-status') == '1')
+                            if(rows[i+1].getAttribute('data-status') == '1')
                             {
                                 console.log('Da vao cai dieu kien nay roi do may');
                                 // table.insertBefore(order_table, rows[i]);
+                                console.log(rows[i]);
                                 rows[i].insertAdjacentHTML('afterend', order_table);
                                 inserted = true;
                                 break;
                             }
                         }
-                        if(!inserted)
-                        {
-                            console.log(12312);
-                        }
+                        // if(!inserted)
+                        // {
+                        //     console.log(12312);
+                        // }
                     }
                     if(response.data.is_paid == 0)
                     {
                         let targetRow = document.querySelector('.order-table tr:first-child');
+                        console.log('Đây là targetrow');
+                        console.log(targetRow);
                         targetRow.insertAdjacentHTML('afterend', order_table);
                     }
 
