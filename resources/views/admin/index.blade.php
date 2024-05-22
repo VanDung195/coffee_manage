@@ -370,8 +370,14 @@
                         let table_id_api = item.table_id;
                         let show_table_api = 'show_table_' + table_id_api;
                         let show_detail_api = 'show_detail_' + table_id_api;
-                        document.getElementById(show_table_api).style.display = 'none';
-                        document.getElementById(show_detail_api).style.display = 'block';
+                        //mọi phần tử trong Set là duy nhất, không trùng lặp và cung cấp các phương thức hiệu quả để kiểm tra các phần tử
+                        const invalid_table_id = new Set(['unknow', 'unknow2', 'takeaway']);
+                        // if(table_id_api != 'unknow' && table_id_api != 'unknow2' && table_id_api != 'takeaway')
+                        if(!invalid_table_id.has(table_id_api))
+                        {
+                            document.getElementById(show_table_api).style.display = 'none';
+                            document.getElementById(show_detail_api).style.display = 'block';
+                        }
 
                         let modal_invoice_api = `
                     <div id="invoice_detail_${table_id_api}" class="modal fade" role="dialog">
@@ -630,11 +636,15 @@
                     let rowspanCount = Math.max(response.data.details.length, 1);
                     let order_table = `
                         <tr class="order_table_class_${table_id}">
-                            <td border="1" class="set-row" rowspan="${rowspanCount}">${data.table_id}<br>${data.checkin_time}<br>${data.created_at}</td>
+                            <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">${data.table_id} <span class="new-invoice-check badge badge-success p-2s">(New)</span>
+                                <br>${data.checkin_time}<br>${data.created_at}
+                            </td>
                         `;
 
-                    console.log(response.data.is_paid, 'asdasdasdasdadsa');
-                    let count = 1;
+                    setTimeout(()=> {
+                        $(`#new-row-${table_id} .new-invoice-check`).remove();
+                    }, 10000);
+                        let count = 1;
                     //foreach of details
                     invoice_item.forEach(function(item, index) {
                         console.log(item);
@@ -728,9 +738,18 @@
                     div2.setAttribute("id", "div_invoice_detail_" + table_id);
                     document.getElementById("append_modal_invoice_detail").appendChild(div2);
 
+                    const invalid_table_id = new Set(['unknow', 'unknow2', 'takeaway']);
+                    // if(table_id_api != 'unknow' && table_id_api != 'unknow2' && table_id_api != 'takeaway')
+                    if(!invalid_table_id.has(table_id))
+                    // if(table_id != 'unknow' && table_id != 'unknow2' && table_id != 'takeaway')
+                    {
+                        //show_table la cai nut de mo invoice and invoice detail
+                        document.getElementById(show_table).style.display = 'none';
+                        document.getElementById(show_detail).style.display = 'block';
+                    }
                     //show_table la cai nut de mo invoice and invoice detail
-                    document.getElementById(show_table).style.display = 'none';
-                    document.getElementById(show_detail).style.display = 'block';
+                    // document.getElementById(show_table).style.display = 'none';
+                    // document.getElementById(show_detail).style.display = 'block';
 
                     //inner order table 
                     // let targetRow = document.querySelector('.order-table tr:first-child');
