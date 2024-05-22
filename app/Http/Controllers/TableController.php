@@ -18,7 +18,8 @@ class TableController extends Controller
         }
         $tables = Table::query()
         ->orderBy('stt', 'asc')
-        ->paginate(11);
+        ->paginate(13);
+        // dd($tables);
         $items = getAndCacheMenuItems();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[ 
