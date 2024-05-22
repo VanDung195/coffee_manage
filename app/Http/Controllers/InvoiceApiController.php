@@ -46,7 +46,8 @@ class InvoiceApiController extends Controller
                 $merged_array[$count] = [
                     'table_id' => $table_id,
                     'total_price' => $item['total_price'],
-                    'created_at' => $item['created_at'],
+                    // 'created_at' => $item['created_at'],
+                    'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                     'checkin_time' => $item['checkin_time'],
                     'checkout_time' => $item['checkout_time'],
                     'is_paid' => 0,
@@ -74,7 +75,8 @@ class InvoiceApiController extends Controller
             $merged_array[$count]= [
                 'table_id' => $table_id,
                 'total_price' => $item['total_price'],
-                'created_at' => $item['created_at'],
+                'created_at' => date('d-m-Y', strtotime($item['created_at'])),
+                // 'created_at' => $item['created_at'],
                 'checkin_time' => $item['checkin_time'],
                 'checkout_time' => $item['checkout_time'],
                 'is_paid' => 1,
