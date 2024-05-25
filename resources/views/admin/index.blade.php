@@ -513,6 +513,10 @@
                     `;
 
                     console.log(response);
+                    
+
+                    
+                    
 
                     response.data.invoices.forEach(function(item, index) {
                         console.log(item);
@@ -588,6 +592,11 @@
                     div_table.classList.add("form-group");
                     document.getElementById("right").appendChild(div_table);
                     // console.log(order_table);
+
+                    console.log('Đây là số lượng tr');
+                    let table = document.getElementById('order-table-id');
+                    let rows = table.getElementsByTagName('tr');
+                    console.log(rows.length);
                 },
                 error: function(error) {
                     console.log(error);
@@ -635,7 +644,7 @@
                 `;
                     let rowspanCount = Math.max(response.data.details.length, 1);
                     let order_table = `
-                        <tr class="order_table_class_${table_id}">
+                        <tr data-status="${response.data.is_paid}" class="order_table_class_${table_id}">
                             <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">${data.table_id} <span class="new-invoice-check badge badge-success p-2s">(New)</span>
                                 <br>${data.checkin_time}<br>${data.created_at}
                             </td>
@@ -756,15 +765,22 @@
                     // targetRow.insertAdjacentHTML('beforeend', order_table);
 
                     let table = document.getElementById('order-table-id');
-                    if(response.data.is_paid == 1)
+                    let rows = table.getElementsByTagName('tr');
+                    console.log(rows.length);
+                    if(response.data.is_paid == 1 && rows.length == 1)
                     {
-                        let rows = table.getElementsByTagName('tr');
+                        console.log(123123123);
+                        let targetRow = document.querySelector('.order-table tr:first-child');
+                        targetRow.insertAdjacentHTML('afterend', order_table);
+                    }
+                    if(response.data.is_paid == 1 && rows.length > 1)
+                    {
                         let inserted = false;
-                        for(let i = 0; i < rows.length; i++)
+                        //1 is first tr tag
+                        for(let i = 1; i <= rows.length; i++)
                         {
                             if(rows[i+1].getAttribute('data-status') == '1')
                             {
-                                console.log('Da vao cai dieu kien nay roi do may');
                                 // table.insertBefore(order_table, rows[i]);
                                 console.log(rows[i]);
                                 rows[i].insertAdjacentHTML('afterend', order_table);
