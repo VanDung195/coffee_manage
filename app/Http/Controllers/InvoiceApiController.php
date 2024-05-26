@@ -17,6 +17,7 @@ class InvoiceApiController extends Controller
     // }
     public function index()
     {
+        
         $table_invoice_id = Table::query()
                                     ->where('invoice_id', '<>', 0)
                                     ->pluck('invoice_id')->toArray();
@@ -42,7 +43,15 @@ class InvoiceApiController extends Controller
         {
             foreach($session_invoices as $item)
             {
+                $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
+                $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
                 $table_id = $item['table_id'];
+
+                if($item['remaining_money'] < 0 || $item['customer_payment'] == null)
+                {
+                    $customer_payment = 'Không';
+                    $remaining_money = 'Không';
+                }
                 $merged_array[$count] = [
                     'table_id' => $table_id,
                     'total_price' => $item['total_price'],
@@ -51,6 +60,8 @@ class InvoiceApiController extends Controller
                     'checkin_time' => $item['checkin_time'],
                     'checkout_time' => $item['checkout_time'],
                     'is_paid' => 0,
+                    'customer_payment' => $customer_payment,
+                    'remaining_money' => $remaining_money,
                     'details' => []
                 ];
                 foreach($item['details'] as $each)
@@ -72,6 +83,13 @@ class InvoiceApiController extends Controller
         foreach($invoices as $item)
         {
             $table_id = $item['table_id'];
+            $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
+            $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
+            if($item['remaining_money'] < 0 || $item['customer_payment'] == null)
+            {
+                $customer_payment = 'Không';
+                $remaining_money = 'Không';
+            }
             $merged_array[$count]= [
                 'table_id' => $table_id,
                 'total_price' => $item['total_price'],
@@ -80,11 +98,14 @@ class InvoiceApiController extends Controller
                 'checkin_time' => $item['checkin_time'],
                 'checkout_time' => $item['checkout_time'],
                 'is_paid' => 1,
+                'customer_payment' => $customer_payment,
+                'remaining_money' => $remaining_money,
+                // 'customer_payment' => $item['customer_payment'],
+                // 'remaining_money' => $item['remaining_money'],
                 'details' => $item['details']
             ];
             $count++;
         }
-
         $message = 'Get api thanh cong';
         // return $this->successResponse($invoices,$message);
         return $this->successResponse([
