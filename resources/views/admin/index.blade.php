@@ -346,13 +346,14 @@
                 dataType: "json",
                 success: function(response) {
                     modal_body.find('.remaining-money').html(response.data.toLocaleString('vi-VN'));
-                    modal_body.closest('.modal-container').find('.btn-submit-invoice').disabled = false;
+                    modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", false);
                     // document.getElementById('remaining-money').innerHTML = response.data.toLocaleString(
                     //     'vi-VN');
                 },
                 error: function() {
                     modal_body.find('.remaining-money').html('NULL');
-                    modal_body.closest('.modal-container').find('.btn-submit-invoice').disabled = false;
+                    modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", true);
+                    console.log('Sai con mịa nó rồi!!!');
                 }
             });
         });
@@ -558,10 +559,10 @@
                             <button onclick="" class="btn btn-danger btn-sm">Swap</button>
                         </td>
                         <td rowspan="${rowspanCount}'">
-                            100k
+                            ${item.customer_payment}
                         </td>
                         <td rowspan="${rowspanCount}'">
-                            200k
+                            ${item.remaining_money}
                         </td>
                         <td rowspan="${rowspanCount}">
                             <button onclick="deleteInvoice('${item.table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
@@ -629,6 +630,8 @@
                     let invoice_item = response.data.details;
                     let data = response.data;
 
+                    console.log('đây là response: ');
+                    console.log(response);
                     modal_invoice_close.modal('toggle');
                     let modal_invoice = `
                     <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
@@ -703,11 +706,11 @@
                             <td rowspan="${rowspanCount}">
                                 <button onclick="" class="btn btn-danger btn-sm">Swap</button>
                             </td>
-                            <td rowspan="${rowspanCount}'">
-                                100k
+                            <td rowspan="${rowspanCount}">
+                                ${response.data.customer_payment}
                             </td>
-                            <td rowspan="${rowspanCount}'">
-                                200k
+                            <td rowspan="${rowspanCount}">
+                                ${response.data.remaining_money}
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <button onclick="deleteInvoice('${table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
@@ -766,7 +769,39 @@
 
                     let table = document.getElementById('order-table-id');
                     let rows = table.getElementsByTagName('tr');
-                    console.log(rows.length);
+                    //limit the use of else 
+                    /*
+                    if(response.data.is_paid == 1)
+                    {
+                        //Chèn dòng invoice vào table nếu is_paid == 1 and chèn ở trên invoice đã thanh toán
+                        if(rows.length == 1)
+                        {
+                            let targetRow = document.querySelector('.order-table tr:first-child');
+                            targetRow.insertAdjacentHTML('afterend', order_table);
+                            // return;
+                        }
+
+                        if(rows.length > 1)
+                        {
+                            for(let i = 1; i <= rows.length; i++)
+                            {
+                                if(rows[i+1].getAttribute('data-status') == '1')
+                                {
+                                    console.log(rows[i]);
+                                    rows[i].insertAdjacentHTML('afterend', order_table);
+                                    // return;
+                                }
+                            }
+                        }
+                    }
+
+                    if(response.data.is_paid == 0)
+                    {
+                        let targetRow = document.querySelector('.order-table tr:first-child');
+                        targetRow.insertAdjacentHTML('afterend', order_table);
+                    }*/
+
+                    
                     if(response.data.is_paid == 1 && rows.length == 1)
                     {
                         console.log(123123123);
@@ -779,6 +814,7 @@
                         //1 is first tr tag
                         for(let i = 1; i <= rows.length; i++)
                         {
+                            //-> i+1
                             if(rows[i+1].getAttribute('data-status') == '1')
                             {
                                 // table.insertBefore(order_table, rows[i]);
