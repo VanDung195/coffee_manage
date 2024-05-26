@@ -49,12 +49,17 @@ class InvoiceController extends Controller
             }
 
             $remaining_money = $customer_payment - $total_price;
+
+            $customer_payment_response = number_format($customer_payment, 0, ',', '.');
+            $remaining_money_response = number_format($remaining_money, 0, ',', '.');
             if($remaining_money < 0 || $customer_payment == null)
             {
-                $remaining_money = null;
                 $customer_payment = null;
+                $remaining_money = null;
+                $customer_payment_response = 'Không';
+                $remaining_money_response = 'Không';
             }
-
+            // dd($customer_payment, $remaining_money);
             if ((int)$request->is_paid == 1) {
                 $invoice = Invoice::create([
                     'created_at' => $now->format('Y:m:d H:i:s'),
@@ -110,8 +115,8 @@ class InvoiceController extends Controller
                     'created_at' => $now->format('d-m-Y'),
                     'checkin_time' => $now->format('H:i:s'),
                     'checkout_time' => $now->format('H:i:s'),
-                    'customer_payment' => $customer_payment,
-                    'remaining_money' => $remaining_money,
+                    'customer_payment' => $customer_payment_response,
+                    'remaining_money' => $remaining_money_response,
                     'is_paid' => (int)$request->is_paid,
                 ], $message);
             }
@@ -171,8 +176,8 @@ class InvoiceController extends Controller
                 'created_at' => $now->format('d-m-Y'),
                 'checkin_time' => $now->format('H:i:s'),
                 'checkout_time' => $now->format('H:i:s'),
-                'customer_payment' => $customer_payment,
-                'remaining_money' => $remaining_money,
+                'customer_payment' => $customer_payment_response,
+                'remaining_money' => $remaining_money_response,
                 'is_paid' => $request->is_paid,
             ], $message);
         } catch (\Throwable $th) {
