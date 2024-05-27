@@ -16,9 +16,10 @@ class TableController extends Controller
         if(!user()){
             return redirect()->route('login');
         }
-        $tables = Table::query()
-        ->orderBy('stt', 'asc')
-        ->paginate(13);
+        // $tables = Table::query()
+        // ->orderBy('stt', 'asc')
+        // ->paginate(13);
+        $tables = getAndCacheTableName();
         // dd($tables);
         $items = getAndCacheMenuItems();
         $is_paids = TableIsPaidEnum::getKeys();
