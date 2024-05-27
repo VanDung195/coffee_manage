@@ -26,7 +26,30 @@ if(!function_exists('getAndCacheTableName')){
             84000*30,
             function()
             {
-                $tables = Table::query()->get();
+                $tables = Table::query()
+                    ->orderBy('stt', 'asc')
+                    ->paginate(13);
+                // $tables = Table::query()->get();
+                return $tables;
+            }
+        );
+    }
+}
+//except table names: unknow, takeaway (using for change information table) 
+if(!function_exists('getAndCacheAvailableTableNames')){
+    function getAndCacheAvailableTableNames()
+    {
+        return cache()->remember(
+            SystemCacheEnum::AVAILABLE_TABLE_NAME,
+            84000 * 30,
+            function()
+            {
+                $tables = Table::query()
+                        ->orderBy('stt', 'asc')
+                        ->get()
+                        ->toArray();
+                $tables = array_slice($tables, 3);
+
                 return $tables;
             }
         );
