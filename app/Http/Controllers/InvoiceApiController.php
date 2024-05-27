@@ -39,9 +39,11 @@ class InvoiceApiController extends Controller
         $count = 0;
         //Nếu không dùng count mà dùng $table_id thì nó sẽ biến thành một object có key => value
         $session_invoices = session()->get('invoice');
+        // dd(array_reverse($session_invoices));
         if(!is_null($session_invoices))
         {
-            foreach($session_invoices as $item)
+            $session_invoices_reverse = array_reverse($session_invoices);
+            foreach($session_invoices_reverse as $item)
             {
                 $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
                 $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
