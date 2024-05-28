@@ -20,11 +20,13 @@ class TableController extends Controller
         // ->orderBy('stt', 'asc')
         // ->paginate(13);
         $tables = getAndCacheTableName();
+        $table_names_available = getAndCacheAvailableTableNames();
         // dd($tables);
         $items = getAndCacheMenuItems();
         $is_paids = TableIsPaidEnum::getKeys();
         return view('admin.index',[ 
             'tables' => $tables,
+            'table_names_available' => $table_names_available,
             'items' => $items,
             'is_paids' => $is_paids,
         ]);
