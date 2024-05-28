@@ -32,7 +32,6 @@ class InvoiceApiController extends Controller
         ->orderBy('created_at', 'desc')
         ->get()
         ->toArray();
-        $table_names = getAndCacheTableName();
 
         // dd($invoices);
         $merged_array = [];
@@ -109,11 +108,13 @@ class InvoiceApiController extends Controller
             $count++;
         }
         $message = 'Get api thanh cong';
+        $table_names_available = getAndCacheAvailableTableNames();
+
         // return $this->successResponse($invoices,$message);
         return $this->successResponse([
             // 'invoices' => $invoices,
             'invoices' => (array)$merged_array,
-            'table_names' => $table_names,
+            'table_names_available' => $table_names_available,
         ]
         ,$message);
     }
