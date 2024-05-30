@@ -42,7 +42,7 @@ class InvoiceController extends Controller
             }
             $now = Carbon::now('Asia/Bangkok');
             $customer_payment = $request->customer_payment * 1000;
-            //khi người dùng nhập 100000 (100 nghìn đồng) thay vì 100 (cũng là 100 nghìn đồng) 
+            //khi người dùng nhập 100000 (100 nghìn đồng) thay vì 100 (cũng là 100 nghìn đồng)
             if($customer_payment > 1000000000 || $customer_payment < 0)
             {
                 return $this->errorResponse();
@@ -105,7 +105,7 @@ class InvoiceController extends Controller
                         'thanh_tien' => $thanh_tien,
                     ];
                 }
-                
+
                 $message = 'Tạo hoá đơn thành công!';
                 return $this->successResponse([
                     'table_id' => $tableId,
@@ -184,7 +184,7 @@ class InvoiceController extends Controller
             dd($th);
         }
 
-        
+
         dd();
         // Cái này là khi thu ngân lập hoá đơn và chọn trả trước
         try {
@@ -201,7 +201,7 @@ class InvoiceController extends Controller
             // dd($menuNames, $menuItems);
             $menuItemsMap = $menuItems->keyBy('id')->toArray();
             // dd($menuItemsMap);
-            /*Ví dụ: 
+            /*Ví dụ:
             array:2 [ // app\Http\Controllers\InvoiceController.php:45
                 1 => array:4 [
                     "id" => 1
@@ -234,7 +234,7 @@ class InvoiceController extends Controller
             // $currentDate = date('Y-m-d');
             // $endDate = $this->end_date->format('Y-m-d');
             // $startDate = $this->start_date->format('Y-m-d');
-            // //echo $paymentDate; // echos today! 
+            // //echo $paymentDate; // echos today!
 
             // // if (($currentDate >= $this->end_date) && ($currentDate <= $this->start_date)){
             // //     return true;s
@@ -434,5 +434,41 @@ class InvoiceController extends Controller
             return $this->successResponse(0);
         }
         return $this->successResponse($remaining_money);
+    }
+
+    //update table infonation
+    public function table_update(Request $request)
+    {
+        // dd($request->all());
+        $payment_status = $request->payment_status;
+        $old_key = $request->from_table;
+        $new_key = $request->to_table;
+
+        if($payment_status == 0)
+        {
+            $invoices = session()->get('invoice');
+            $keys = array_keys($invoices);
+            // dd($keys);
+            //Nếu muốn đổi 2 bàn đã tồn tại cho nhau    
+            if(array_key_exists($new_key, $invoices))
+            {
+                $keys[array_search($new_key, $keys)] = $old_key;
+            }
+            // $invoice[$to_table] = $invoice[$from_table];
+            // $invoice[$to_table]['table_id'] = $to_table;
+            // unset($invoice[$from_table]);
+            // session()->put('invoice', $invoice);
+            $keys[array_search($old_key, $keys)] = $new_key;
+            dd($keys);
+            $invoices = array_combine($keys, $invoices);
+            $invoices[$new_key]['table_id'] = $new_key;
+            session()->put('invoice', $invoices);
+
+            return $this->successResponse([
+                'new_key' => $new_key,
+            ], 'Thanh cong roi nhe');
+        }
+
+
     }
 }
