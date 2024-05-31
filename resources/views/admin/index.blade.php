@@ -680,45 +680,77 @@
             });
 
 
-            setTimeout(()=> {
-                $('.btn-change-invoice').on('click', function(){
-                    let table_name = $(this).data('table-name');
-                    let modal_change_invoice = '.modal-change-invoice-'+table_name;
-
-                    $(modal_change_invoice).modal('show');
-                    console.log(123);
-                })
-            }, 400);
+           
             // $(document).on('click', '.btn-change-invoice', function() {
             //     var tableName = $(this).data('table-name');
             //     console.log('Button clicked for table: ' + tableName);
             // });
         });
 
-        setTimeout(() => {
-            $('.btn-submit-change-invoice').on('click', function(){
-                    let modal_content = $(this).closest('.modal-content');
-                    let from_table = modal_content.find('.from-table').text();
-                    let to_table = modal_content.find('.select-to-table').val();
-                    let payment_status = modal_content.find('.payment-status').val();
-                    let csrf_token = modal_content.find('input[name="_token"]').val();
-                    console.log(from_table, to_table, payment_status);
-                    $.ajax({
-                        type: 'post',
-                        url: '{{ route('table_update') }}',
-                        data: {
-                            from_table: from_table,
-                            to_table: to_table,
-                            payment_status: payment_status,
-                            _token: csrf_token
-                        },
-                        dataType: "json",
-                        success: function (response) {
-                            
-                        }
-                    });
-                }); 
-        }, 400);
+        // setTimeout(()=> {
+        //     $('.btn-change-invoice').on('click', function(){
+        //         let table_name = $(this).data('table-name');
+        //         let modal_change_invoice = '.modal-change-invoice-'+table_name;
+        //         $(modal_change_invoice).modal('show');
+        //         console.log(123);
+        //     })
+        // }, 800);
+        //delegation
+        $(document).on('click', '.btn-change-invoice', function(){
+            let table_name = $(this).data('table-name');
+            let modal_change_invoice = '.modal-change-invoice-' + table_name;
+            $(modal_change_invoice).modal('show');
+            console.log(123);
+        });
+        $(document).on('click', '.btn-submit-change-invoice', function(){
+            let modal_content = $(this).closest('.modal-content');
+            let from_table = modal_content.find('.from-table').text();
+            let to_table = modal_content.find('.select-to-table').val();
+            let payment_status = modal_content.find('.payment-status').val();
+            let csrf_token = modal_content.find('input[name="_token"]').val();
+            
+            $.ajax({
+                type: 'post',
+                url: '{{ route('table_update') }}',
+                data: {
+                    from_table: from_table,
+                    to_table: to_table,
+                    payment_status: payment_status,
+                    _token: csrf_token
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+        // setTimeout(() => {
+        //     $('.btn-submit-change-invoice').on('click', function(){
+        //             let modal_content = $(this).closest('.modal-content');
+        //             let from_table = modal_content.find('.from-table').text();
+        //             let to_table = modal_content.find('.select-to-table').val();
+        //             let payment_status = modal_content.find('.payment-status').val();
+        //             let csrf_token = modal_content.find('input[name="_token"]').val();
+        //             console.log(from_table, to_table, payment_status);
+        //             $.ajax({
+        //                 type: 'post',
+        //                 url: '{{ route('table_update') }}',
+        //                 data: {
+        //                     from_table: from_table,
+        //                     to_table: to_table,
+        //                     payment_status: payment_status,
+        //                     _token: csrf_token
+        //                 },
+        //                 dataType: "json",
+        //                 success: function (response) {
+        //                     console.log(response);
+        //                 }
+        //             });
+        //         }); 
+        // }, 800);
 
 
         //https://stackoverflow.com/questions/7114780/convert-jquery-element-to-html-element
@@ -820,7 +852,7 @@
                                 </li>
                             </td>
                             <td rowspan="${rowspanCount}">
-                                <button onclick="" class="btn btn-danger btn-sm">Swap</button>
+                                <button type="button" data-table-name="${table_id}" class="btn-change-invoice btn btn-danger btn-sm">Change</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 ${response.data.customer_payment}
@@ -917,20 +949,18 @@
                         targetRow.insertAdjacentHTML('afterend', order_table);
                     }*/
 
-                    
-                    if(response.data.is_paid == 1 && rows.length == 1)
-                    {
-                        console.log(123123123);
-                        let targetRow = document.querySelector('.order-table tr:first-child');
-                        targetRow.insertAdjacentHTML('afterend', order_table);
-                    }
                     if(response.data.is_paid == 1 && rows.length > 1)
                     {
                         let inserted = false;
-                        //1 is first tr tag
-                        for(let i = 1; i <= rows.length; i++)
+                        //1 is the first tr tag
+                        for(let i = 1; i < rows.length; i++)
                         {
-                            //-> i+1
+                            //trường hợp khi dữ liệu trong bảng toàn 'Chưa thanh toán'
+                            if(rows[i+1] == undefined)
+                            {
+                                rows[i].insertAdjacentHTML('afterend', order_table);
+                                break;
+                            }
                             if(rows[i+1].getAttribute('data-status') == '1')
                             {
                                 // table.insertBefore(order_table, rows[i]);
@@ -945,8 +975,15 @@
                         //     console.log(12312);
                         // }
                     }
+                    if(response.data.is_paid == 1 && rows.length == 1)
+                    {
+                        console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
+                        let targetRow = document.querySelector('.order-table tr:first-child');
+                        targetRow.insertAdjacentHTML('afterend', order_table);
+                    }
                     if(response.data.is_paid == 0)
                     {
+                        //Mặc định khi thêm 1 hoá đơn chưa thanh toán vào session thì nó luôn thêm vào đầu tiên của bảng
                         let targetRow = document.querySelector('.order-table tr:first-child');
                         console.log('Đây là targetrow');
                         console.log(targetRow);
@@ -971,16 +1008,14 @@
                     // }
 
                     document.getElementById('remaining-money').textContent = "0";
-                    console.log(response);
-                    $.toast({
-                        heading: 'Success',
-                        text: response.responseJSON.message,
-                        showHideTransition: 'slide',
-                        icon: 'success'
-                    })
-                    //thêm vào cuối
-                    // let existing_table = document.querySelector(".order-table");
-                    // existing_table.insertAdjacentHTML('beforeend', order_table);
+                    
+
+                    // $(document).on('click', '.btn-change-invoice', function(){
+                    //     let table_name = $(this).data('table-name');
+                    //     let modal_change_invoice = '.modal-change-invoice-' + table_name;
+                    //     $(modal_change_invoice).modal('show');
+                    //     console.log(123);
+                    // });
 
                 },
                 error: function(response) {
@@ -997,9 +1032,9 @@
 
         
 
-        function showModal() {
-            $("#modal-invoice").modal("show");
-        }
+        // function showModal() {
+        //     $("#modal-invoice").modal("show");
+        // }
 
         function showInvoiceDetail(table_name) {
             $(table_name).modal("show");
@@ -1290,5 +1325,6 @@
                 })
             }
         });
+
     </script>
 @endpush
