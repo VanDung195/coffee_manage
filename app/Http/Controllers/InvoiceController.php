@@ -40,6 +40,7 @@ class InvoiceController extends Controller
                 $price = $menuItemsMap[$id]['price'];
                 $total_price += $quantity * $price;
             }
+
             $now = Carbon::now('Asia/Bangkok');
             $customer_payment = $request->customer_payment * 1000;
             //khi người dùng nhập 100000 (100 nghìn đồng) thay vì 100 (cũng là 100 nghìn đồng)
@@ -448,27 +449,40 @@ class InvoiceController extends Controller
         {
             $invoices = session()->get('invoice');
             $keys = array_keys($invoices);
-            // dd($keys);
             //Nếu muốn đổi 2 bàn đã tồn tại cho nhau    
             if(array_key_exists($new_key, $invoices))
             {
-                $keys[array_search($new_key, $keys)] = $old_key;
+                //Đoạn này là đổi array_keys
+                $new_key_index = array_search($new_key, $keys);
+                $old_key_index = array_search($old_key, $keys);
+                // dd($old_key_index, $new_key_index, $keys);
+                $keys[$new_key_index] = $old_key;
+                $keys[$old_key_index] = $new_key;
+                //Gán array_keys vào value của invoices
+                $invoices = array_combine($keys, $invoices);
+
+                //Đổi array_values trong mảng invoices
+                $invoices[$old_key]['table_id'] = $old_key;
+                $invoices[$new_key]['table_id'] = $new_key;
+                session()->put('invoice', $invoices);
+                
+                return $this->successResponse([
+                    'old_key' => $old_key,
+                    'new_key' => $new_key,
+                ],'thanh cong roi nhe');
             }
-            // $invoice[$to_table] = $invoice[$from_table];
-            // $invoice[$to_table]['table_id'] = $to_table;
-            // unset($invoice[$from_table]);
-            // session()->put('invoice', $invoice);
+
             $keys[array_search($old_key, $keys)] = $new_key;
-            dd($keys);
             $invoices = array_combine($keys, $invoices);
             $invoices[$new_key]['table_id'] = $new_key;
             session()->put('invoice', $invoices);
 
             return $this->successResponse([
+                'old_key' => $old_key,
                 'new_key' => $new_key,
             ], 'Thanh cong roi nhe');
         }
 
-
+        //Trường hợp 2: Đổi bàn đã thanh toán (dễ vl)
     }
 }
