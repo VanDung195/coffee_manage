@@ -13,6 +13,8 @@
                             <th>CCCD</th>
                             <th>So dien thoat</th>
                             <th>chuc vu</th>
+                            <th>sua</th>
+                            <th>xoa</th>
                         </tr>
                     </thead>
                     <tbody>
