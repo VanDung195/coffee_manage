@@ -665,6 +665,7 @@
                     $('.form-row .select-to-table').select2({
                         tag: true
                     });
+                    event_change_invoice();
                     /*
                     // console.log(response.data.table_names_available);
                     let table_available = response.data.table_names_available;
@@ -696,37 +697,7 @@
         //     })
         // }, 800);
         //delegation
-        $(document).on('click', '.btn-change-invoice', function(){
-            let table_name = $(this).data('table-name');
-            let modal_change_invoice = '.modal-change-invoice-' + table_name;
-            $(modal_change_invoice).modal('show');
-            console.log(123);
-        });
-        $(document).on('click', '.btn-submit-change-invoice', function(){
-            let modal_content = $(this).closest('.modal-content');
-            let from_table = modal_content.find('.from-table').text();
-            let to_table = modal_content.find('.select-to-table').val();
-            let payment_status = modal_content.find('.payment-status').val();
-            let csrf_token = modal_content.find('input[name="_token"]').val();
-            
-            $.ajax({
-                type: 'post',
-                url: '{{ route('table_update') }}',
-                data: {
-                    from_table: from_table,
-                    to_table: to_table,
-                    payment_status: payment_status,
-                    _token: csrf_token
-                },
-                dataType: "json",
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        });
+        
         // setTimeout(() => {
         //     $('.btn-submit-change-invoice').on('click', function(){
         //             let modal_content = $(this).closest('.modal-content');
@@ -778,8 +749,59 @@
                     let invoice_item = response.data.details;
                     let data = response.data;
 
-                    console.log('đây là response: ');
-                    console.log(response);
+                    //modal change invoice
+                    let div_modal_change_invoice = document.createElement('div');
+                    div_modal_change_invoice.classList.add('form-group');
+
+                    let modal_change_invoice = ``;
+                    //modal để đổi thông tin hoá đơn (đổi bàn hoặc cũng có thể làm thêm số tiền khách trả)
+                    console.log(123123123);
+                    modal_change_invoice = `
+                        <div class="modal-change-invoice-${table_id} modal fade" role="dialog">
+                            <div class="modal-container-change-invoice modal-dialog modal-sm">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Sửa thông tin</h4>
+                                        <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-change-invoice">
+                                            @csrf
+                                            <input type="hidden" class="payment-status" name="payment-status" value="${item.is_paid}">
+                                            <div class="form-row">
+                                                <div class="form-group col-5">
+                                                    <label>Từ bàn</label>
+                                                    <p class="from-table form-control">${table_id}</p>
+                                                </div>
+                                                <div class="icon-swap form-group"> 
+                                                    <i style="font-size: 35px" class=" uil-exchange-alt"></i>
+                                                </div>
+                                                <div class="form-group col-5">
+                                                    <label>Tới bàn</label>
+                                                    <select name="to_table" class="select-to-table">
+                                                        @foreach ($table_names_available as $item)
+                                                            <option value="{{ $item['name'] }}" data-table="{{ $item['name'] }}">
+                                                                {{ $item['name'] }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn-submit-change-invoice btn btn-success" type="button">Đổi thông tin</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    div_modal_change_invoice.innerHTML = modal_change_invoice;
+                    document.getElementById('modal-invoice-change').appendChild(div_modal_change_invoice);
+
+                    // console.log('đây là response: ');
+                    // console.log(response);
                     modal_invoice_close.modal('toggle');
                     let modal_invoice = `
                     <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
@@ -998,6 +1020,9 @@
                     select_item.select2({
                         tag: true
                     });
+                    $('.form-row .select-to-table').select2({
+                        tag: true
+                    });
                     //2 cách để xoá
                     for (let index = 0; index < child_div.length; index++) {
                         child_div.get(index).remove();
@@ -1030,7 +1055,71 @@
             });
         });
 
-        
+        $(document).on('click', '.btn-change-invoice', function(){
+            let table_name = $(this).data('table-name');
+            let modal_change_invoice = '.modal-change-invoice-' + table_name;
+            $(modal_change_invoice).modal('show');
+            console.log(123);
+        });
+        $(document).on('click', '.btn-submit-change-invoice', function(){
+            let modal_content = $(this).closest('.modal-content');
+            let from_table = modal_content.find('.from-table').text();
+            let to_table = modal_content.find('.select-to-table').val();
+            let payment_status = modal_content.find('.payment-status').val();
+            let csrf_token = modal_content.find('input[name="_token"]').val();
+            
+            $.ajax({
+                type: 'post',
+                url: '{{ route('table_update') }}',
+                data: {
+                    from_table: from_table,
+                    to_table: to_table,
+                    payment_status: payment_status,
+                    _token: csrf_token
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        /*
+        $(document).on('click', '.btn-change-invoice', function(){
+            let table_name = $(this).data('table-name');
+            let modal_change_invoice = '.modal-change-invoice-' + table_name;
+            $(modal_change_invoice).modal('show');
+            console.log(123);
+        });
+        $(document).on('click', '.btn-submit-change-invoice', function(){
+            let modal_content = $(this).closest('.modal-content');
+            let from_table = modal_content.find('.from-table').text();
+            let to_table = modal_content.find('.select-to-table').val();
+            let payment_status = modal_content.find('.payment-status').val();
+            let csrf_token = modal_content.find('input[name="_token"]').val();
+            
+            $.ajax({
+                type: 'post',
+                url: '{{ route('table_update') }}',
+                data: {
+                    from_table: from_table,
+                    to_table: to_table,
+                    payment_status: payment_status,
+                    _token: csrf_token
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });*/
+
 
         // function showModal() {
         //     $("#modal-invoice").modal("show");
