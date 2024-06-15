@@ -748,7 +748,7 @@
                     let index = response.data.index;
                     let invoice_item = response.data.details;
                     let data = response.data;
-
+                    console.log(data);
                     //modal change invoice
                     let div_modal_change_invoice = document.createElement('div');
                     div_modal_change_invoice.classList.add('form-group');
@@ -768,7 +768,7 @@
                                     <div class="modal-body">
                                         <form class="form-change-invoice">
                                             @csrf
-                                            <input type="hidden" class="payment-status" name="payment-status" value="${item.is_paid}">
+                                            <input type="hidden" class="payment-status" name="payment-status" value="${response.data.is_paid}">
                                             <div class="form-row">
                                                 <div class="form-group col-5">
                                                     <label>Từ bàn</label>
@@ -826,7 +826,7 @@
                     setTimeout(()=> {
                         $(`#new-row-${table_id} .new-invoice-check`).remove();
                     }, 10000);
-                        let count = 1;
+                    let count = 1;
                     //foreach of details
                     invoice_item.forEach(function(item, index) {
                         console.log(item);
@@ -975,7 +975,7 @@
                     {
                         let inserted = false;
                         //1 is the first tr tag
-                        for(let i = 1; i < rows.length; i++)
+                        for(let i = 0; i < rows.length; i++)
                         {
                             //trường hợp khi dữ liệu trong bảng toàn 'Chưa thanh toán'
                             if(rows[i+1] == undefined)
@@ -1067,7 +1067,7 @@
             let to_table = modal_content.find('.select-to-table').val();
             let payment_status = modal_content.find('.payment-status').val();
             let csrf_token = modal_content.find('input[name="_token"]').val();
-            
+            console.log("day la ajax de doi thong tin ban");
             $.ajax({
                 type: 'post',
                 url: '{{ route('table_update') }}',
