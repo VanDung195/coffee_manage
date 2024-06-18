@@ -399,6 +399,7 @@ class InvoiceController extends Controller
         }
     }
 
+    //update tiền
     public function update(Request $request)
     {
         //test
@@ -438,14 +439,14 @@ class InvoiceController extends Controller
     }
 
     //update table infonation
-    public function table_update(Request $request)
+    public function invoice_table_update(Request $request)
     {
-        // dd($request->all());
-        $payment_status = $request->payment_status;
+        dd($request->all());
+        $payment_status_old = $request->payment_status_old;
         $old_key = $request->from_table;
         $new_key = $request->to_table;
 
-        if($payment_status == 0)
+        if($payment_status_old == 0)
         {
             $invoices = session()->get('invoice');
             $keys = array_keys($invoices);
@@ -465,7 +466,7 @@ class InvoiceController extends Controller
                 $invoices[$old_key]['table_id'] = $old_key;
                 $invoices[$new_key]['table_id'] = $new_key;
                 session()->put('invoice', $invoices);
-                
+                // dd('da ton tai array key');                
                 return $this->successResponse([
                     'old_key' => $old_key,
                     'new_key' => $new_key,
@@ -476,7 +477,7 @@ class InvoiceController extends Controller
             $invoices = array_combine($keys, $invoices);
             $invoices[$new_key]['table_id'] = $new_key;
             session()->put('invoice', $invoices);
-
+            // dd('chua ton tai array key');
             return $this->successResponse([
                 'old_key' => $old_key,
                 'new_key' => $new_key,
@@ -484,5 +485,6 @@ class InvoiceController extends Controller
         }
 
         //Trường hợp 2: Đổi bàn đã thanh toán (dễ vl)
+        
     }
 }
