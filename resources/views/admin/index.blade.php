@@ -25,6 +25,9 @@
             margin-left: 21px;
             margin-right: 21px;
         }
+        .p-table{
+            margin-bottom: 0px;
+        }
     </style>
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
@@ -535,7 +538,7 @@
                         //modal để đổi thông tin hoá đơn (đổi bàn hoặc cũng có thể làm thêm số tiền khách trả)
                         console.log(123123123);
                         modal_change_invoice = `
-                            <div class="modal-change-invoice-${item.table_id} modal fade" role="dialog">
+                            <div class="modal-change-invoice-${item.table_id} modal-change-invoice modal fade" role="dialog">
                                 <div class="modal-container-change-invoice modal-dialog modal-sm">
                                     <!-- Modal content-->
                                     <div class="modal-content">
@@ -583,8 +586,8 @@
                         order_table += `<tr data-status="${item.is_paid}" class="order_table_class_${item.table_id}">`;
                         order_table += `
                             <td border="1" class="set-row" rowspan="${rowspanCount}">
-                                ${item.table_id}
-                                <br>${item.checkin_time}<br>${item.created_at}
+                                <p id="p-table-id-${item.table_id}" class="p-table">${item.table_id}</p>
+                                ${item.checkin_time}<br>${item.created_at}
                             </td>
                         `;
 
@@ -665,7 +668,7 @@
                     $('.form-row .select-to-table').select2({
                         tag: true
                     });
-                    event_change_invoice();
+
                     /*
                     // console.log(response.data.table_names_available);
                     let table_available = response.data.table_names_available;
@@ -757,7 +760,7 @@
                     //modal để đổi thông tin hoá đơn (đổi bàn hoặc cũng có thể làm thêm số tiền khách trả)
                     console.log(123123123);
                     modal_change_invoice = `
-                        <div class="modal-change-invoice-${table_id} modal fade" role="dialog">
+                        <div class="modal-change-invoice-${table_id} modal-change-invoice modal fade" role="dialog">
                             <div class="modal-container-change-invoice modal-dialog modal-sm">
                                 <!-- Modal content-->
                                 <div class="modal-content">
@@ -818,8 +821,11 @@
                     let rowspanCount = Math.max(response.data.details.length, 1);
                     let order_table = `
                         <tr data-status="${response.data.is_paid}" class="order_table_class_${table_id}">
-                            <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">${data.table_id} <span class="new-invoice-check badge badge-success p-2s">(New)</span>
-                                <br>${data.checkin_time}<br>${data.created_at}
+                            <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">
+                                <p id="p-table-id-${data.table_id}" class="p-table">${data.table_id}
+                                    <span class="new-invoice-check badge badge-success p-2s">(New)</span>
+                                </p>
+                                ${data.checkin_time}<br>${data.created_at}
                             </td>
                         `;
 
@@ -1063,10 +1069,16 @@
         });
         $(document).on('click', '.btn-submit-change-invoice', function(){
             let modal_content = $(this).closest('.modal-content');
+            let modal = $(this).closest('.modal-change-invoice');
             let from_table = modal_content.find('.from-table').text();
             let to_table = modal_content.find('.select-to-table').val();
-            let payment_status = modal_content.find('.payment-status').val();
+            let payment_status_old = modal_content.find('.payment-status').val();
             let csrf_token = modal_content.find('input[name="_token"]').val();
+
+            let modal_class_new = '.modal-change-invoice-'+to_table;
+            let payment_status_new = $(modal_class_new).find('.payment-status').val();
+            console.log(modal_class_new);
+            console.log(payment_status_new);
             console.log("day la ajax de doi thong tin ban");
             $.ajax({
                 type: 'post',
@@ -1074,12 +1086,29 @@
                 data: {
                     from_table: from_table,
                     to_table: to_table,
-                    payment_status: payment_status,
+                    payment_status_old: payment_status_old,
+                    payment_status_new: payment_status_new,
                     _token: csrf_token
                 },
                 dataType: "json",
                 success: function (response) {
-                    console.log(response);
+                    let new_key = response.data.new_key;
+                    let old_key = response.data.old_key;
+                    let new_key_id = 'p-table-id-' + new_key;
+                    let old_key_id = 'p-table-id-' + old_key;
+                    let id_p_table_new = document.getElementById(new_key_id);
+                    let id_p_table_old = document.getElementById(old_key_id);
+                    if(id_p_table_new != null)
+                    {
+                        let class_invoice_new = '.modal-change-invoice-' + new_key;
+                        let modal_invoice_new = $(class_invoice_new).find('.from-table').html(old_key);
+                        id_p_table_new.innerHTML = old_key;
+                        id_p_table_new.id = old_key_id;
+                    }
+                    modal_content.find('.from-table').html(new_key);
+                    id_p_table_old.innerHTML = new_key;
+                    id_p_table_old.id = new_key_id;
+                    $(modal).modal('toggle');
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
@@ -1144,6 +1173,9 @@
                 success: function(response) {
                     //delete invoice detail modal
                     let modal_invoice = "#invoice_detail_" + table_name;
+                    let modal_change_invoice = '.modal-change-invoice-'+table_name;
+                    $(modal_change_invoice).remove();
+                    console.log(modal_change_invoice);
                     if (type == 'modal_invoice') {
                         $(modal_invoice).modal('toggle');
                     }
