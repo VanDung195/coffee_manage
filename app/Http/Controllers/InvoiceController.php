@@ -12,6 +12,7 @@ use App\Models\Table;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -441,8 +442,9 @@ class InvoiceController extends Controller
     //update table infonation
     public function invoice_table_update(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $payment_status_old = $request->payment_status_old;
+        $payment_status_new = $request->payment_status_new;
         $old_key = $request->from_table;
         $new_key = $request->to_table;
 
@@ -450,7 +452,7 @@ class InvoiceController extends Controller
         {
             $invoices = session()->get('invoice');
             $keys = array_keys($invoices);
-            //Nếu muốn đổi 2 bàn đã tồn tại cho nhau    
+            //Nếu muốn đổi 2 bàn đã tồn tại cho nhau (session)    
             if(array_key_exists($new_key, $invoices))
             {
                 //Đoạn này là đổi array_keys
@@ -472,19 +474,62 @@ class InvoiceController extends Controller
                     'new_key' => $new_key,
                 ],'thanh cong roi nhe');
             }
+            
+            // //test
+            // if(!array_key_exists($new_key, $invoices))
+            // {
+            //     $invoice_id_new_key = Table::query()
+            //                             ->where('name', $new_key)
+            //                             ->get('invoice_id');
+            //     dd($invoice_id_new_key);
+            // }
+
+            //nếu payment status old = 0 va payment status new = 1
+            if(!array_key_exists($new_key, $invoices))
+            {
+                $invoice_id_new_key = Table::query()
+                                        ->where('name', $new_key)
+                                        ->pluck('invoice_id');
+                // dd($invoice_id_new_key[0]);
+                Table::query()
+                    ->where('name', $new_key)
+                    ->update([
+                        'status' => TableStausEnum::getKey(1),
+                        'invoice_id' => 0,
+                    ]);
+
+                Table::query()
+                    ->where('name', $old_key)
+                    ->update([
+                        'status' => TableStausEnum::getKey(0),
+                        'invoice_id' => $invoice_id_new_key[0],
+                    ]);
+                Invoice::query()
+                        ->where('id', $invoice_id_new_key)
+                        ->update([
+                            'table_id' => $old_key,
+                        ]);
+            }
 
             $keys[array_search($old_key, $keys)] = $new_key;
             $invoices = array_combine($keys, $invoices);
             $invoices[$new_key]['table_id'] = $new_key;
             session()->put('invoice', $invoices);
-            // dd('chua ton tai array key');
+            
             return $this->successResponse([
                 'old_key' => $old_key,
                 'new_key' => $new_key,
             ], 'Thanh cong roi nhe');
         }
+        if($payment_status_new == 0 && $payment_status_old == 0)
+        {
 
-        //Trường hợp 2: Đổi bàn đã thanh toán (dễ vl)
+        }
+        if($payment_status_new == 1 && $payment_status_old == 0)
+        {
+
+        }
+        
         
     }
 }
