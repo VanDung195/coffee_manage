@@ -442,17 +442,20 @@ class InvoiceController extends Controller
     //update table infonation
     public function invoice_table_update(Request $request)
     {
-        // dd($request->all());
         $payment_status_old = $request->payment_status_old;
         $payment_status_new = $request->payment_status_new;
         $old_key = $request->from_table;
         $new_key = $request->to_table;
 
-        if($payment_status_old == 0)
+        $invoices = session()->get('invoice');
+        $keys = [];
+        if(!empty($invoices))
         {
-            $invoices = session()->get('invoice');
             $keys = array_keys($invoices);
-            //Nếu muốn đổi 2 bàn đã tồn tại cho nhau (session)    
+        }
+        if($payment_status_old == 0 && !empty($invoices))
+        {
+            //Nếu muốn đổi 2 bàn đã tồn tại cho nhau và cả 2 đều chưa thanh toán trước (session)    
             if(array_key_exists($new_key, $invoices))
             {
                 //Đoạn này là đổi array_keys
@@ -489,7 +492,8 @@ class InvoiceController extends Controller
             {
                 $invoice_id_new_key = Table::query()
                                         ->where('name', $new_key)
-                                        ->pluck('invoice_id');
+                                        // ->pluck('invoice_id');
+                                        ->value('invoice_id');
                 // dd($invoice_id_new_key[0]);
                 Table::query()
                     ->where('name', $new_key)
@@ -502,8 +506,16 @@ class InvoiceController extends Controller
                     ->where('name', $old_key)
                     ->update([
                         'status' => TableStausEnum::getKey(0),
-                        'invoice_id' => $invoice_id_new_key[0],
+                        'invoice_id' => $invoice_id_new_key,
                     ]);
+
+                // Table::query()
+                //     ->whereIn('name', [$new_key, $old_key])
+                //     ->update([
+                //         'status' => DB::raw("CASE WHEN name = '$new_key' THEN '" . TableStausEnum::getKey(1) . "' ELSE '" . TableStausEnum::getKey(0) . "' END"),
+                //         'invoice_id' => DB::raw("CASE WHEN name = '$new_key' THEN 0 ELSE $invoice_id_new_key END"),
+                //     ]);
+
                 Invoice::query()
                         ->where('id', $invoice_id_new_key)
                         ->update([
@@ -521,15 +533,99 @@ class InvoiceController extends Controller
                 'new_key' => $new_key,
             ], 'Thanh cong roi nhe');
         }
-        if($payment_status_new == 0 && $payment_status_old == 0)
+        if($payment_status_old == 1)
         {
+            // dd(112);
+            $table_invoice = Table::query()
+                            ->whereIn('name', [$new_key, $old_key])
+                            ->pluck('invoice_id', 'name');
+            // dd($table_invoice);
+            $invoice_id_new_key = $table_invoice[$new_key];
+            $invoice_id_old_key = $table_invoice[$old_key];
+            // dd($invoice_id_new_key, $invoice_id_old_key);
 
-        }
-        if($payment_status_new == 1 && $payment_status_old == 0)
-        {
+            //created
+            if($invoice_id_new_key != null && $invoice_id_old_key != null)
+            {
+                // dd(1123);
+                Table::query()
+                    ->whereIn('name', [$new_key, $old_key])
+                    ->update([
+                        'invoice_id' => DB::raw("case when name = '$new_key' then $invoice_id_old_key else $invoice_id_new_key end"),
+                    ]);
 
+
+                DB::transaction(function() use ($invoice_id_new_key, $new_key, $invoice_id_old_key, $old_key) {
+                    Invoice::query()
+                        ->whereIn('id', [$invoice_id_new_key, $invoice_id_old_key])
+                        ->update([
+                            'table_id' => DB::raw("case when id = '$invoice_id_old_key' then '$new_key' else '$old_key' end"),
+                        ]);
+                });
+                // Invoice::query()
+                //     ->where('id', $invoice_id_old_key)
+                //     ->update(['table_id' => $new_key]);
+                // Invoice::query()
+                //     ->where('id', $invoice_id_new_key)
+                //     ->update(['table_id' => $old_key]);
+                return $this->successResponse([
+                    'old_key' => $old_key,
+                    'new_key' => $new_key,
+                ], 'Thanh cong roi nhe!');
+            }
+            //session
+            // if(array_key_exists($new_key,$invoices))
+            // {
+            //     dd(1);
+            // }
+
+
+
+            Table::query()
+                ->whereIn('name', [$new_key, $old_key])
+                ->update([
+                    'status' => DB::raw("case when name = '$new_key' then'" . TableStausEnum::getKey(0) . "'else'" . TableStausEnum::getKey(1) . "'end"),
+                    'invoice_id' => DB::raw("case when name = '$new_key' then $invoice_id_old_key else 0 end"),
+                ]);
+
+            Invoice::query()
+                ->where('id', $invoice_id_old_key)
+                ->update(['table_id' => $new_key]);
+
+            // $invoice_id_new_key = Table::query()
+            //                         ->where('name',$new_key)
+            //                         ->value('invoice_id');
+            // $invoice_id_old_key = Table::query()
+            //                     ->where('name', $old_key)
+            //                     ->value('invoice_id');
+
+            
+            
+
+            // Table::query()
+            //     ->where('name', $new_key)
+            //     ->update([
+            //         'status' => TableStausEnum::getKey(0),
+            //         'invoice_id' => $invoice_id_old_key
+            //     ]);
+            // Table::query()
+            //     ->where('name', $old_key)
+            //     ->update([
+            //         'status' => TableStausEnum::getKey(1),
+            //         'invoice_id' => 0,
+            //     ]);
+            // Invoice::query()
+            //     ->where('id', $invoice_id_old_key)
+            //     ->update([
+            //         'table_id' => $new_key,
+            //     ]);
+
+            return $this->successResponse([
+                'old_key' => $old_key,
+                'new_key' => $new_key,
+            ], 'Thanh cong roi nhe!');
         }
-        
-        
+
+
     }
 }
