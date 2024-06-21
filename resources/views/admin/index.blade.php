@@ -1092,23 +1092,35 @@
                 },
                 dataType: "json",
                 success: function (response) {
+                    $(modal).modal('toggle');
                     let new_key = response.data.new_key;
                     let old_key = response.data.old_key;
                     let new_key_id = 'p-table-id-' + new_key;
                     let old_key_id = 'p-table-id-' + old_key;
                     let id_p_table_new = document.getElementById(new_key_id);
                     let id_p_table_old = document.getElementById(old_key_id);
-                    if(id_p_table_new != null)
+
+                    //modal invoice old la luon luon co vi co moi doi duoc ban chu. Con cai new thif hen xui vaix
+                    let class_modal_invoice_old = '.modal-invoice-' + old_key;
+                    let class_modal_invoice_new = '.modal-invoice-' + new_key;
+                    let modal_invoice_old = document.getElementsByClassName(class_modal_invoice_old);
+                    let modal_invoice_new = document.getElementsByClassName(class_modal_invoice_new);
+
+                    //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
+                    if(modal_invoice_new != null)
                     {
                         let class_invoice_new = '.modal-change-invoice-' + new_key;
                         let modal_invoice_new = $(class_invoice_new).find('.from-table').html(old_key);
                         id_p_table_new.innerHTML = old_key;
                         id_p_table_new.id = old_key_id;
                     }
+                    else
+                    {
+                        
+                    }
                     modal_content.find('.from-table').html(new_key);
                     id_p_table_old.innerHTML = new_key;
                     id_p_table_old.id = new_key_id;
-                    $(modal).modal('toggle');
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
