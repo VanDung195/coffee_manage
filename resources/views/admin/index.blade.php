@@ -803,8 +803,6 @@
                     div_modal_change_invoice.innerHTML = modal_change_invoice;
                     document.getElementById('modal-invoice-change').appendChild(div_modal_change_invoice);
 
-                    // console.log('đây là response: ');
-                    // console.log(response);
                     modal_invoice_close.modal('toggle');
                     let modal_invoice = `
                     <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
@@ -1101,26 +1099,59 @@
                     let id_p_table_old = document.getElementById(old_key_id);
 
                     //modal invoice old la luon luon co vi co moi doi duoc ban chu. Con cai new thif hen xui vaix
-                    let class_modal_invoice_old = '.modal-invoice-' + old_key;
-                    let class_modal_invoice_new = '.modal-invoice-' + new_key;
-                    let modal_invoice_old = document.getElementsByClassName(class_modal_invoice_old);
-                    let modal_invoice_new = document.getElementsByClassName(class_modal_invoice_new);
+                    let id_modal_invoice_old = 'invoice_detail_' + old_key;
+                    let id_modal_invoice_new = 'invoice_detail_' + new_key;
+                    let modal_invoice_old = document.getElementById(id_modal_invoice_old);
+                    let modal_invoice_new = document.getElementById(id_modal_invoice_new);
 
+                    
+                    console.log('day la modal invocie new: ');
+                    console.log(modal_invoice_new.length);
                     //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
                     if(modal_invoice_new != null)
                     {
+                        //data table change
                         let class_invoice_new = '.modal-change-invoice-' + new_key;
                         let modal_invoice_new = $(class_invoice_new).find('.from-table').html(old_key);
                         id_p_table_new.innerHTML = old_key;
                         id_p_table_new.id = old_key_id;
+
+                        modal_content.find('.from-table').html(new_key);
+                        id_p_table_old.innerHTML = new_key;
+                        id_p_table_old.id = new_key_id;
+
+                        //modal invoice change (done)
+                        let modal_invoice_id_new = 'invoice_detail_'+new_key;
+                        let modal_invoice_id_old = 'invoice_detail_'+old_key;
+                        let modal_invoice_detail_new = document.getElementById(modal_invoice_id_new).id = modal_invoice_id_old;
+                        let modal_invoice_detail_old = document.getElementById(modal_invoice_id_old).id = modal_invoice_id_new;
+
                     }
                     else
                     {
-                        
+                        console.log(123);
+                        // modal_content.find('.from-table').html(new_key);
+                        // id_p_table_old.innerHTML = new_key;
+                        // id_p_table_old.id = new_key_id;
+
+                        // let id_show_table_old = document.getElementById('show_table_'+old_key);
+                        // let id_show_table_new = document.getElementById('show_table_'+new_key);
+
+                        // let id_show_table_detail_old = document.getElementById('show_detail_'+old_key);
+                        // let id_show_table_detail_new = document.getElementById('show_detail_'+new_key);
+
+                        // id_show_table_old.style.display = 'block';
+                        // id_show_table_detail_old.style.display = 'none';
+
+                        // id_show_table_new.style.display = 'none';
+                        // id_show_table_detail_new.style.display = 'block';
+
+                        // let modal_invoice_detail_old = document.getElementById(modal_invoice_id_old).id = modal_invoice_id_new;
+
                     }
-                    modal_content.find('.from-table').html(new_key);
-                    id_p_table_old.innerHTML = new_key;
-                    id_p_table_old.id = new_key_id;
+                    // modal_content.find('.from-table').html(new_key);
+                    // id_p_table_old.innerHTML = new_key;
+                    // id_p_table_old.id = new_key_id;
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
