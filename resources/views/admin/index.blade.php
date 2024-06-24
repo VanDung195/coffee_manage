@@ -449,7 +449,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" onclick="deleteInvoice('${table_id_api}', 'modal_invoice')" class="btn btn-danger">Xoá hoá đơn</button>
+                        <button type="button" onclick="deleteInvoice('${table_id_api}', 'modal_invoice')" class="btn btn-delete-invoice btn-danger">Xoá hoá đơn</button>
                         <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
                     </div>
                     </div>
@@ -626,7 +626,7 @@
                                         ${item.remaining_money}
                                     </td>
                                     <td rowspan="${rowspanCount}">
-                                        <button onclick="deleteInvoice('${item.table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
+                                        <button onclick="deleteInvoice('${item.table_id}','order_table')" class="btn btn-delete-invoice btn-danger btn-sm">Xoá</button>
                                     </td>
                                 `;
                                     //cách 2 để dùng hiển thị cái badge
@@ -887,7 +887,7 @@
                                 ${response.data.remaining_money}
                             </td>
                             <td rowspan="${rowspanCount}">
-                                <button onclick="deleteInvoice('${table_id}','order_table')" class="btn btn-danger btn-sm">Xoá</button>
+                                <button onclick="deleteInvoice('${table_id}','order_table')" class="btn btn-delete-invoice btn-danger btn-sm">Xoá</button>
                             </td>
                         `;
                         }
@@ -1099,17 +1099,32 @@
                     let id_p_table_old = document.getElementById(old_key_id);
 
                     //modal invoice old la luon luon co vi co moi doi duoc ban chu. Con cai new thif hen xui vaix
-                    let id_modal_invoice_old = 'invoice_detail_' + old_key;
+                    // let id_modal_invoice_old = 'invoice_detail_' + old_key;
                     let id_modal_invoice_new = 'invoice_detail_' + new_key;
-                    let modal_invoice_old = document.getElementById(id_modal_invoice_old);
+                    // let modal_invoice_old = document.getElementById(id_modal_invoice_old);
                     let modal_invoice_new = document.getElementById(id_modal_invoice_new);
 
+                    let modal_invoice_id_new = 'invoice_detail_'+new_key;
+                    let modal_invoice_id_old = 'invoice_detail_'+old_key;
                     
-                    console.log('day la modal invocie new: ');
-                    console.log(modal_invoice_new.length);
+                    //change button delete
+                    let btn_delete_data_table_old = $('.order_table_class_'+old_key).find('.btn-delete-invoice');
+                    let btn_delete_data_table_new = $('.order_table_class_'+new_key).find('.btn-delete-invoice');
+                    let btn_delete_modal_old = $('#invoice_detail_'+old_key).find('.btn-delete-invoice');
+                    let btn_delete_modal_new = $('#invoice_detail_'+new_key).find('.btn-delete-invoice');
+
+                    let invoice_detail_old = document.getElementById('invoice_detail_'+old_key);
+                    let invoice_detail_new = document.getElementById('invoice_detail_'+new_key);
+
+                    let div_invoice_detail_old = document.getElementById('div_invoice_detail_'+old_key);
+                    let div_invoice_detail_new = document.getElementById('div_invoice_detail_'+new_key);
+
+                    let elements_old = document.querySelectorAll('.order_table_class_'+old_key);
+                    let elements_new = document.querySelectorAll('.order_table_class_'+new_key);
                     //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
-                    if(modal_invoice_new != null)
+                    if(modal_invoice_new != null)  //done
                     {
+                        console.log('da co modal invoice new nhe!!!!!');
                         //data table change
                         let class_invoice_new = '.modal-change-invoice-' + new_key;
                         let modal_invoice_new = $(class_invoice_new).find('.from-table').html(old_key);
@@ -1120,33 +1135,57 @@
                         id_p_table_old.innerHTML = new_key;
                         id_p_table_old.id = new_key_id;
 
-                        //modal invoice change (done)
-                        let modal_invoice_id_new = 'invoice_detail_'+new_key;
-                        let modal_invoice_id_old = 'invoice_detail_'+old_key;
-                        let modal_invoice_detail_new = document.getElementById(modal_invoice_id_new).id = modal_invoice_id_old;
-                        let modal_invoice_detail_old = document.getElementById(modal_invoice_id_old).id = modal_invoice_id_new;
+                        //modal invoice change 
+                        invoice_detail_old.id = 'invoice_detail_'+new_key;
+                        invoice_detail_new.id = 'invoice_detail_'+old_key;
+
+                        //change btn delete 
+                        btn_delete_data_table_old.attr('onclick', `deleteInvoice('${new_key}', 'order_table')`);
+                        btn_delete_data_table_new.attr('onclick', `deleteInvoice('${old_key}', 'order_table')`);
+                        btn_delete_modal_old.attr('onclick', `deleteInvoice('${new_key}', 'modal_invoice')`);
+                        btn_delete_modal_new.attr('onclick', `deleteInvoice('${old_key}', 'modal_invoice')`);
+
+                        //change div invoice detail
+                        div_invoice_detail_old.id = 'div_invoice_detail_'+new_key;
+                        div_invoice_detail_new.id = 'div_invoice_detail_'+old_key;
+
+                        div_invoice_detail_old.querySelector('h3').innerHTML = 'Bàn số: '+new_key;
+                        div_invoice_detail_new.querySelector('h3').innerHTML = 'Bàn số: '+old_key;
+
+                        elements_old.forEach(function(element){
+                            element.className = 'order_table_class_'+new_key;
+                        });
+                        elements_new.forEach(function (element) { 
+                            element.className = 'order_table_class_'+old_key;
+                        });
 
                     }
                     else
                     {
                         console.log(123);
-                        // modal_content.find('.from-table').html(new_key);
-                        // id_p_table_old.innerHTML = new_key;
-                        // id_p_table_old.id = new_key_id;
+                        modal_content.find('.from-table').html(new_key);
+                        id_p_table_old.innerHTML = new_key;
+                        id_p_table_old.id = new_key_id;
 
-                        // let id_show_table_old = document.getElementById('show_table_'+old_key);
-                        // let id_show_table_new = document.getElementById('show_table_'+new_key);
+                        let btn_show_table_new = "show_table_" + new_key;
+                        let btn_show_invoice_detail_new = "show_detail_" + new_key;
+                        document.getElementById(btn_show_table_new).style.display = 'none';
+                        document.getElementById(btn_show_invoice_detail_new).style.display = 'block';
 
-                        // let id_show_table_detail_old = document.getElementById('show_detail_'+old_key);
-                        // let id_show_table_detail_new = document.getElementById('show_detail_'+new_key);
+                        let btn_show_table_old = "show_table_" + old_key;
+                        let btn_show_invoice_detail_old = "show_detail_" + old_key;
+                        document.getElementById(btn_show_table_old).style.display = 'block';
+                        document.getElementById(btn_show_invoice_detail_old).style.display = 'none';
 
-                        // id_show_table_old.style.display = 'block';
-                        // id_show_table_detail_old.style.display = 'none';
+                        btn_delete_data_table_old.attr('onclick', `deleteInvoice('${new_key}', 'order_table')`);
+                        btn_delete_modal_old.attr('onclick', `deleteInvoice('${new_key}', 'modal_invoice')`);
+                        div_invoice_detail_old.id = 'div_invoice_detail_'+new_key;
+                        invoice_detail_old.id = 'invoice_detail_'+new_key;
+                        div_invoice_detail_old.querySelector('h3').innerHTML = 'Bàn số: '+new_key;
 
-                        // id_show_table_new.style.display = 'none';
-                        // id_show_table_detail_new.style.display = 'block';
-
-                        // let modal_invoice_detail_old = document.getElementById(modal_invoice_id_old).id = modal_invoice_id_new;
+                        elements_old.forEach(function(element){
+                            element.className = 'order_table_class_'+new_key;
+                        });
 
                     }
                     // modal_content.find('.from-table').html(new_key);
@@ -1214,6 +1253,7 @@
                     table_name
                 },
                 success: function(response) {
+                    console.log('day la ham delete invoice');
                     //delete invoice detail modal
                     let modal_invoice = "#invoice_detail_" + table_name;
                     let modal_change_invoice = '.modal-change-invoice-'+table_name;
@@ -1224,6 +1264,7 @@
                     }
                     let div_invoice = "div_invoice_detail_" + table_name;
                     let divR = document.getElementById(div_invoice);
+                    console.log(div_invoice);
                     divR.remove();
 
                     //switch tu red button to green button
@@ -1237,6 +1278,7 @@
                     modal_bg.remove;
 
                     //remove tr table
+                    console.log(table_name);
                     let elements = document.querySelectorAll('.order_table_class_' + table_name);
                     elements.forEach(function(element) {
                         console.log(element);
