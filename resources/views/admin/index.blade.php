@@ -389,7 +389,8 @@
                         let show_table_api = 'show_table_' + table_id_api;
                         let show_detail_api = 'show_detail_' + table_id_api;
                         //mọi phần tử trong Set là duy nhất, không trùng lặp và cung cấp các phương thức hiệu quả để kiểm tra các phần tử
-                        const invalid_table_id = new Set(['unknow', 'unknow2', 'takeaway']);
+                        // const invalid_table_id = new Set(['unknow', 'unknow2', 'takeaway']);
+                        const invalid_table_id = new Set(['takeaway']);
                         // if(table_id_api != 'unknow' && table_id_api != 'unknow2' && table_id_api != 'takeaway')
                         if(!invalid_table_id.has(table_id_api))
                         {
