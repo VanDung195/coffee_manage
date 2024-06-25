@@ -48,7 +48,7 @@ if(!function_exists('getAndCacheAvailableTableNames')){
                         ->orderBy('stt', 'asc')
                         ->get()
                         ->toArray();
-                $tables = array_slice($tables, 3);
+                $tables = array_slice($tables, 4);
 
                 return $tables;
             }
