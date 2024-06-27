@@ -131,215 +131,213 @@
     .form-control{
         margin-top: 0px;
     }
+    
+    .form-invoice{
+        /* border: 1px solid black; */
+        margin-top: 20px;
+        max-width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        width: 430px;
+        padding: 5px;
+    }
+    .table-name{
+        margin-left: 5px;
+        
+    }
+    .icon-center{
+        max-width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+
+
+
+
+
+    .form-group label {
+        font-size: 16px;
+    }
+
+    .quantity-container {
+        display: flex;
+        align-items: center;
+        /* border-radius: 5px;  */
+        overflow: hidden; /* Đảm bảo nội dung không vượt ra ngoài góc bo */
+    }
+
+    .btn-update-quantity {
+        border-radius: 5px;
+        background-color: #343a40; /* Màu nền xám tối */
+        border: none; /* Loại bỏ viền */
+        color: #ecf0f1; /* Màu chữ sáng */
+        padding: 0 15px; /* Đệm nút */
+        cursor: pointer; /* Con trỏ tay */
+        font-size: 20px; /* Kích thước chữ lớn */
+        /* height: 40px;  */
+        height: 38.4px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s; /* Hiệu ứng chuyển màu mượt mà */
+    }
+
+    .btn-update-quantity:hover {
+        background-color: #3c566c; /* Màu đậm hơn khi hover */
+    }
+
+    .btn-update-quantity:disabled {
+        background-color: #34495e; /* Màu nền cho trạng thái disabled */
+        color: #7f8c8d; /* Màu chữ nhạt hơn cho trạng thái disabled */
+        cursor: not-allowed; /* Con trỏ không cho phép */
+    }
+
+    .quantity {
+        border-radius: 5px;
+        background-color: #464f5b; /* Nền input màu tối */
+        border: none; /* Loại bỏ viền */
+        height: 40px; /* Chiều cao cố định */
+        width: 50px; /* Chiều rộng cố định */
+        text-align: center; /* Căn giữa chữ */
+        font-size: 16px; /* Kích thước chữ */
+        color: #ecf0f1; /* Màu chữ sáng */
+    }
+
     .btn-delete{
-        width: 30px;
-        height: 30px;
+        height: 38.4px;
+        width: 100px;
+    }
+    .btn-delete-disabled{
+        height: 38.4px;
+        width: 60px;
+    }
+    .btn-delete-disabled:disabled{
+        height: 38.4px;
+        width: 80px;
+        cursor: not-allowed;
+        background-color: #34495e; /* Màu nền cho trạng thái disabled */
+        border: none; 
     }
     </style>
 </head>
 <body>
-    {{-- <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
+{{-- <div class="form-invoice">
+    <form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
         @csrf
-        <div class="form-row">
-            <label for="">Bàn số</label>
-            <input type="text" class="form-control" name="table-id" id="table-id" readonly value="{{ $table_name }}">
+        <div class="table-name form-row">
+            <input type="hidden" name="table-id" value="{{ $table_name }}">
+            <h3>Bàn số: {{ $table_name }}</h3>
         </div>
-        <div class="item form-row" id="item">
-            <div class="div-select form-group col-5" id="div-select">
-                <label for="">Món</label>
-                <select name="id[]" class="select-item">
-                    <option selected>Chọn món</option>
-                    @foreach ($items as $item)
-                    <option value="{{$item->id}}" data-price="{{ $item->price }}">
-                        {{ $item->name }}
-                    </option>
-                    @endforeach
-                </select>
+        <div class="item" id="item">
+            <div class="form-row">
+                <div class="form-group col-7 div-select" id="div-select">
+                    <label for="id[]">Món: </label>
+                    <select name="id[]" class="form-control select-item">
+                        <option selected>Chọn món</option>
+                        @foreach ($items as $item)
+                            <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                {{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-4" style="margin-left: 5px; margin-right: 5px;">
+                    <label for="quantity">Số lượng: </label>
+                    <div style="display: flex;">
+                        <button type="button" class="btn-update-quantity" data-type='0' disabled>-</button>
+                        <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69; border: none; height: 40px; width: 40px; text-align: center;" readonly>
+                        <button type="button" class="btn-update-quantity" data-type='1' disabled>+</button>
+                    </div>
+                </div>
             </div>
-            <div class="form-group" style="margin-left: 42px;width:135px;">
-                <label for="">Số lượng (Min: 1)</label>
-                <br>
-                <button
-                type="button"
-                class="btn-update-quantity"
-                data-type='0'
-                style="float: left"
-                disabled
-                >
-                -
-            </button>
-            <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
-            <button
-            type="button"
-            class="btn-update-quantity"
-            data-type='1'
-            style="float: left;"
-            disabled
-            >
-            +
-        </button>
-    </div>
-    <div class="form-group col-3">
-        <span class="span-sum">
-            <label>Giá</label>
-            <input type="text" id="price" class="price form-control" value="0" readonly>
-        </span>
-    </div>
-</div>
-<div id="append-item">
-
-</div>
-<div class="form-row" style="margin-top: 30px;">
-    <div class="form-group col-5" id="div-paid">
-        <select name="is_paid" id="select_paid" class="form-control">
-            <option value="0">Chưa thanh toán</option>
-            <option value="1" selected>Đã thanh toán</option>
-        </select>
-    </div> 
-    <div class="form-group col-2" style="margin-left: 60px;">
-        <h4>Tổng tiền: </h4>
-    </div>
-    <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
-        <span class="fl-right" style="margin-bottom: 20px;">
-            <input type="text" id="total-price" value="0" class="form-control" readonly>
-        </span>
-    </div>
-</div>
-<button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
-</form>  --}}
-
-
-{{-- 
-
-
-<form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
-    @csrf
-    <div class="form-row">
-        <label for="">Bàn số</label>
-        <input type="text" class="form-control" name="table-id" id="table-id" readonly value="{{ $table_name }}">
-    </div>
-    <div class="item form-row" id="item">
-        <div class="div-select form-group col-5" id="div-select">
-            <label for="">Món</label>
-            <select name="id[]" class="select-item">
-                <option selected>Chọn món</option>
-                @foreach ($items as $item)
-                    <option value="{{$item->id}}" data-price="{{ $item->price }}">
-                        {{ $item->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group" style="margin-left: 5px;margin-right:5px;">
-            <label for="">Số lượng</label>
-            <br>
-            <button
-                type="button"
-                class="btn-update-quantity"
-                data-type='0'
-                style="float: left"
-                disabled
-            >
-                -
-            </button>
-            <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
-            <button
-                type="button"
-                class="btn-update-quantity"
-                data-type='1'
-                style="float: left;"
-                disabled
-            >
-                +
-            </button>
-        </div>
-        <div class="form-group">
-            <span class="span-sum">
-                <label>Giá</label>
+            <div class="form-group col-4" style="padding:0px;">
+                <label for="price">Giá: </label>
                 <input type="text" id="price" class="price form-control" value="0" readonly>
-            </span>
-        </div>
-    </div>
-    <div id="append-item"></div>
-    <div class="form-row" style="margin-top: 30px;">
-        <div class="form-group col-5" id="div-paid">
-            <select name="is_paid" id="select_paid" class="form-control">
-                <option value="0">Chưa thanh toán</option>
-                <option value="1" selected>Đã thanh toán</option>
-            </select>
-        </div> 
-        <div class="form-group col-2" style="margin-left: 60px;">
-            <h4>Tổng tiền: </h4>
-        </div>
-        <div class="form-group col-4" style="margin-top: 5px;margin-left:0px;">
-            <span class="fl-right" style="margin-bottom: 20px;">
-                <input type="text" id="total-price" value="0" class="form-control" readonly>
-            </span>
-        </div>
-    </div>
-    <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
-</form>  
-<button type="button" onclick="submitForm()" class="btn btn-success" >Tạo hoá đơn</button>
---}}
-<form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
-    @csrf
-    <div class="form-row">
-        <label for="table-id">Bàn số</label>
-        <input type="text" class="form-control" name="table-id" id="table-id" readonly value="{{ $table_name }}">
-    </div>
-    <div class="item" id="item">
-        <div class="form-row">
-            <div class="form-group col-7 div-select" id="div-select">
-                <label for="id[]">Món</label>
-                <select name="id[]" class="form-control select-item">
-                    <option selected>Chọn món</option>
-                    @foreach ($items as $item)
-                        <option value="{{ $item->id }}" data-price="{{ $item->price }}">
-                            {{ $item->name }}
-                        </option>
-                    @endforeach
-                </select>
             </div>
-            <div class="form-group col-4" style="margin-left: 5px; margin-right: 5px;">
-                <label for="quantity">Số lượng</label>
-                <div style="display: flex;">
-                    <button type="button" class="btn-update-quantity" data-type='0' disabled>-</button>
-                    <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69; border: none; height: 40px; width: 40px; text-align: center;" readonly>
-                    <button type="button" class="btn-update-quantity" data-type='1' disabled>+</button>
+        </div>
+        
+        <div id="append-item"></div>
+        <div class="form-row" style="margin-top: 10px;">
+            <div class="form-group col-5" id="div-paid">
+                <select name="is_paid" id="select_paid" class="form-control">
+                    <option value="0">Thanh toán sau</option>
+                    <option value="1" selected>Thanh toán luôn</option>
+                </select>
+            </div> 
+            <div class="form-group col-2" style="margin-left: 15px;float: left;">
+                <h4>Tổng tiền:</h4>
+            </div>
+            <div class="form-group col-4" style="margin-top: 5px; margin-left: 0;">
+                <input type="text" id="total-price" value="0" class="form-control" readonly>
+            </div>
+        </div>
+        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
+    </form>
+    <button type="button" onclick="submitForm()" class="btn btn-success">Tạo hoá đơn</button>
+</div> --}}
+
+<div class="form-invoice">
+    <form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
+        @csrf
+        <div class="table-name form-row">
+            <input type="hidden" name="table-id" value="{{ $table_name }}">
+            <h3>Bàn số: {{ $table_name }}</h3>
+        </div>
+        <div class="item" id="item">
+            <div class="form-row">
+                <div class="form-group col-12 div-select" id="div-select">
+                    <label for="id[]">Món: </label>
+                    <select name="id[]" class="form-control select-item">
+                        <option value="0" selected>Chọn món</option>
+                        @foreach ($items as $item)
+                            <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                {{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-5">
+                    <label for="quantity">Số lượng: </label>
+                    <div class="quantity-container" style="width:160px;">
+                        <button type="button" class="btn-update-quantity" data-type='0' disabled style="width:41.68px;margin-left:0px;">-</button>
+                        <input type="text" name="quantity[]" class="quantity" value="0" readonly>
+                        <button type="button" class="btn-update-quantity" data-type='1' disabled>+</button>
+                    </div>
+                </div>
+                <div class="form-group col-4" style="padding:0px;">
+                    <label for="price">Giá: </label>
+                    <input type="text" id="price" class="price form-control" value="0" readonly>
+                </div>
+                <div class="form-group col-2">
+                    <label>Delete</label>
+                    <button type="button" class="btn-delete-disabled btn-danger btn-sm" disabled><i class="dripicons-cross"></i></button>
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="price">Giá</label>
-            <input type="text" id="price" class="price form-control" value="0" readonly>
+        
+        <div id="append-item"></div>
+        <div class="form-row" style="margin-top: 10px;">
+            <div class="form-group col-5" id="div-paid">
+                <select name="is_paid" id="select_paid" class="form-control">
+                    <option value="0">Thanh toán sau</option>
+                    <option value="1" selected>Thanh toán luôn</option>
+                </select>
+            </div> 
+            <div class="form-group col-2" style="margin-left: 15px;float: left;">
+                <h4>Tổng tiền:</h4>
+            </div>
+            <div class="form-group col-4" style="margin-top: 5px; margin-left: 0;">
+                <input type="text" id="total-price" value="0" class="form-control" readonly>
+            </div>
         </div>
-    </div>
-    
-    <div id="append-item"></div>
-    <div class="form-row" style="margin-top: 10px;">
-        <div class="form-group col-5" id="div-paid">
-            <select name="is_paid" id="select_paid" class="form-control">
-                <option value="0">Chưa thanh toán</option>
-                <option value="1" selected>Đã thanh toán</option>
-            </select>
-        </div> 
-        <div class="form-group col-2" style="margin-left: 60px;float: left;">
-            <h4>Tổng tiền:</h4>
-        </div>
-        <div class="form-group col-4" style="margin-top: 5px; margin-left: 0;">
-            <input type="text" id="total-price" value="0" class="form-control" readonly>
-        </div>
-    </div>
-    <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
-</form>
-<button type="button" onclick="submitForm()" class="btn btn-success">Tạo hoá đơn</button>
-
-<script>
-    
-</script>
-
-
-
+        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
+    </form>
+    <button type="button" onclick="submitForm()" class="btn btn-success">Tạo hoá đơn</button>
+</div>
 </body>
 </html>
 <script src="{{ asset('js/vendor.min.js') }}"></script>
@@ -367,14 +365,19 @@
         });
     }
 
-    function updateRowTotal(formRow) {
-        let quantity = parseInt(formRow.find('.quantity').val());
-        let price = formRow.find(".select-item").find(":selected").data("price");
-        let sum = price * quantity;
-        formRow.find(".price").val(sum.toLocaleString('vi-VN'));
-            // console.log(1);
-            // Cập nhật tổng tiền của tất cả sản phẩm
-        updateTotalPrice();
+    function update_row_total(item_class) {
+        // let quantity = parseInt(formRow.find('.quantity').val());
+        // let price = formRow.find(".select-item").find(":selected").data("price");
+        // let sum = price * quantity;
+        // formRow.find(".price").val(sum.toLocaleString('vi-VN'));
+        //     // console.log(1);
+        //     // Cập nhật tổng tiền của tất cả sản phẩm
+        // updateTotalPrice();
+
+        let quantity_input = parseInt(item_class.find('.quantity').val());
+        let price = item_class.find(".select-item").find(":selected").data('price');
+        let sum = price * quantity_input;
+        item_class.find('.price').val(sum.toLocaleString('vi-VN'));
     }
 
     function updateTotalPrice() {
@@ -400,12 +403,18 @@
 
         })
         $(".form-group .select-item").on('change', function(){
-            let formRow = $(this).closest('.form-row');
-            let quantityInput = formRow.find('.quantity').val('1');
-            let btnUpdateQuantity = formRow.find('.btn-update-quantity');
-            btnUpdateQuantity.attr('disabled', false);
-            updateRowTotal(formRow);
-            console.log(123123123);
+            console.log(123);
+            // let formRow = $(this).closest('.form-row');
+            // let quantityInput = formRow.find('.quantity').val('1');
+            // let btnUpdateQuantity = formRow.find('.btn-update-quantity');
+            // btnUpdateQuantity.attr('disabled', false);
+            // updateRowTotal(formRow);
+            let item_class = $(this).closest('.item');
+            let quantity_input = item_class.find('.quantity').val('1');
+            let btn_update_quantity = item_class.find('.btn-update-quantity');
+            btn_update_quantity.attr('disabled', false);
+
+            update_row_total(item_class);
         });
         
         $(".btn-update-quantity").on('click', function(){
@@ -433,10 +442,15 @@
         addBtn.addEventListener('click', function() {
             let div = document.createElement("div");
             div.innerHTML = `
-                <div class="item">
+            <div class="icon-center">
+                <i class="mdi mdi-minus"></i>
+                <i class="dripicons-minus"></i>
+                <i class="dripicons-minus"></i>
+            </div>
+                <div class="item" id="item">
                     <div class="form-row">
-                        <div class="form-group col-7 div-select" id="div-select">
-                            <label for="id[]">Món</label>
+                        <div class="form-group col-12 div-select" id="div-select">
+                            <label for="id[]">Món: </label>
                             <select name="id[]" class="form-control select-item">
                                 <option selected>Chọn món</option>
                                 @foreach ($items as $item)
@@ -446,22 +460,24 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-4" style="margin-left: 5px; margin-right: 5px;">
-                            <label for="quantity">Số lượng</label>
-                            <div style="display: flex;">
-                                <button type="button" class="btn-update-quantity" data-type='0' disabled>-</button>
-                                <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69; border: none; height: 40px; width: 40px; text-align: center;" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-5">
+                            <label for="quantity">Số lượng: </label>
+                            <div class="quantity-container">
+                                <button type="button" class="btn-update-quantity" data-type='0' disabled style="width:41.68px;margin-left:0px;">-</button>
+                                <input type="text" id="quantity" name="quantity[]" class="quantity" value="0" readonly>
                                 <button type="button" class="btn-update-quantity" data-type='1' disabled>+</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group col-3">
-                        <label for="price">Giá</label>
-                        <input type="text" id="price" class="price form-control" value="0" readonly>
-                    </div>
-                    <div class="form-group col-1">
-                        <label>Delete</label>
-                        <button type="button" class="btn-delete btn-danger">X</button>
+                        <div class="form-group col-4" style="padding:0px;">
+                            <label for="price">Giá: </label>
+                            <input type="text" id="price" class="price form-control" value="0" readonly>
+                        </div>
+                        <div class="form-group col-1">
+                            <label>Delete</label>
+                            <button type="button" class="btn-delete-disabled btn-danger btn-sm" disabled><i class="dripicons-cross"></i></button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -469,9 +485,6 @@
             $(".form-row .select-item").select2({ tag: true });
             envent();
         });
-
-
-
 
         
                 //Append item 
