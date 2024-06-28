@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/app-creative-dark.min.css') }}" rel="stylesheet" type="text/css">
     <title>Document</title>
@@ -170,7 +171,7 @@
 
     .btn-update-quantity {
         border-radius: 5px;
-        background-color: #343a40; /* Màu nền xám tối */
+        background-color: #525d68; /* Màu nền xám tối */
         border: none; /* Loại bỏ viền */
         color: #ecf0f1; /* Màu chữ sáng */
         padding: 0 15px; /* Đệm nút */
@@ -219,6 +220,15 @@
         cursor: not-allowed;
         background-color: #34495e; /* Màu nền cho trạng thái disabled */
         border: none; 
+    }
+    .btn-submit-invoice{
+        width: 100%;
+        margin-top: 20px;
+        height: 50px;
+        font-size: 20px;
+    }
+    .btn-submit-invoice:disabled{
+        background-color: rgb(178, 240, 178);
     }
     </style>
 </head>
@@ -282,7 +292,7 @@
     <form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
         @csrf
         <div class="table-name form-row">
-            <input type="hidden" name="table-id" value="{{ $table_name }}">
+            <input type="hidden" name="table_id" value="{{ $table_name }}">
             <h3>Bàn số: {{ $table_name }}</h3>
         </div>
         <div class="item" id="item">
@@ -290,7 +300,7 @@
                 <div class="form-group col-12 div-select" id="div-select">
                     <label for="id[]">Món: </label>
                     <select name="id[]" class="form-control select-item">
-                        <option value="0" selected>Chọn món</option>
+                        <option data-price="0" selected>Chọn món</option>
                         @foreach ($items as $item)
                             <option value="{{ $item->id }}" data-price="{{ $item->price }}">
                                 {{ $item->name }}
@@ -313,7 +323,7 @@
                     <input type="text" id="price" class="price form-control" value="0" readonly>
                 </div>
                 <div class="form-group col-2">
-                    <label>Delete</label>
+                    <label>Xoá: </label>
                     <button type="button" class="btn-delete-disabled btn-danger btn-sm" disabled><i class="dripicons-cross"></i></button>
                 </div>
             </div>
@@ -331,12 +341,24 @@
                 <h4>Tổng tiền:</h4>
             </div>
             <div class="form-group col-4" style="margin-top: 5px; margin-left: 0;">
-                <input type="text" id="total-price" value="0" class="form-control" readonly>
+                {{-- <input type="text" name="total_price" id="total-price" value="0" class="form-control" readonly> --}}
+                <p style="margin:0px;display: flex; align-items: center;" id="total-price" class="form-control">0</p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="">Số tiền trả (1 = 10.000):</label>
+                <input class="customer-payment form-control" type="text" name="customer_payment" id="">
+            </div>
+            <div class="form-group col-5"  style="margin-left: 20px;">
+                <label for="">Số tiền còn lại:</label>
+                {{-- <input class="form-control" type="text" name="" id=""> --}}
+                <p style="margin: 0px;display: flex; align-items: center;" class="remaining-money form-control">0</p>
             </div>
         </div>
         <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
     </form>
-    <button type="button" onclick="submitForm()" class="btn btn-success">Tạo hoá đơn</button>
+    <button type="button" onclick="submitForm()" class="btn btn-submit-invoice btn-success">Tạo hoá đơn</button>
 </div>
 </body>
 </html>
@@ -366,33 +388,59 @@
     }
 
     function update_row_total(item_class) {
-        // let quantity = parseInt(formRow.find('.quantity').val());
-        // let price = formRow.find(".select-item").find(":selected").data("price");
-        // let sum = price * quantity;
-        // formRow.find(".price").val(sum.toLocaleString('vi-VN'));
-        //     // console.log(1);
-        //     // Cập nhật tổng tiền của tất cả sản phẩm
-        // updateTotalPrice();
-
         let quantity_input = parseInt(item_class.find('.quantity').val());
         let price = item_class.find(".select-item").find(":selected").data('price');
         let sum = price * quantity_input;
         item_class.find('.price').val(sum.toLocaleString('vi-VN'));
+        update_total_price();
     }
 
-    function updateTotalPrice() {
-        console.log(12387123987123871289);
+    function update_total_price() {
         let total = 0;
         $(".item").each(function(){
             let quantity = parseInt($(this).find('.quantity').val());
-            let price = $(this).find(".select-item").find(":selected").data("price");
+            let price = parseInt($(this).find(".select-item").find(":selected").data("price"));
             let totalPrice = quantity*price;
             total += price * quantity;
         })
-        console.log(total);
-        $("#total-price").val(total.toLocaleString('vi-VN'));
+        // $("#total-price").val(total.toLocaleString('vi-VN'));
+        $("#total-price").html(total.toLocaleString('vi-VN'));
     }
+    
+
     $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $('.customer-payment').on('keyup', function() {
+            // let modal_content = $(this).closest('.modal-content');
+            // let object = modal_content.find('.form-create');
+            // let form_data = new FormData(object[0]);
+            let object = $('#form-create');
+            let form_data = new FormData(object[0]);
+            console.log(123);
+            $.ajax({
+                type: "post",
+                url: '{{ route('invoice.update') }}',
+                data: form_data,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('.remaining-money').html(response.data.toLocaleString('vi-VN'));
+                    $('.btn-submit-invoice').prop( "disabled", false);
+                },
+                error: function(error) {
+                    $('.remaining-money').html('NULL');
+                    $('.btn-submit-invoice').prop( "disabled", true);
+                }
+            });
+        });
+
+
         $(".select-item").select2({tag: true});
         $('.btn-table').click(function(){
             var tableId = $(this).data('table-id');
@@ -403,12 +451,6 @@
 
         })
         $(".form-group .select-item").on('change', function(){
-            console.log(123);
-            // let formRow = $(this).closest('.form-row');
-            // let quantityInput = formRow.find('.quantity').val('1');
-            // let btnUpdateQuantity = formRow.find('.btn-update-quantity');
-            // btnUpdateQuantity.attr('disabled', false);
-            // updateRowTotal(formRow);
             let item_class = $(this).closest('.item');
             let quantity_input = item_class.find('.quantity').val('1');
             let btn_update_quantity = item_class.find('.btn-update-quantity');
@@ -418,23 +460,22 @@
         });
         
         $(".btn-update-quantity").on('click', function(){
-        console.log(1);
-            let formRow = $(this).closest('.form-row');
+            let item_class = $(this).closest('.item');
             let type = parseInt($(this).data('type'));
-            let quantityInput = $(this).closest('.form-row').find('.quantity');
-                // console.log(quantityInput);
-            let quantity = parseInt(quantityInput.val());
-            if(type===0)
+            let quantity_input = $(this).closest('.item').find('.quantity');
+            let quantity = parseInt(quantity_input.val());
+            if(type === 0)
             {
-                if(quantity>1){
+                if(quantity > 1)
+                {
                     quantity = quantity - 1;
-                    quantityInput.val(quantity);
+                    quantity_input.val(quantity);
                 }
             }else{
                 quantity += 1;
-                quantityInput.val(quantity);
+                quantity_input.val(quantity);
             }
-            updateRowTotal(formRow);
+            update_row_total(item_class);
             
         })
 
@@ -442,17 +483,17 @@
         addBtn.addEventListener('click', function() {
             let div = document.createElement("div");
             div.innerHTML = `
-            <div class="icon-center">
-                <i class="mdi mdi-minus"></i>
-                <i class="dripicons-minus"></i>
-                <i class="dripicons-minus"></i>
-            </div>
                 <div class="item" id="item">
+                    <div class="icon-center">
+                        <i class="mdi mdi-minus"></i>
+                        <i class="dripicons-minus"></i>
+                        <i class="dripicons-minus"></i>
+                    </div>
                     <div class="form-row">
                         <div class="form-group col-12 div-select" id="div-select">
                             <label for="id[]">Món: </label>
                             <select name="id[]" class="form-control select-item">
-                                <option selected>Chọn món</option>
+                                <option data-price="0" selected>Chọn món</option>
                                 @foreach ($items as $item)
                                     <option value="{{ $item->id }}" data-price="{{ $item->price }}">
                                         {{ $item->name }}
@@ -475,8 +516,8 @@
                             <input type="text" id="price" class="price form-control" value="0" readonly>
                         </div>
                         <div class="form-group col-1">
-                            <label>Delete</label>
-                            <button type="button" class="btn-delete-disabled btn-danger btn-sm" disabled><i class="dripicons-cross"></i></button>
+                            <label>Xoá:</label>
+                            <button type="button" class="btn-delete btn-danger btn-sm"><i class="dripicons-cross"></i></button>
                         </div>
                     </div>
                 </div>
@@ -532,35 +573,53 @@
 
         function envent()
         {
-            $(".form-row .select-item").on('change', function(){
-                let formRow = $(this).closest('.form-row');
-                let quantityInput = formRow.find('.quantity');
-                let btnUpdateQuantity = formRow.find('.btn-update-quantity');
-                btnUpdateQuantity.attr('disabled', false);
-                quantityInput.val('1');
-                let quantity = parseInt(quantityInput.val());
-                updateRowTotal(formRow);
+            $(".form-group .select-item").on('change', function(){
+                let item_class = $(this).closest('.item');
+                let quantity_input = item_class.find('.quantity').val('1');
+                let btn_update_quantity = item_class.find('.btn-update-quantity');
+                btn_update_quantity.attr('disabled', false);
+                update_row_total(item_class);
             });
                 // Sự kiện cho nút tăng giảm trong form-row mới
-            $(".form-row:last-child .btn-update-quantity").on('click', function(){
-                let formRow = $(this).closest('.form-row');
+            // $(".form-row:last-child .btn-update-quantity").on('click', function(){
+            //     let formRow = $(this).closest('.form-row');
+            //     let type = parseInt($(this).data('type'));
+            //     let quantityInput = $(this).closest('.form-row').find('.quantity');
+            //     let quantity = parseInt(quantityInput.val());
+            //     if (type === 0 && quantity > 1) {
+            //         quantity = quantity - 1;
+            //         quantityInput.val(quantity);
+            //     } else if (type === 1) {
+            //         quantity += 1;
+            //         quantityInput.val(quantity);
+            //     }
+            //     updateRowTotal(formRow);
+            // });
+
+            $(".btn-update-quantity").on('click', function(){
+                let item_class = $(this).closest('.item');
                 let type = parseInt($(this).data('type'));
-                let quantityInput = $(this).closest('.form-row').find('.quantity');
-                let quantity = parseInt(quantityInput.val());
-                if (type === 0 && quantity > 1) {
-                    quantity = quantity - 1;
-                    quantityInput.val(quantity);
-                } else if (type === 1) {
+                let quantity_input = $(this).closest('.item').find('.quantity');
+                let quantity = parseInt(quantity_input.val());
+                if(type === 0)
+                {
+                    if(quantity > 1)
+                    {
+                        quantity = quantity - 1;
+                        quantity_input.val(quantity);
+                    }
+                }else{
                     quantity += 1;
-                    quantityInput.val(quantity);
+                    quantity_input.val(quantity);
                 }
-                updateRowTotal(formRow);
+                update_row_total(item_class);
+                
             });
 
-            $(".form-row .btn-delete").on('click', function(){
-                let divDelete = $(this).closest('.form-row');
+            $(".item .btn-delete").on('click', function(){
+                let divDelete = $(this).closest('.item');
                 divDelete.remove();
-                updateTotalPrice();
+                update_total_price();
             })
         } 
     });
