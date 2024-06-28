@@ -20,7 +20,7 @@ class InvoiceController extends Controller
     use ResponseTrait;
     // use NumberFormatter;
 
-    public function store(StoreRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         // dd($request->all());
         try {
@@ -51,6 +51,10 @@ class InvoiceController extends Controller
             }
 
             $remaining_money = $customer_payment - $total_price;
+            if($remaining_money < 0)
+            {
+                return $this->errorResponse();
+            }
 
             $customer_payment_response = number_format($customer_payment, 0, ',', '.');
             $remaining_money_response = number_format($remaining_money, 0, ',', '.');
@@ -165,6 +169,7 @@ class InvoiceController extends Controller
                 'customer_payment' => $customer_payment,
                 'remaining_money' => $remaining_money,
                 'is_paid' => $request->is_paid,
+                'is_qr' => 0,
             ];
             session()->put('invoice', $invoice);
             // dd(session()->get('invoice'));
@@ -339,6 +344,7 @@ class InvoiceController extends Controller
     //chạy vào hàm store của thu ngân
     public function store_qr(StoreRequest $request)
     {
+        dd($request->all());
         try {
             $tableId = $request->input('table-id');
             $allData = $request->all();
@@ -382,6 +388,7 @@ class InvoiceController extends Controller
                 'created_at' => $now->format('Y:m:d H:i:s'),
                 'checkin_time' => $now->format('H:i:s'),
                 'checkout_time' => $now->format('H:i:s'),
+                'is_qr' => 1,
             ];
             session()->put('invoice', $invoice);
             event(new InvoicePlaced(
@@ -400,9 +407,24 @@ class InvoiceController extends Controller
         }
     }
 
-    //update tiền
+    //update remaining money
     public function update(Request $request)
     {
+        // dd($request->all());
+        $all_data = $request->all();
+        $items_id = $all_data['id'];
+        $menu_items = MenuItem::query()
+                    ->whereIn('id', $items_id)
+                    ->get();
+        $menu_items_map = $menu_items->keyBy('id')->toArray();
+        // dd($all_data, $menu_items, $menu_items_map);
+        $total_price = 0;
+        foreach ($items_id as $index => $id) {
+            $quantity = $all_data['quantity'][$index];
+            $price = $menu_items_map[$id]['price'];
+            $total_price += $quantity * $price;
+        }
+
         //test
         // $test = str_replace('.','', $request->total_price);
         // dd($test);
@@ -424,7 +446,7 @@ class InvoiceController extends Controller
         $numericTotal = intval($numericTotal);
         */
 
-        $total_price = str_replace('.', '', $request->total_price);
+        // $total_price = str_replace('.', '', $request->total_price);
         $customer_payment = (float)$request->customer_payment * 1000;
         // dd($customer_payment, $total_price);
 
@@ -442,6 +464,7 @@ class InvoiceController extends Controller
     //update table infonation
     public function invoice_table_update(Request $request)
     {
+        // dd($request->all());
         $payment_status_old = $request->payment_status_old;
         $payment_status_new = $request->payment_status_new;
         $old_key = $request->from_table;
@@ -566,21 +589,23 @@ class InvoiceController extends Controller
                 // Invoice::query()
                 //     ->where('id', $invoice_id_new_key)
                 //     ->update(['table_id' => $old_key]);
+
                 return $this->successResponse([
                     'old_key' => $old_key,
                     'new_key' => $new_key,
                 ], 'Thanh cong roi nhe!');
             }
+
             //session
             if(!empty($invoices) && array_key_exists($new_key,$invoices))
             {
+                dd('day la cho session');
                 //chi update tren session thoi
                 $keys[array_search($new_key, $keys)] = $old_key;
                 $invoices = array_combine($keys, $invoices);
                 $invoices[$old_key]['table_id'] = $old_key;
                 session()->put('invoice', $invoices);
             }
-
             Table::query()
                 ->whereIn('name', [$new_key, $old_key])
                 ->update([
