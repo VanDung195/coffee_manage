@@ -42,6 +42,7 @@ class InvoiceApiController extends Controller
         if(!is_null($session_invoices))
         {
             $session_invoices_reverse = array_reverse($session_invoices);
+            // dd($session_invoices_reverse);
             foreach($session_invoices_reverse as $item)
             {
                 $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
@@ -63,7 +64,8 @@ class InvoiceApiController extends Controller
                     'is_paid' => 0,
                     'customer_payment' => $customer_payment,
                     'remaining_money' => $remaining_money,
-                    'details' => []
+                    'details' => [],
+                    'is_qr' => $item['is_qr'],
                 ];
                 foreach($item['details'] as $each)
                 {
