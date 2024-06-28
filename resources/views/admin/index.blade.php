@@ -15,7 +15,6 @@
 
         .jq-toast-single {
             font-size: 16px;
-            /* Điều chỉnh kích thước font theo ý muốn */
         }
         .modal-container-change-invoice{
             max-width: 500px;
@@ -353,14 +352,20 @@
             let total_price = modal_body.find('.total-price').val();
             let customer_payment = $(this).val();
 
+            let modal_content = $(this).closest('.modal-content');
+            let object = modal_content.find('.form-create');
+            let form_data = new FormData(object[0]);
             $.ajax({
-                type: "get",
+                type: "post",
                 url: '{{ route('invoice.update') }}',
-                data: {
-                    total_price: total_price,
-                    customer_payment: customer_payment
-                },
+                data: form_data,
+                // data: {
+                //     total_price: total_price,
+                //     customer_payment: customer_payment,
+                // },
                 dataType: "json",
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     modal_body.find('.remaining-money').html(response.data.toLocaleString('vi-VN'));
                     modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", false);
@@ -732,7 +737,6 @@
         $('.btn-submit-invoice').on('click', function() {
             let modal_content = $(this).closest('.modal-content');
             let obj = modal_content.find('.form-create');
-            let object = $('#form-create');
             let modal_invoice_close = $(this).closest('.modal-invoice');
 
             let formData = new FormData(obj[0]);
