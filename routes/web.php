@@ -52,6 +52,7 @@ Route::post('/6635bb17c246e2',[InvoiceController::class, 'store'])->name('invoic
 Route::post('/table_update', [InvoiceController::class, 'invoice_table_update'])->name('table_update')->middleware(AdminMiddleware::class);
 Route::post('/store_qr', [InvoiceController::class, 'store_qr'])->name('invoice.store_qr');
 Route::post('/update_tot', [InvoiceController::class, 'update'])->name('invoice.update');
+Route::get('/success', [InvoiceController::class, 'redirect_success'])->name('redirect_success');
 
 Route::get('/create', [TestController::class, 'create']); //test
 
