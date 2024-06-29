@@ -105,13 +105,13 @@ class InvoiceApiController extends Controller
                 'remaining_money' => $remaining_money,
                 // 'customer_payment' => $item['customer_payment'],
                 // 'remaining_money' => $item['remaining_money'],
-                'details' => $item['details']
+                'details' => $item['details'],
+                'is_qr' => 0,
             ];
             $count++;
         }
         $message = 'Get api thanh cong';
         $table_names_available = getAndCacheAvailableTableNames();
-
         // return $this->successResponse($invoices,$message);
         return $this->successResponse([
             // 'invoices' => $invoices,
