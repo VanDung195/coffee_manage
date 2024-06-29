@@ -216,10 +216,12 @@
     }
     .btn-delete-disabled:disabled{
         height: 38.4px;
-        width: 80px;
+        width: 66px;
         cursor: not-allowed;
         background-color: #34495e; /* Màu nền cho trạng thái disabled */
         border: none; 
+        float: right;
+        border-radius: 5px;
     }
     .btn-submit-invoice{
         width: 100%;
@@ -229,6 +231,48 @@
     }
     .btn-submit-invoice:disabled{
         background-color: rgb(178, 240, 178);
+    }
+    /* CSS cho màn hình điện thoại di động (mobile) */
+    /* @media (max-width: 768px) {
+        body {
+            background-color: lightgreen;
+            font-size: 14px;
+            padding: 10px;
+        }
+    } */
+
+    @media (min-width: 1200px) {
+        /* body {
+            background-color: lightcoral;
+            font-size: 20px;
+            padding: 30px;
+        } */
+        .btn-delete-disabled:disabled{
+            height: 38.4px;
+            width: 66px;
+            cursor: not-allowed;
+            background-color: #34495e; /* Màu nền cho trạng thái disabled */
+            border: none; 
+            float: right;
+            border-radius: 5px;
+        }
+    }
+    /* CSS cho màn hình máy tính bảng (tablet) */
+    @media (max-width: 1024px) {
+        /* body {
+            background-color: rgb(0, 0, 0);
+            font-size: 16px;
+            padding: 15px;
+        } */
+        .btn-delete-disabled:disabled{
+            height: 38.4px;
+            width: 80px;
+            cursor: not-allowed;
+            background-color: #34495e; /* Màu nền cho trạng thái disabled */
+            border: none; 
+            float: right;
+            border-radius: 5px;
+        }
     }
     </style>
 </head>
@@ -296,7 +340,7 @@
             <h3>Bàn số: {{ $table_name }}</h3>
         </div>
         <div class="item" id="item">
-            <div class="form-row">
+            <div class="form-row" style="margin-bottom:0px;">
                 <div class="form-group col-12 div-select" id="div-select">
                     <label for="id[]">Món: </label>
                     <select name="id[]" class="form-control select-item">
@@ -330,6 +374,9 @@
         </div>
         
         <div id="append-item"></div>
+        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append" style="margin-bottom:20px;margin-top:20px;">
+            Thêm món
+        </button>
         <div class="form-row" style="margin-top: 10px;">
             <div class="form-group col-5" id="div-paid">
                 <select name="is_paid" id="select_paid" class="form-control">
@@ -345,6 +392,10 @@
                 <p style="margin:0px;display: flex; align-items: center;" id="total-price" class="form-control">0</p>
             </div>
         </div>
+        {{-- <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append" style="margin-bottom:20px;">
+            Thêm món
+        </button> --}}
+
         <div class="form-row">
             <div class="form-group col-6">
                 <label for="">Số tiền trả (1 = 10.000):</label>
@@ -356,7 +407,7 @@
                 <p style="margin: 0px;display: flex; align-items: center;" class="remaining-money form-control">0</p>
             </div>
         </div>
-        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
+        {{-- <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button> --}}
     </form>
     <button type="button" onclick="submitForm()" class="btn btn-submit-invoice btn-success">Tạo hoá đơn</button>
 </div>
@@ -380,6 +431,7 @@
             processData: false,
             contentType: false,
             success: function (response) {
+                window.location.replace("http://coffee_manage.test/success");
                 console.log('thanh cong roi nhe');
             },
             error: function(response) {
@@ -489,7 +541,7 @@
                         <i class="dripicons-minus"></i>
                         <i class="dripicons-minus"></i>
                     </div>
-                    <div class="form-row">
+                    <div class="form-row" style="margin-bottom:0px;">
                         <div class="form-group col-12 div-select" id="div-select">
                             <label for="id[]">Món: </label>
                             <select name="id[]" class="form-control select-item">
