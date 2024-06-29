@@ -260,29 +260,29 @@
                 let rowspanCount = Math.max(event.details.length, 1);
 
                 let order_table = `
-            <tr class="order_table_class_${event.table_id}">
-                <td border="1" class="set-row" rowspan="${rowspanCount}">${event.table_id}<br>${event.checkin_time}<br>${event.created_at}</td>
-            `;
+                    <tr class="order_table_class_${event.table_id}">
+                        <td border="1" class="set-row" rowspan="${rowspanCount}">${event.table_id}<br>${event.checkin_time}<br>${event.created_at}</td>
+                    `;
                 let count = 1;
                 event.details.forEach(function(item, index) {
                     if (count != 1) {
                         order_table += `<tr class="order_table_class_${event.table_id}">`;
                     }
                     order_table += `
-                <td>${item['name']}</td>
-                <td class="price">${item['price']}</td>
-                <td>${item['quantity']}</td>
-            `;
+                        <td>${item['name']}</td>
+                        <td class="price">${item['price']}</td>
+                        <td>${item['quantity']}</td>
+                    `;
                     if (count == 1) {
                         order_table += `
-                    <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
-                    <td rowspan="${rowspanCount}"> 
-                        <button class="btn btn-success btn-sm">Xuất HD</button>
-                    </td>
-                    <td rowspan="${rowspanCount}">
-                        <button onclick="deleteInvoice('${event.table_id}','order_table_session')" class="btn btn-danger btn-sm">Xoá</button>
-                    </td>
-                `;
+                            <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
+                            <td rowspan="${rowspanCount}"> 
+                                <button class="btn btn-success btn-sm">Xuất HD</button>
+                            </td>
+                            <td rowspan="${rowspanCount}">
+                                <button onclick="deleteInvoice('${event.table_id}','order_table_session')" class="btn btn-danger btn-sm">Xoá</button>
+                            </td>
+                        `;
                     }
                     order_table += `</tr>`;
                     count++;
@@ -537,6 +537,7 @@
                     `;
 
                     response.data.invoices.forEach(function(item, index) {
+                        console.log(item);
                         let div_modal_change_invoice = document.createElement('div');
                         div_modal_change_invoice.classList.add('form-group');
 
@@ -592,7 +593,13 @@
                         order_table += `<tr data-status="${item.is_paid}" class="order_table_class_${item.table_id}">`;
                         order_table += `
                             <td border="1" class="set-row" rowspan="${rowspanCount}">
-                                <p id="p-table-id-${item.table_id}" class="p-table">${item.table_id}</p>
+                                <p id="p-table-id-${item.table_id}" class="p-table">
+                                    ${item.table_id}
+                                    ${item.is_qr ? 
+                                    `(QR)` :
+                                    ` `
+                                    }
+                                </p>
                                 ${item.checkin_time}<br>${item.created_at}
                             </td>
                         `;
