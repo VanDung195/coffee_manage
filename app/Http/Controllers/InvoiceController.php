@@ -44,6 +44,7 @@ class InvoiceController extends Controller
 
             $now = Carbon::now('Asia/Bangkok');
             $customer_payment = $request->customer_payment * 1000;
+
             //khi người dùng nhập 100000 (100 nghìn đồng) thay vì 100 (cũng là 100 nghìn đồng)
             if($customer_payment > 1000000000 || $customer_payment < 0)
             {
@@ -51,14 +52,14 @@ class InvoiceController extends Controller
             }
 
             $remaining_money = $customer_payment - $total_price;
-            if($remaining_money < 0)
+            if($remaining_money < 0 && $customer_payment != null)
             {
                 return $this->errorResponse();
             }
 
             $customer_payment_response = number_format($customer_payment, 0, ',', '.');
             $remaining_money_response = number_format($remaining_money, 0, ',', '.');
-            if($remaining_money < 0 || $customer_payment == null)
+            if($customer_payment == null)
             {
                 $customer_payment = null;
                 $remaining_money = null;
@@ -186,6 +187,7 @@ class InvoiceController extends Controller
                 'customer_payment' => $customer_payment_response,
                 'remaining_money' => $remaining_money_response,
                 'is_paid' => $request->is_paid,
+                'is_qr' => 0,
             ], $message);
         } catch (\Throwable $th) {
             dd($th);
@@ -344,9 +346,9 @@ class InvoiceController extends Controller
     //chạy vào hàm store của thu ngân
     public function store_qr(StoreRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
         try {
-            $tableId = $request->input('table-id');
+            $tableId = $request->input('table_id');
             $allData = $request->all();
             $ItemsId = $allData['id'];
             $menuItems = MenuItem::query()
@@ -360,6 +362,27 @@ class InvoiceController extends Controller
                 $total_price += $quantity * $price;
             }
             $now = Carbon::now('Asia/Bangkok');
+            $customer_payment = $request->customer_payment * 1000;
+
+            if($customer_payment > 1000000000 || $customer_payment < 0)
+            {
+                return $this->errorResponse();
+            }
+            $remaining_money = $customer_payment - $total_price;
+            if($remaining_money < 0 && $customer_payment != null)
+            {
+                return $this->errorResponse();
+            }
+            $customer_payment_response = number_format($customer_payment, 0, ',', '.');
+            $remaining_money_response = number_format($remaining_money, 0, ',', '.');
+            // dd($customer_payment_response, $remaining_money_response);
+            if($customer_payment == null)
+            {
+                $customer_payment = null;
+                $remaining_money = null;
+                $customer_payment_response = 'Không';
+                $remaining_money_response = 'Không';
+            }
             foreach ($ItemsId as $index => $id) {
                 $quantity = $allData['quantity'][$index];
 
@@ -388,6 +411,9 @@ class InvoiceController extends Controller
                 'created_at' => $now->format('Y:m:d H:i:s'),
                 'checkin_time' => $now->format('H:i:s'),
                 'checkout_time' => $now->format('H:i:s'),
+                'customer_payment' => $customer_payment,
+                'remaining_money' => $remaining_money,
+                'is_paid' => $request->is_paid,
                 'is_qr' => 1,
             ];
             session()->put('invoice', $invoice);
@@ -400,7 +426,8 @@ class InvoiceController extends Controller
                 $now->format('H:i:s'),
                 $request->is_paid
             ));
-
+            // return redirect()->to('http://coffee_manage.test/success');
+            // return redirect()->action([TestController::class, 'success']);
             return $this->successResponse(1);
         } catch (\Throwable $th) {
             dd($th);
@@ -624,5 +651,10 @@ class InvoiceController extends Controller
         }
 
 
+    }
+
+    public function redirect_success()
+    {
+        return view('qr.success');
     }
 }
