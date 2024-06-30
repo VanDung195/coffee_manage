@@ -424,7 +424,10 @@ class InvoiceController extends Controller
                 $now->format('Y:m:d H:i:s'),
                 $now->format('H:i:s'),
                 $now->format('H:i:s'),
-                $request->is_paid
+                $customer_payment,
+                $remaining_money,
+                $request->is_paid,
+                1,
             ));
             // return redirect()->to('http://coffee_manage.test/success');
             // return redirect()->action([TestController::class, 'success']);
