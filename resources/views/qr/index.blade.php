@@ -431,7 +431,7 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                window.location.replace("http://coffee_manage.test/success");
+                // window.location.replace("http://coffee_manage.test/success");
                 console.log('thanh cong roi nhe');
             },
             error: function(response) {
@@ -455,7 +455,28 @@
             let totalPrice = quantity*price;
             total += price * quantity;
         })
-        // $("#total-price").val(total.toLocaleString('vi-VN'));
+        let customer_payment = parseFloat($('.customer-payment').val());
+        if(!isNaN(customer_payment))
+        {
+            let object = $('#form-create');
+            let form_data = new FormData(object[0]);
+            $.ajax({
+                type: "post",
+                url: '{{ route('invoice.update') }}',
+                data: form_data,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('.remaining-money').html(response.data.toLocaleString('vi-VN'));
+                    $('.btn-submit-invoice').prop("disabled", false);
+                },
+                error: function(error) {
+                    $('.remaining-money').html('NULL');
+                    $('.btn-submit-invoice').prop("disabled", true);
+                }
+            });
+        }
         $("#total-price").html(total.toLocaleString('vi-VN'));
     }
     
