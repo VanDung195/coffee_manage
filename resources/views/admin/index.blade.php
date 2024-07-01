@@ -1077,7 +1077,7 @@
                     div2.setAttribute("id", "div_invoice_detail_" + table_id);
                     document.getElementById("append_modal_invoice_detail").appendChild(div2);
 
-                    const invalid_table_id = new Set(['unknow', 'unknow2', 'takeaway']);
+                    const invalid_table_id = new Set(['takeaway']);
                     // if(table_id_api != 'unknow' && table_id_api != 'unknow2' && table_id_api != 'takeaway')
                     if(!invalid_table_id.has(table_id))
                     // if(table_id != 'unknow' && table_id != 'unknow2' && table_id != 'takeaway')
@@ -1127,11 +1127,12 @@
                         let targetRow = document.querySelector('.order-table tr:first-child');
                         targetRow.insertAdjacentHTML('afterend', order_table);
                     }*/
-
+                    console.log('đây là rows legth');
+                    console.log(rows.length);
                     if(response.data.is_paid == 1 && rows.length > 1)
                     {
                         let inserted = false;
-                        //1 is the first tr tag
+                        //0 is the first tr tag
                         for(let i = 0; i < rows.length; i++)
                         {
                             //trường hợp khi dữ liệu trong bảng toàn 'Chưa thanh toán'
@@ -1154,20 +1155,46 @@
                         //     console.log(12312);
                         // }
                     }
-                    if(response.data.is_paid == 1 && rows.length == 1)
+                    if(response.data.is_paid == 1 && rows.length == 1 || response.data.is_paid == 0 && rows.length == 1)
                     {
+                        console.log(rows.length);
                         console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
                         let targetRow = document.querySelector('.order-table tr:first-child');
                         targetRow.insertAdjacentHTML('afterend', order_table);
                     }
-                    if(response.data.is_paid == 0)
-                    {
-                        //Mặc định khi thêm 1 hoá đơn chưa thanh toán vào session thì nó luôn thêm vào đầu tiên của bảng
-                        let targetRow = document.querySelector('.order-table tr:first-child');
-                        console.log('Đây là targetrow');
-                        console.log(targetRow);
-                        targetRow.insertAdjacentHTML('afterend', order_table);
+                    // if(response.data.is_paid == 0 && rows.length > 1)
+                    // {
+                    //     for(let i = 0; i < rows.length; i++)
+                    //     {
+                    //         if(rows[i+1] == undefined)
+                    //         {
+                    //             rows[i].insertAdjacentHTML('afterend', order_table);
+                    //             break;
+                    //         }
+                    //         if(rows[i+1].getAttribute('data-status') == '1')
+                    //         {
+                    //             rows[i].insertAdjacentHTML('afterend', order_table);
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    if(response.data.is_paid == 0 && rows.length > 1) {
+                        Array.from(rows).some((row, index) => {
+                            if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
+                                row.insertAdjacentHTML('afterend', order_table);
+                                return true; 
+                            }
+                            return false;
+                        });
                     }
+
+                    //cách cũ
+                    //Mặc định khi thêm 1 hoá đơn chưa thanh toán vào session thì nó luôn thêm vào đầu tiên của bảng
+                    // let targetRow = document.querySelector('.order-table tr:first-child');
+                    // console.log('Đây là targetrow');
+                    // console.log(targetRow);
+                    // targetRow.insertAdjacentHTML('afterend', order_table);
+
 
                     //reset modal after tạo invoice  modal-invoice-close
                     modal_invoice_close.find('form').trigger('reset');
