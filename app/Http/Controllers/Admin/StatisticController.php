@@ -151,8 +151,11 @@ class StatisticController extends Controller
 
         $month = date('m', strtotime($date));
         $year = date('Y', strtotime($date));
-        $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, date_format(invoices.created_at, "%e-%m") as ngaytao,sum(invoice_details.quantity) as soluong,
-        sum(invoice_details.quantity*menu_items.price) as total_price, sum(invoices.total_price) as total_price_t')
+        $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, 
+                                date_format(invoices.created_at, "%e-%m") as ngaytao,
+                                sum(invoice_details.quantity) as soluong,
+                                sum(invoice_details.quantity*menu_items.price) as total_price, 
+                                sum(invoices.total_price) as total_price_t')
             ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
             ->join('menu_items', 'invoice_details.menu_item_id', '=', 'menu_items.id')
             // ->whereBetween('invoices.created_at', [$start_date, $end_date])
@@ -230,11 +233,21 @@ class StatisticController extends Controller
             $arr[$menu_item_id]['y'] += (int)$invoice['soluong'];
             $arr2[$menu_item_id]['data'][$key] = [$key, (int)$invoice['soluong']];
 
-            $arrChart2[$key] += (float)$invoice['total_price'];
+            // $arrChart2[$key] += (float)$invoice['total_price'];
             $total_price += (float)$invoice['total_price'];
         }
         // dd($arrChart2);
-
+        $invoice_for_total_price = Invoice::selectRaw('date_format(invoices.created_at, "%e-%m") as day_month, 
+                        sum(invoices.total_price) as total_price')
+                        ->whereMonth('invoices.created_at', '=', $month)
+                        ->whereYear('invoices.created_at', $year)
+                        ->groupBy('day_month')
+                        ->get();
+        foreach($invoice_for_total_price as $item)
+        {
+            $key = $item['day_month'];
+            $arrChart2[$key] += (float)$item['total_price'];
+        }
         return $this->successResponse([
             'arr1' => array_values($arr),
             'arr2' => array_values($arr2),
@@ -303,9 +316,19 @@ class StatisticController extends Controller
             $arr1[$menu_item_id]['y'] += (int)$invoice['soluong'];
             $arr2[$menu_item_id]['data'][$key] = [$key, (int)$invoice['soluong']];
 
-            $arrChart2[$key] += (float)$invoice['tongtien'];
+            // $arrChart2[$key] += (float)$invoice['tongtien'];
             $total_price += (float)$invoice['tongtien'];
         }
+        $invoice_for_total_price = Invoice::selectRaw('month(created_at) as month, sum(invoices.total_price) as total_price')
+                        ->whereYear('invoices.created_at', $year)
+                        ->groupBy('month')
+                        ->get();
+        foreach($invoice_for_total_price as $item)
+        {
+            $key = (int)$item['month'];
+            $arrChart2[$key] += (float)$item['total_price'];
+        }
+        // dd($arrChart2);
         // dd(array_values($arr1));
         return $this->successResponse([
             'arr1' => array_values($arr1),
@@ -363,13 +386,16 @@ class StatisticController extends Controller
             //             ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
             //             ->groupBy('date','menu_items.name', 'id')
             //             ->get();
-            $data = Invoice::selectRaw('date_format(invoices.created_at, "%d-%m-%Y") as date ,menu_items.name,menu_items.id as id,sum(invoice_details.quantity) as quantity, 
-                                    sum(invoices.total_price) as total_price')
+            $data = Invoice::selectRaw('date_format(invoices.created_at, "%d-%m-%Y") as date,
+                                         menu_items.name, menu_items.id as id,
+                                        sum(invoice_details.quantity) as quantity, 
+                                        sum(invoice_details.quantity * menu_items.price) as total_price')
                         ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                         ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
                         ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
                         ->groupBy('date', 'menu_items.id','menu_items.name', 'id')
                         ->get();
+
             foreach ($arr2 as $key => $value) {
                 // $arrX[$each['name']] += (int)$each['quantity'];
                 $current_date = $start_date;
@@ -414,24 +440,24 @@ class StatisticController extends Controller
         {
             //có thể đổi sang month(invoices.created_at) để không có số 0 ở đằng trước 
             $data = Invoice::selectRaw('menu_items.id as id, date_format(invoices.created_at, "%m-%Y") as month,
-                                        sum(invoice_details.quantity) as quantity, sum(invoices.total_price) as total_price')
+                                        sum(invoice_details.quantity) as quantity, sum(invoice_details.quantity*menu_items.price) as total_price')
                             ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                             ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
                             ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
                             ->groupBy('id', 'month')
                             ->get();
 
-            $invoices = Invoice::selectRaw('menu_items.id as masanpham, 
-                menu_items.name as tensanpham, 
-                date_format(invoices.created_at, "%e-%m") as ngaytao,
-                sum(invoice_details.quantity) as soluong,
-                sum(invoice_details.quantity*menu_items.price) as total_price, sum(invoices.total_price) as total_price_t')
-                    ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
-                    ->join('menu_items', 'invoice_details.menu_item_id', '=', 'menu_items.id')
-                    // ->whereBetween('invoices.created_at', [$start_date, $end_date])
-                    ->whereMonth('invoices.created_at', '=', $month)
-                    ->groupBy('masanpham', 'tensanpham', 'ngaytao')
-                    ->get();
+            // $invoices = Invoice::selectRaw('menu_items.id as masanpham, 
+            //     menu_items.name as tensanpham, 
+            //     date_format(invoices.created_at, "%e-%m") as ngaytao,
+            //     sum(invoice_details.quantity) as soluong,
+            //     sum(invoice_details.quantity*menu_items.price) as total_price, sum(invoices.total_price) as total_price_t')
+            //         ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
+            //         ->join('menu_items', 'invoice_details.menu_item_id', '=', 'menu_items.id')
+            //         // ->whereBetween('invoices.created_at', [$start_date, $end_date])
+            //         ->whereMonth('invoices.created_at', '=', $month)
+            //         ->groupBy('masanpham', 'tensanpham', 'ngaytao')
+            //         ->get();
             $start_month = $start_date->format('m-Y');
             $end_month = $end_date->format('m-Y'); 
 
