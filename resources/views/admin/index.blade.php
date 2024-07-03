@@ -27,6 +27,9 @@
         .p-table{
             margin-bottom: 0px;
         }
+        .p-table span {
+            display: inline;
+        }
     </style>
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
 @endpush
@@ -34,6 +37,9 @@
     <div id="left">
         <div class="header">
             <h1>Bàn</h1>
+        </div>
+        <div>
+
         </div>
         @foreach ($tables as $table)
             <div class="show-table" id="show_table_{{ $table->name }}" style="display: block;float: left;">
@@ -254,6 +260,8 @@
     <script type="module">
         window.Echo.channel('order-channel')
             .listen('InvoicePlaced', (response) => {
+                let audio = new Audio('/sound_effect/order_sound_effect.mp3');
+                audio.play();
                 console.log(response);
                 let formatTotalPrice = response.total_price.toLocaleString('vi-VN');
                 let rowspanCount = Math.max(response.details.length, 1);
@@ -262,9 +270,9 @@
                     <tr data-status="${response.is_paid}" class="order_table_class_${response.table_id}">
                         <td border="1" class="set-row" id="new-row-${response.table_id}" rowspan="${rowspanCount}">
                             <p id="p-table-id-${response.table_id}" class="p-table">
-                                ${response.table_id}
-                                ${response.is_qr ? `(QR)` : ``} 
-                                <span class="new-invoice-check badge badge-success p-2s">(New)</span>
+                                <span class="span-table-class-${response.table_id}">${response.table_id}</span>
+                                <span>${response.is_qr ? '(QR)' : ''}</span>
+                                <span id="new-row-remove-${response.table_id}" class="new-invoice-check badge badge-success p-2s">(New)</span>
                             </p>
                             ${response.checkin_time}<br>${response.created_at}
                         </td>
@@ -300,10 +308,24 @@
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
-                                    ${parseInt(response.is_paid) ? 
-                                    `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
-                                    `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
-                                    }
+                                    ${function() {
+                                        const badgeStyles = "font-size: 15px; p-2s";
+                                        const badges = {
+                                            0: response.is_qr == 1 ? 'badge-warning' : 'badge-secondary',
+                                            1: 'badge-success',
+                                            2: 'badge-warning'
+                                        };
+                                        const badgeTexts = {
+                                            0: 'TT sau',
+                                            1: 'Đã TT',
+                                            2: 'TT trước'
+                                        };
+
+                                        const badgeClass = badges[response.is_paid] || 'badge-secondary';
+                                        const badgeText = badgeTexts[response.is_paid] || 'TT sau';
+
+                                        return `<div style="${badgeStyles}" class="badge ${badgeClass}">${badgeText}</div>`;
+                                    }()}									
                                 </li>
                             </td>
                             <td rowspan="${rowspanCount}">
@@ -382,8 +404,24 @@
                     document.getElementById(show_detail).style.display = 'block';
                 }
 
-                let targetRow = document.querySelector('.order-table tr:first-child');
-                targetRow.insertAdjacentHTML('afterend', order_table);
+                let table = document.getElementById('order-table-id');
+                let rows = table.getElementsByTagName('tr');
+                if( rows.length == 1 && response.is_paid == 0 || response.is_paid == 2)
+                {
+                    console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
+                    let targetRow = document.querySelector('.order-table tr:first-child');
+                    targetRow.insertAdjacentHTML('afterend', order_table);
+                }
+
+                if(response.is_paid == 0  || response.is_paid == 2 && rows.length > 1) {
+                    Array.from(rows).some((row, index) => {
+                        if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
+                            row.insertAdjacentHTML('afterend', order_table);
+                            return true; 
+                        }
+                        return false;
+                    });
+                }
 
                 let modal_change_invoice = `
                     <div class="modal-change-invoice-${response.table_id} modal-change-invoice modal fade" role="dialog">
@@ -429,7 +467,10 @@
                 div_modal_change_invoice.classList.add('form-group');
                 div_modal_change_invoice.innerHTML = modal_change_invoice;
                 document.getElementById('modal-invoice-change').appendChild(div_modal_change_invoice);
-
+                setTimeout(()=> {
+                    // $(`#new-row-remove-${table_id} .new-invoice-check`).remove();
+                    $('#new-row-remove-'+ response.table_id).remove();
+                }, 10000);
                 $('.form-row .select-to-table').select2({
                     tag: true
                 });
@@ -621,45 +662,6 @@
                         // console.log('thanh cong');
                     })
 
-
-                    //Hoá đơn test
-                    //-----------------------
-                    // let order_table = `
-                // <table class="order-table">
-                //     <tr>
-                //         <th>ID</th>
-                //         <th>Sản phẩm</th>
-                //         <th>Giá</th>
-                //         <th>SL</th>
-                //         <th>Tong tien</th>
-                //         <th>Thành công</th>
-                //     </tr>
-                //     <tr>
-                // `;
-                    // response.data.forEach(function(item, index){
-                    //     console.log(item);
-                    //     let rowsspanCount = 0;
-                    //     rowsspanCount = Math.max(item.details.length, 1);
-                    //     order_table += `
-                //         <td class="set-row" rowspan="${rowsspanCount}">${item.table_id}<br>${item.checkin_time}<br>${item.created_at}</td>
-                //     `;
-                    //     item.details.forEach(function(item,index){
-                    //         order_table += `
-                //         <td>${item.menu_items.name}</td>
-                //         <td class="price">${item.menu_items.price}</td>
-                //         <td>${item.quantity}</td>
-                //         `;
-                    //     })
-                    //     order_table += `
-                //         <td class="set-row" rowspan="${rowsspanCount}">${item.total_price}</td>
-                //         <td class="set-row" class="status-success" rowspan="${rowsspanCount}">Thành công</td>
-                //     </tr>
-                //     `;
-                    // })
-                    // order_table += `
-                //     </tr>
-                // </table>
-                // `;  ------------------
                     let order_table = `
                         <table class="order-table" id="order-table-id">
                             <tr>
@@ -735,16 +737,14 @@
                         order_table += `
                             <td border="1" class="set-row" rowspan="${rowspanCount}">
                                 <p id="p-table-id-${item.table_id}" class="p-table">
-                                    ${item.table_id}
-                                    ${item.is_qr ? 
-                                    `(QR)` :
-                                    ` `
-                                    }
+                                    <span class="span-table-class-${item.table_id}">${item.table_id}</span>
+                                    <span>${item.is_qr ? '(QR)' : ''}</span>
                                 </p>
                                 ${item.checkin_time}<br>${item.created_at}
                             </td>
                         `;
-
+                        console.log('day la is paid');
+                        console.log(item.is_paid);
                         let count = 1;
                         item.details.forEach(function(detail, index) {
                             if (count != 1) {
@@ -764,10 +764,24 @@
                                     </td>
                                     <td rowspan="${rowspanCount}">
                                         <li class="list-inline-item ml-2">
-                                            ${item.is_paid ? 
-                                            `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
-                                            `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
-                                            }
+                                            ${function() {
+                                                const badgeStyles = "font-size: 15px; p-2s";
+                                                const badges = {
+                                                    0: item.is_qr == 1 ? 'badge-warning' : 'badge-secondary',
+                                                    1: 'badge-success',
+                                                    2: 'badge-warning'
+                                                };
+                                                const badgeTexts = {
+                                                    0: 'TT sau',
+                                                    1: 'Đã TT',
+                                                    2: 'TT trước'
+                                                };
+
+                                                const badgeClass = badges[item.is_paid] || 'badge-secondary';
+                                                const badgeText = badgeTexts[item.is_paid] || 'TT sau';
+
+                                                return `<div style="${badgeStyles}" class="badge ${badgeClass}">${badgeText}</div>`;
+                                            }()}									
                                         </li>
                                     </td>
                                     <td rowspan="${rowspanCount}">
@@ -973,7 +987,9 @@
                     let order_table = `
                         <tr data-status="${response.data.is_paid}" class="order_table_class_${table_id}">
                             <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">
-                                <p id="p-table-id-${data.table_id}" class="p-table">${data.table_id}
+                                <p id="p-table-id-${data.table_id}" class="p-table">
+                                    <span class="span-table-class-${data.table_id}">${data.table_id}</span>
+                                    <span>${data.is_qr ? '(QR)' : ''}</span>
                                     <span class="new-invoice-check badge badge-success p-2s">(New)</span>
                                 </p>
                                 ${data.checkin_time}<br>${data.created_at}
@@ -1026,7 +1042,7 @@
                                 <li class="list-inline-item ml-2">
                                     ${parseInt(response.data.is_paid) ? 
                                     `<div style="font-size: 15px;" class="badge badge-success p-2s">Đã TT</div>` : 
-                                    `<div style="font-size: 15px;" class="badge badge-secondary p-2s">Chưa TT</div>`
+                                    `<div style="font-size: 15px;" class="badge badge-secondary p-2s">TT sau</div>`
                                     }
                                 </li>
                             </td>
@@ -1273,11 +1289,17 @@
                     $(modal).modal('toggle');
                     let new_key = response.data.new_key;
                     let old_key = response.data.old_key;
-                    let new_key_id = 'p-table-id-' + new_key;
-                    let old_key_id = 'p-table-id-' + old_key;
-                    let id_p_table_new = document.getElementById(new_key_id);
-                    let id_p_table_old = document.getElementById(old_key_id);
+                    // let new_key_id = 'p-table-id-' + new_key;
+                    // let old_key_id = 'p-table-id-' + old_key;
+                    let span_class_old_key = 'span-table-class-' + old_key;
+                    let span_class_new_key = 'span-table-class-' + new_key;
+                    // let id_p_table_new = document.getElementById(new_key_id);
+                    // let id_p_table_old = document.getElementById(old_key_id);
+                    let span_class_table_new = document.getElementsByClassName(span_class_new_key);
+                    let span_class_table_old = document.getElementsByClassName(span_class_old_key);
 
+                    console.log(span_class_table_new);
+                    console.log(span_class_table_old);
                     //modal invoice old la luon luon co vi co moi doi duoc ban chu. Con cai new thif hen xui vaix
                     // let id_modal_invoice_old = 'invoice_detail_' + old_key;
                     let id_modal_invoice_new = 'invoice_detail_' + new_key;
@@ -1304,16 +1326,21 @@
                     //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
                     if(modal_invoice_new != null)  //done
                     {
-                        console.log('da co modal invoice new nhe!!!!!');
+                        console.log('co modal invoice new nhe!!!!!');
                         //data table change
                         let class_invoice_new = '.modal-change-invoice-' + new_key;
                         let modal_invoice_new = $(class_invoice_new).find('.from-table').html(old_key);
-                        id_p_table_new.innerHTML = old_key;
-                        id_p_table_new.id = old_key_id;
+                        // id_p_table_new.innerHTML = old_key;
+                        //Đối sang dùng id cho khoẻ
+                        span_class_table_new[0].textContent = old_key;
+                        // id_p_table_new.id = old_key_id;
+                        span_class_table_new[0].className = span_class_old_key;
 
                         modal_content.find('.from-table').html(new_key);
-                        id_p_table_old.innerHTML = new_key;
-                        id_p_table_old.id = new_key_id;
+                        span_class_table_old[0].textContent = new_key;
+                        // id_p_table_old.textContent = new_key;
+                        // id_p_table_old.id = new_key_id;
+                        span_class_table_old[0].className = span_class_new_key;
 
                         //modal invoice change 
                         invoice_detail_old.id = 'invoice_detail_'+new_key;
@@ -1344,8 +1371,10 @@
                     {
                         console.log(123);
                         modal_content.find('.from-table').html(new_key);
-                        id_p_table_old.innerHTML = new_key;
-                        id_p_table_old.id = new_key_id;
+                        span_class_table_old[0].textContent = new_key;
+                        // id_p_table_old.innerHTML = new_key;
+                        // id_p_table_old.id = new_key_id;
+                        span_class_table_old[0].className = span_class_new_key;
 
                         let btn_show_table_new = "show_table_" + new_key;
                         let btn_show_invoice_detail_new = "show_detail_" + new_key;
