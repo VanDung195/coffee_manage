@@ -33,7 +33,7 @@ class InvoiceController extends Controller
             }
             $menuItems = MenuItem::query()
                 ->whereIn('id', $ItemsId)->get();
-            $menuNames = MenuItem::query()->whereIn('id', $ItemsId)->pluck('name');
+            // $menuNames = MenuItem::query()->whereIn('id', $ItemsId)->pluck('name');
             $menuItemsMap = $menuItems->keyBy('id')->toArray();
             $total_price = 0;
             foreach ($ItemsId as $index => $id) {
@@ -100,10 +100,6 @@ class InvoiceController extends Controller
                         'menu_item_id' => $id,
                         'quantity' => $quantity,
                     ]);
-                    // Table::where('name', $tableId)->update([
-                    //     'status' => TableStausEnum::getKey(0),
-                    //     'invoice_id' => $invoice_id,
-                    // ]);
                     $invoice_details[] = [
                         'id' => $id,
                         'name' => $item->name,
@@ -348,6 +344,12 @@ class InvoiceController extends Controller
     {
         // dd($request->all());
         try {
+            $selected_available = [0, 2];
+            if(!in_array($request->is_paid, $selected_available))
+            {
+                return $this->errorResponse();
+            }
+
             $tableId = $request->input('table_id');
             $allData = $request->all();
             $ItemsId = $allData['id'];
@@ -408,7 +410,7 @@ class InvoiceController extends Controller
                 'table_id' => $tableId,
                 'details' => $invoice_details,
                 'total_price' => $total_price,
-                'created_at' => $now->format('Y:m:d H:i:s'),
+                'created_at' => $now->format('d-m-Y'),
                 'checkin_time' => $now->format('H:i:s'),
                 'checkout_time' => $now->format('H:i:s'),
                 'customer_payment' => $customer_payment,
@@ -421,11 +423,11 @@ class InvoiceController extends Controller
                 $tableId,
                 $invoice_details,
                 $total_price,
-                $now->format('Y:m:d H:i:s'),
+                $now->format('d-m-Y'),
                 $now->format('H:i:s'),
                 $now->format('H:i:s'),
-                $customer_payment,
-                $remaining_money,
+                $customer_payment_response,
+                $remaining_money_response,
                 $request->is_paid,
                 1,
             ));
@@ -506,7 +508,7 @@ class InvoiceController extends Controller
         {
             $keys = array_keys($invoices);
         }
-        if($payment_status_old == 0 && !empty($invoices))
+        if(!empty($invoices) && $payment_status_old == 0 || $payment_status_old == 2 )
         {
             //Nếu muốn đổi 2 bàn đã tồn tại cho nhau và cả 2 đều chưa thanh toán trước (session)    
             if(array_key_exists($new_key, $invoices))
@@ -629,7 +631,7 @@ class InvoiceController extends Controller
             //session
             if(!empty($invoices) && array_key_exists($new_key,$invoices))
             {
-                dd('day la cho session');
+                // dd('day la cho session');
                 //chi update tren session thoi
                 $keys[array_search($new_key, $keys)] = $old_key;
                 $invoices = array_combine($keys, $invoices);
