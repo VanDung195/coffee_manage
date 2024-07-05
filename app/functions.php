@@ -3,6 +3,7 @@
 use App\Enums\SystemCacheEnum;
 use App\Enums\UserRoleEnum;
 use App\Models\MenuItem;
+use App\Models\Shift;
 use App\Models\Table;
 
 if(!function_exists('getAndCacheMenuItems')){
@@ -51,6 +52,23 @@ if(!function_exists('getAndCacheAvailableTableNames')){
                 $tables = array_slice($tables, 6);
 
                 return $tables;
+            }
+        );
+    }
+}
+if(!function_exists('getAndCacheShift'))
+{
+    function getAndCacheShift()
+    {
+        return cache()->remember(
+            SystemCacheEnum::SHIFT,
+            84000 * 30,
+            function()
+            {
+                $shift = Shift::query()
+                        ->where('time', '<>', 0)
+                        ->get();
+                return $shift;
             }
         );
     }
