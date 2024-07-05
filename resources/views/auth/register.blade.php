@@ -38,18 +38,18 @@
                                 @csrf
                                 <div class="form-group">
                                     <label for="fullname">Full Name</label>
-                                    <input class="form-control" type="text" id="fullname" name="name" placeholder="Nhập cả họ cả tên vào" required="">
+                                    <input class="form-control" type="text" id="fullname" name="name" placeholder="Nhập họ tên" required="">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="emailaddress">Tài khoản</label>
-                                    <input class="form-control" name="account" id="emailaddress" required="" placeholder="Enter your account">
+                                    <input class="form-control" name="account" id="emailaddress" required="" placeholder="Nhập tên tài khoản">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="password">Mật khẩu</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="password" id="password" class="form-control" name="password" placeholder="Enter your password">
+                                        <input type="password" id="password" class="form-control" name="password" placeholder="Nhập mật khẩu (recommend: Như tài khoản)">
                                         <div class="input-group-append" data-password="false">
                                             <div class="input-group-text">
                                                 <span class="password-eye"></span>
@@ -57,17 +57,26 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="emailaddress">Chọn chức vụ</label>
-                                    {{-- <input class="form-control" name="account" id="emailaddress" required="" placeholder="Enter your account"> --}}
-                                    <select name="role" id="" class="form-control">
-                                        @foreach ($roles as $key => $value)
-                                            <option value="{{ $value }}">{{ $key }}</option>
-                                        @endforeach
-                                    </select>
+                                <div class="form-row">
+                                    <div class="form-group col-5">
+                                        <label for="emailaddress">Chọn chức vụ:</label>
+                                        {{-- <input class="form-control" name="account" id="emailaddress" required="" placeholder="Enter your account"> --}}
+                                        <select name="role" id="" class="form-control">
+                                            @foreach ($roles as $key => $value)
+                                                <option value="{{ $value }}">{{ $key }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-7">
+                                        <label for="shift">Chọn ca:</label>
+                                        <select name="shift" class="form-control">
+                                            @foreach ($shifts as $shift)
+                                                <option value="{{ $shift->id }}">{{ $shift->description }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-
+                                
                                 <div class="form-group mb-0 text-center">
                                     <button class="btn btn-primary" type="submit"> Đăng ký </button>
                                 </div>
