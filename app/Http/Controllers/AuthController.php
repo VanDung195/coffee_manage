@@ -16,6 +16,11 @@ class AuthController extends Controller
     }
     public function process_login(Request $request) 
     {
+        // dd(auth()->check());
+        if(auth()->check())
+        {
+            return redirect()->route('login')->with('error', 'Đăng xuất đã!');
+        }
         // $account = $request->account;
         // $password = $request->password;
         
@@ -27,23 +32,49 @@ class AuthController extends Controller
         //             ->where('password', $password)->first();
         // }
         // dd($user);
+        // $user = $request->only('account','password');
+        // $role = User::query()
+        //             ->where('account', $request->account)
+        //             ->pluck('role');
+        // dd($role);
+        // $clientIpAddress = $request->getClientIp();
+        // dd($clientIpAddress);
+        $user = User::query()
+                ->where('account', $request->account)
+                ->first();
+        if($user && Hash::check($request->password, $user->password))
+        {
+            auth()->login($user,true);
 
-        $user = $request->only('account','password');
-        // dd($user);
-        if(Auth::attempt($user)){
-            $user = Auth::user();
-            auth()->login($user);
-            // dd(user()->role);
-            
+            $available_role = [1, 2, 3];
+            if(!in_array(user()->role, $available_role))
+            {
+                return redirect()->route('table');
+            }
             return redirect()->route('table');
         }
-
         return redirect()->route('login')->with('error', 'Dang nhap that bai');
+
+        // $check_exist = true;
+        // dd($user);
+        // // if(Auth::attempt($user)){
+        // //     $user = Auth::user();
+        // //     $check_exist = true;
+        // //     auth()->login($user, true);
+        // //     // dd(user()->role);
+        // //     // if(user()->role )
+        // return redirect()->route('table');
+
+        // // }
+
+        // return redirect()->route('login')->with('error', 'Dang nhap that bai');
     }
     public function register() {
         $roleForRegister = UserRoleEnum::getRoleForRegister();
+        $shift = getAndCacheShift();
         return view('auth.register', [
             'roles' => $roleForRegister,
+            'shifts' => $shift,
         ]);
     }
     public function process_register(Request $request)
@@ -66,6 +97,7 @@ class AuthController extends Controller
             $user->gender = 1;
             $user->phone = $request->account;
             $user->role = $request->role;
+            $user->shift_id = $request->shift;
         }
         $user->save();
         return redirect()->route('table');
