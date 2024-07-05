@@ -8,6 +8,7 @@ use App\Models\Shift;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -104,15 +105,111 @@ class AttendanceController extends Controller
                 'shift_id' => $shift_id,
             ]);
         }
+
         foreach ($statuses as $user_id => $status) {
-            // dd($attendance->id, $user_id, $status);
-            AttendanceUser::updateOrCreate([
-                'attendance_id' => $attendance->id,
-                'user_id' => $user_id,
-            ],[
-                'status' => $status,
-            ]);
+            $attendance_user = AttendanceUser::where('attendance_id', $attendance->id)
+                                             ->where('user_id', $user_id)
+                                             ->first();
+            if ($attendance_user) {
+                AttendanceUser::query()
+                            ->where('attendance_id', $attendance->id)
+                            ->where('user_id', $user_id)
+                            ->update([
+                                'status' => $status,
+                            ]);
+            } else {
+                AttendanceUser::create([
+                    'attendance_id' => $attendance->id,
+                    'user_id' => $user_id,
+                    'status' => (int) $status,
+                ]);
+            }
         }
+
+        // foreach ($statuses as $user_id => $status) {
+        //     // Log::info('Updating attendance for user', [
+        //     //     'attendance_id' => $attendance->id,
+        //     //     'user_id' => $user_id,
+        //     //     'status' => $status
+        //     // ]);
+        //     // AttendanceUser::updateOrCreate(
+        //     //     [
+        //     //         'attendance_id' => $attendance->id,
+        //     //         'user_id' => $user_id,
+        //     //     ],
+        //     //     [
+        //     //         'status' => $status,
+        //     //     ]
+        //     // );
+
+        //     $attendance_user = AttendanceUser::query()
+        //                     ->where([
+        //                         'attendance_id' => $attendance->id,
+        //                         'user_id' => $user_id,
+        //                     ])->first();
+        //     if($attendance_user)
+        //     {
+                
+        //         $attendance_user->status = (int)$status;
+        //         $attendance_user->save();
+        //     }else
+        //     {
+        //         Attendance::create([
+        //             'attendance_id' => $attendance_id,
+        //             'user_id' => $user_id,
+        //             'status' => (int)$status,
+        //         ]);
+        //     }
+        // }
+        
+
+        // foreach ($statuses as $user_id => $status) {
+        //     $attendance_user = AttendanceUser::where('attendance_id', $attendance->id)
+        //                                      ->where('user_id', $user_id)
+        //                                      ->first();
+        //     if ($attendance_user) {
+        //         AttendanceUser::query()
+        //                     ->where('attendance_id', $attendance->id)
+        //                     ->where('user_id', $user_id)
+        //                     ->update([
+        //                         'status' => $status,
+        //                     ]);
+        //     } else {
+        //         AttendanceUser::create([
+        //             'attendance_id' => $attendance->id,
+        //             'user_id' => $user_id,
+        //             'status' => (int) $status,
+        //         ]);
+        //     }
+        // }
+        
+        // foreach ($statuses as $user_id => $status) {
+        //     $attendanceUser = AttendanceUser::firstOrNew([
+        //         'attendance_id' => $attendance->id,
+        //         'user_id' => $user_id,
+        //     ]);
+        //     $attendanceUser->status = $status;
+        //     $attendanceUser->save();
+        // }
+        // $user_ids = array_keys($statuses);
+        // $attendance_users = AttendanceUser::where('attendance_id', $attendance->id)
+        //                                 ->whereIn('user_id', $user_ids)
+        //                                 ->get()
+        //                                 ->keyBy('user_id');
+        
+        // foreach ($statuses as $user_id => $status) {
+        //     if (isset($attendance_users[$user_id])) {
+        //         $attendance_users[$user_id]->update([
+        //             'status' => $status,
+        //         ]);
+        //     } else {
+        //         AttendanceUser::create([
+        //             'attendance_id' => $attendance->id,
+        //             'user_id' => $user_id,
+        //             'status' => (int) $status,
+        //         ]);
+        //     }
+        // }
 
         return redirect()->route('attendance.index');
     }
