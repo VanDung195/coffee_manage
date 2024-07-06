@@ -21,13 +21,16 @@ class UserController extends Controller
     }
 
     public function index() {
-        $users = User::query()->paginate();
+        $users = User::query()
+                ->orderBy('role', 'asc')
+                ->where('role', '<>', 1)
+                ->paginate();
 
         return view('admin.user.index', [
             'users' => $users,
         ]);
     } 
     public function show($user) {
-        dd(1);
+        dd($user);
     }
 }
