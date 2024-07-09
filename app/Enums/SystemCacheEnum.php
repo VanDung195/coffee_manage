@@ -15,4 +15,5 @@ final class SystemCacheEnum extends Enum
     public const TABLE_NAMES = 'table_names';
     public const AVAILABLE_TABLE_NAME = 'avalable_table_name';
     public const SHIFT = 'shift';
+    public const POSITIONS = 'positions';
 }
