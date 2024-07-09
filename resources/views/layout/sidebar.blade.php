@@ -24,38 +24,38 @@
             <li class="side-nav-title side-nav-item">Manager</li>
             <li class="side-nav-item">
                 <a href="{{route('table')}}" class="side-nav-link">
-                    <i class="uil-home-alt"></i>
+                    <i class="mdi mdi-table-chair"></i>
                     <span> Table </span>
                 </a>
             </li>
             <li class="side-nav-item">
                 <a href="{{ route('attendance.index') }}" class="side-nav-link">
-                    <i class="uil-home-alt"></i>
+                    <i class="mdi mdi-google-downasaur"></i>
                     <span> Điểm danh nhân viên </span>
                 </a>
             </li>
             @if (user()->role === 1 || user()->role === 2 && user())
                 <li class="side-nav-item">
                     <a href="{{ route('admin.user.index') }}" class="side-nav-link">
-                        <i class="uil-home-alt"></i>
+                        <i class="dripicons-user"></i>
                         <span> User </span>
                     </a>
                 </li>
                 <li class="side-nav-item">
                     <a href="#" class="side-nav-link">
-                        <i class="uil-home-alt"></i>
+                        <i class="mdi mdi-bowl"></i>
                         <span> Món </span>
                     </a>
                 </li>
                 <li class="side-nav-item">
                     <a href="#" class="side-nav-link">
-                        <i class="uil-home-alt"></i>
+                        <i class="uil-invoice"></i>
                         <span> Hoá đơn </span>
                     </a>
                 </li>
                 <li class="side-nav-item">
                     <a href="javascript: void(0);" class="side-nav-link" aria-expanded="false">
-                        <i class="uil-store"></i>
+                        <i class="uil-chart-growth"></i>
                         <span> Thống kê doanh thu </span>
                         <span class="menu-arrow"></span>
                     </a>
