@@ -3,6 +3,7 @@
 use App\Enums\SystemCacheEnum;
 use App\Enums\UserRoleEnum;
 use App\Models\MenuItem;
+use App\Models\Position;
 use App\Models\Shift;
 use App\Models\Table;
 
@@ -56,19 +57,36 @@ if(!function_exists('getAndCacheAvailableTableNames')){
         );
     }
 }
-if(!function_exists('getAndCacheShift'))
+// if(!function_exists('getAndCacheShift'))
+// {
+//     function getAndCacheShift($shift_id)
+//     {
+//         return cache()->remember(
+//             SystemCacheEnum::SHIFT,
+//             84000 * 30,
+//             function()
+//             {
+//                 $shift = Shift::query()
+//                         ->where('id', $shift_id)
+//                         ->value('description');
+//                 return $shift;
+//             }
+//         );
+//     }
+// }
+if(!function_exists('getAndCachePositions'))
 {
-    function getAndCacheShift()
+    function getAndCachePositions()
     {
         return cache()->remember(
-            SystemCacheEnum::SHIFT,
+            SystemCacheEnum::POSITIONS, 
             84000 * 30,
             function()
             {
-                $shift = Shift::query()
-                        ->where('time', '<>', 0)
-                        ->get();
-                return $shift;
+                $positions = Position::query()
+                            ->where('name', '<>', 'Admin')
+                            ->get();
+                return $positions;
             }
         );
     }
