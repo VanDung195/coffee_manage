@@ -25,7 +25,7 @@
             <li class="side-nav-item">
                 <a href="{{route('table')}}" class="side-nav-link">
                     <i class="mdi mdi-table-chair"></i>
-                    <span> Table </span>
+                    <span> Bàn </span>
                 </a>
             </li>
             <li class="side-nav-item">
@@ -38,19 +38,49 @@
                 <li class="side-nav-item">
                     <a href="{{ route('admin.user.index') }}" class="side-nav-link">
                         <i class="dripicons-user"></i>
-                        <span> User </span>
+                        <span> Nhân viên </span>
                     </a>
                 </li>
-                <li class="side-nav-item">
+                {{-- <li class="side-nav-item">
                     <a href="#" class="side-nav-link">
                         <i class="mdi mdi-bowl"></i>
                         <span> Món </span>
+                    </a>
+                </li> --}}
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-invoice"></i>
+                        <span> Hoá đơn </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('admin.menu_items.index') }}" class="side-nav-link">
+                        <i class="uil-invoice"></i>
+                        <span> Quản lý món </span>
                     </a>
                 </li>
                 <li class="side-nav-item">
                     <a href="#" class="side-nav-link">
                         <i class="uil-invoice"></i>
-                        <span> Hoá đơn </span>
+                        <span> Quản lý loại món </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-invoice"></i>
+                        <span> Quản lý chức vụ </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-invoice"></i>
+                        <span> Quản lý ca </span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="#" class="side-nav-link">
+                        <i class="uil-invoice"></i>
+                        <span> Quản lý bàn </span>
                     </a>
                 </li>
                 <li class="side-nav-item">
