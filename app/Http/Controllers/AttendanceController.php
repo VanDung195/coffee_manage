@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\AttendanceUser;
+use App\Models\Position;
+use App\Models\SalaryInformation;
 use App\Models\Shift;
 use App\Models\User;
 use Carbon\Carbon;
@@ -33,7 +35,7 @@ class AttendanceController extends Controller
                 $this->shift_id = 3;
                 break;
             default:
-                $this->shift_id = null; 
+                $this->shift_id = 3; 
                 break;
         }
     }
@@ -106,11 +108,68 @@ class AttendanceController extends Controller
             ]);
         }
 
-        foreach ($statuses as $user_id => $status) {
+        foreach ($statuses as $user_id => $status) 
+        {
             $attendance_user = AttendanceUser::where('attendance_id', $attendance->id)
                                              ->where('user_id', $user_id)
                                              ->first();
+
+            $user = User::find($user_id);
+            $position = Position::find($user->role);
+            $last_salary_infor = SalaryInformation::query()
+                                    ->where('user_id', $user_id)
+                                    ->whereNull('payroll_date')
+                                    ->orderBy('created_at', 'desc')
+                                    ->first();
+            // dd(($last_salary_infor->work_hours + $work_hours) * $position->salary);
+            if($last_salary_infor && $last_salary_infor->created_at->diffInDays(Carbon::now()) <= 30)
+            {
+                if($attendance_user && $attendance_user->status == 1 && $status == 2)
+                {
+
+                    $last_salary_infor->update([
+                        'work_hours' => $last_salary_infor->work_hours - 4,
+                        'total_amount' => ($last_salary_infor->work_hours - 4) * $position->salary,
+                    ]);
+                }
+                if($attendance_user && $attendance_user->status == 2 && $status == 1)
+                {
+
+                    $work_hours = $status == 1 ? 4 : 0;
+                    $last_salary_infor->update([
+                        'work_hours' => $last_salary_infor->work_hours + $work_hours,
+                        'total_amount' => ($last_salary_infor->work_hours + $work_hours) * $position->salary,
+                    ]);
+                }
+            }
+            else
+            {
+                if($last_salary_infor)
+                {
+                    $last_salary_infor->update([
+                        'payroll_date' => Carbon::now(),
+                    ]);
+                }
+                $work_hours = $status == 1 ? 4 : 0;
+                SalaryInformation::create([
+                    'user_id' => $user_id,
+                    // 'payroll_date' => Carbon::now(),
+                    'work_hours' => $work_hours,
+                    'total_amount' => $work_hours * $position->salary,
+                ]);
+            }
+
+
             if ($attendance_user) {
+                // if($attendance_user->status == 1 && $status == 2)
+                // {
+                //     $work_hours -= 4;
+                // } else {
+                //     $work_hours = $status == 1 ? 4 : 0;
+                // }
+                // $attendance_user -> update([
+                //     'status' => $status,
+                // ]);
                 AttendanceUser::query()
                             ->where('attendance_id', $attendance->id)
                             ->where('user_id', $user_id)
@@ -124,6 +183,8 @@ class AttendanceController extends Controller
                     'status' => (int) $status,
                 ]);
             }
+
+            
         }
 
         // foreach ($statuses as $user_id => $status) {
