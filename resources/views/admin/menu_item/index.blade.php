@@ -4,23 +4,26 @@
     <div class="col-12">    <!-- chia thành 12 cột -->
         <div class="card">
             <div class="card-header">
-                <form id="form-inline" action="">
+                <form id="form-inline" class="form-inline" action="">
                     <div class="form-group">
                         <label>Loại món</label>
                         <div class="col-4">
                             <select name="category" id="category" class="form-control select-filter">
-                                <option value="">ALL</option>
+                                <option selected value="">ALL</option>
                                 @foreach ($menu_categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" @if ((string)$category->id == $selected_category) selected @endif>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
                 </form>
+                <a href="{{ route('admin.menu_items.create') }}" class="btn btn-success">Thêm món</a>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
-                    <thead> <!--vì sao lại dùng tHead các thứ thì sau này dùng mấy cái thư viện gì đó thì hai cái T này quan trọng vãi-->
+                    <thead> 
                         <tr>
                             <th>Mã món</th>
                             <th>Tên món</th>
@@ -30,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($menu_items as $item)
+                        @foreach ($data as $item)
                             <tr>
                                 <td>
                                     <a>
