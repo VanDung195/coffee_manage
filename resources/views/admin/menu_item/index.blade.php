@@ -1,4 +1,11 @@
 @extends('layout.master')
+@push('css')
+    <style>
+        .center {
+            text-align: center;
+        }
+    </style>
+@endpush
 @section('content')
 <div class="row">
     <div class="col-12">    <!-- chia thành 12 cột -->
@@ -20,12 +27,14 @@
                     </div>
                 </form>
                 <a href="{{ route('admin.menu_items.create') }}" class="btn btn-success">Thêm món</a>
+                <button class="btn btn-danger" onclick="openmodal()">test</button>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
                     <thead> 
                         <tr>
                             <th>Mã món</th>
+                            <th>Loại món</th>
                             <th>Tên món</th>
                             <th>Giá bán</th>
                             <th>Sửa món</th>
@@ -42,6 +51,11 @@
                                 </td>
                                 <td>
                                     <a>
+                                        {{ $item->menu_category->name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a>
                                         {{ $item->name }}
                                     </a>
                                 </td>
@@ -51,14 +65,22 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <button class="btn btn-success">
+                                    {{-- <button class="btn btn-success">
                                         Sửa
-                                    </button>
+                                    </button> --}}
+                                    {{-- <a href="{{ route('admin.menu_items.edit', $item->id) }}" class="btn btn-success">Sửa món</a> --}}
+                                    <form action="{{ route('admin.menu_items.edit', $item->id) }}" method="POST"> 
+                                        @csrf
+                                        @method('put')
+                                        <button class="btn btn-success">Sửa món</button>
+                                    </form>
                                 </td>
-                                <td>
-                                    <button class="btn btn-danger">
-                                        Xoá
-                                    </button>
+                                <td class="data-item" data-item-id="{{ $item->id }}">
+                                    <form action="{{ route("admin.menu_items.destroy", $item->id) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-danger">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -68,9 +90,39 @@
         </div>
     </div>
 </div>    
+<div id="modal-accept" class="modal fade" role="dialog" tabindex="-1"> 
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Xác nhận</h4>
+                <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
+                    @csrf
+                    <input type="hidden" name="menu_item_id" id="item-id">
+                    <h4 class="center">Có chắc xoá món này chứ?</h4>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger">Huỷ</button>
+                <button class="btn btn-success">Có chứ!</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @push('js')
     <script>
+        function openmodal()
+        {
+            $('#modal-accept').modal('show');
+            // $('#myModal').modal('toggle');
+            // $('#myModal').modal('show');
+            // $('#myModal').modal('hide');
+        }
+
         $(document).ready(function () {
             $('.select-filter').change(function(){
                 $('#form-inline').submit();
