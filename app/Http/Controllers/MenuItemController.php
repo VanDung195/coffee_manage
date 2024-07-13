@@ -42,6 +42,7 @@ class MenuItemController extends Controller
                     ->get();
         // $menu_items = MenuItem::query()
         //                 ->get();
+        // dd($data);
         return view('admin.menu_item.index', [
             'data' => $data,
             'menu_categories' => $menu_categories,
@@ -83,6 +84,48 @@ class MenuItemController extends Controller
             'price' => $price * 1000,
         ]);
         return redirect()->back()->with('success', 'Thêm món thành công rồi nhé!');
+    }
+
+    public function edit($item_id)
+    {
+        $item = MenuItem::query()
+                ->where('id', $item_id)
+                ->first();
+        // $category = MenuCategory::find($item->menu_category_id);
+
+        // $item = $this->model
+        //         ->clone()
+        //         ->with('menu_category:id,name')
+        //         ->where('id', $item_id)
+        //         ->first();
+        $menu_categories = MenuCategory::query()
+                ->get();
+        // dd($item);
+        // dd($menu_categories);
+        // dd($item->menu_category->id);
+        return view('admin.menu_item.edit',[
+            'item' => $item,
+            'categories' => $menu_categories,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        // dd($request->all());
+        MenuItem::query()
+                ->where('id', $request->menu_item_id)
+                ->update([
+                    'menu_category_id' => $request->category,
+                    'name' => $request->name,
+                    'price' => $request->price * 1000,
+                ]);
+        return redirect()->route('admin.menu_items.index')->with('success', 'Cập nhật món thành công');
+    }
+
+    public function destroy($item_id)
+    {
+        MenuItem::destroy($item_id);
+        return redirect()->back();
     }
     // public function search(Request $request): JsonResponse
     // {
