@@ -27,4 +27,9 @@ class MenuItem extends Model
     {
         return $this->belongsTo(MenuCategory::class, 'menu_category_id');
     }
+    public function getPriceForEditAttribute()
+    {
+        $price = ($this->price) / 1000;
+        return $price;
+    }
 }
