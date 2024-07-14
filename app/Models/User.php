@@ -7,6 +7,9 @@ use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class User extends Model implements AuthenticatableContract
 {
@@ -29,6 +32,12 @@ class User extends Model implements AuthenticatableContract
         'remember_token',
         'shift_id',
     ];
+
+    public function shift(): BelongsTo
+    {
+        return $this->belongsTo(Shift::class,'shift_id');
+    }
+
     //https://laravel.com/docs/11.x/eloquent-mutators             accessors
     // public function getRoleNameAttribute(): string
     // {
@@ -38,7 +47,9 @@ class User extends Model implements AuthenticatableContract
     // }
     public function getRoleNameSecondAttribute(): string
     {
-        return UserRoleEnum::getKey($this->role);
+        $role = UserRoleEnum::getKey($this->role);
+        $role = Str::lower($role);
+        return Str::ucfirst($role);
     }
     public function getCccdNameAttribute(): ?string
     {
@@ -48,12 +59,28 @@ class User extends Model implements AuthenticatableContract
         }
         return $this->CCCD;
     }
-    public function getBirthDateNameAttribute()
+    public function getBirthDateNameAttribute(): string
     {
         if($this->birthdate == null)
         {
             return 'Chưa nhập';
         }
         return $this->birthdate;
+    }
+    public function getGenderNameAttribute(): string
+    {
+        if($this->gender == 1)
+        {
+            return 'Nam';
+        }
+        return 'Nữ';
+    }
+    public function getAddressNameAttribute(): string
+    {
+        if($this->address == null)
+        {
+            return 'Chưa cập nhật';
+        }
+        return $this->address;
     }
 }
