@@ -57,6 +57,11 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="emailaddress">Số điện thoại</label>
+                                    <input class="form-control" name="phone" id="phone" required="" placeholder="Nhập số điện thoại">
+                                </div>
                                 <div class="form-row">
                                     <div class="form-group col-5">
                                         <label for="emailaddress">Chọn chức vụ:</label>
@@ -76,11 +81,12 @@
                                         </select>
                                     </div>
                                 </div>
-                                
                                 <div class="form-group mb-0 text-center">
                                     <button class="btn btn-primary" type="submit"> Đăng ký </button>
                                 </div>
-
+                                <div class="form-group mb-0 text-center" style="margin-top: 20px;">
+                                    <a href="{{ route('admin.user.index') }}" class="btn btn-danger">Huỷ</a>
+                                </div>
                             </form>
                         </div> <!-- end card-body -->
                     </div>
