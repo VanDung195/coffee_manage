@@ -57,23 +57,22 @@ if(!function_exists('getAndCacheAvailableTableNames')){
         );
     }
 }
-// if(!function_exists('getAndCacheShift'))
-// {
-//     function getAndCacheShift($shift_id)
-//     {
-//         return cache()->remember(
-//             SystemCacheEnum::SHIFT,
-//             84000 * 30,
-//             function()
-//             {
-//                 $shift = Shift::query()
-//                         ->where('id', $shift_id)
-//                         ->value('description');
-//                 return $shift;
-//             }
-//         );
-//     }
-// }
+if(!function_exists('getAndCacheShift'))
+{
+    function getAndCacheShift()
+    {
+        return cache()->remember(
+            SystemCacheEnum::SHIFT,
+            84000 * 30,
+            function()
+            {
+                $shift = Shift::query()
+                        ->get();
+                return $shift;
+            }
+        );
+    }
+}
 if(!function_exists('getAndCachePositions'))
 {
     function getAndCachePositions()
