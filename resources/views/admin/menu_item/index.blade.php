@@ -27,7 +27,7 @@
                     </div>
                 </form>
                 <a href="{{ route('admin.menu_items.create') }}" class="btn btn-success">Thêm món</a>
-                <button class="btn btn-danger" onclick="openmodal()">test</button>
+                {{-- <button class="btn btn-danger" onclick="openmodal()">test</button> --}}
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
@@ -69,18 +69,19 @@
                                         Sửa
                                     </button> --}}
                                     {{-- <a href="{{ route('admin.menu_items.edit', $item->id) }}" class="btn btn-success">Sửa món</a> --}}
-                                    <form action="{{ route('admin.menu_items.edit', $item->id) }}" method="POST"> 
+                                    <form action="{{ route('admin.menu_items.edit', $item->id) }}" method="POST" style="margin: 0px;"> 
                                         @csrf
                                         @method('put')
                                         <button class="btn btn-success">Sửa món</button>
                                     </form>
                                 </td>
-                                <td class="data-item" data-item-id="{{ $item->id }}">
-                                    <form action="{{ route("admin.menu_items.destroy", $item->id) }}" method="post">
+                                <td class="data-item">
+                                    {{-- <form action="{{ route("admin.menu_items.destroy", $item->id) }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <button class="btn btn-danger">Delete</button>
-                                    </form>
+                                    </form> --}}
+                                    <button data-menu-item-id="{{ $item->id }}" class="btn-delete btn btn-danger">Xoá món</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -99,15 +100,16 @@
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('invoice.store') }}" method="POST" id="form-create">
+                <form action="{{ route("admin.menu_items.destroy") }}" method="POST" id="form-accept">
                     @csrf
+                    @method('delete')
                     <input type="hidden" name="menu_item_id" id="item-id">
                     <h4 class="center">Có chắc xoá món này chứ?</h4>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger">Huỷ</button>
-                <button class="btn btn-success">Có chứ!</button>
+                <button class="btn-submit-form btn btn-success">Có chứ!</button>
             </div>
         </div>
     </div>
@@ -115,18 +117,29 @@
 @endsection
 @push('js')
     <script>
-        function openmodal()
-        {
+        // function openmodal()
+        // {
+        //     $('#modal-accept').modal('show');
+        //     // $('#myModal').modal('toggle');
+        //     // $('#myModal').modal('show');
+        //     // $('#myModal').modal('hide');
+        // }
+        $('.btn-delete').on('click', function(){
+            let menu_item_id = $(this).data('menu-item-id');
+            $('#item-id').val(menu_item_id);
             $('#modal-accept').modal('show');
-            // $('#myModal').modal('toggle');
-            // $('#myModal').modal('show');
-            // $('#myModal').modal('hide');
-        }
-
+        })
         $(document).ready(function () {
             $('.select-filter').change(function(){
                 $('#form-inline').submit();
             });
+
+            $('.btn-submit-form').click(function(){
+                $('#modal-accept').modal('toggle');
+                setTimeout(()=> {
+                    $('#form-accept').submit();
+                }, 400);
+            })
         });
     </script>
 @endpush
