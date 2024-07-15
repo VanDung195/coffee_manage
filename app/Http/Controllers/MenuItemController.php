@@ -24,6 +24,16 @@ class MenuItemController extends Controller
     
     public function index(Request $request)
     {
+        $selected_sort = $request->sort;
+        // if($selected_sort == 'asc')
+        // {
+        //     $sort = 'asc';
+        // }
+        // if($selected_sort == 'desc')
+        // {
+        //     $sort = 'desc';
+        // }
+        
         $selected_category = $request->get('category');
         $query = $this->model->clone()
                 ->with('menu_category:id,name');
@@ -36,6 +46,15 @@ class MenuItemController extends Controller
             });
             // dd($query->toSql(), $query->getBindings());
         }
+
+        if(!is_null($selected_sort))
+        {
+            if($selected_sort == 'none')
+            {
+                $selected_sort = '';
+            }
+            $query->orderBy('price', $selected_sort);
+        }
         $data = $query->paginate(10)->appends($request->all());
         
         $menu_categories = MenuCategory::query()
@@ -47,6 +66,7 @@ class MenuItemController extends Controller
             'data' => $data,
             'menu_categories' => $menu_categories,
             'selected_category' => $selected_category,
+            'selected_sort' => $selected_sort,
         ]);
     }
 
@@ -122,9 +142,9 @@ class MenuItemController extends Controller
         return redirect()->route('admin.menu_items.index')->with('success', 'Cập nhật món thành công');
     }
 
-    public function destroy($item_id)
+    public function destroy(Request $request)
     {
-        MenuItem::destroy($item_id);
+        MenuItem::destroy($request->menu_item_id);
         return redirect()->back();
     }
     // public function search(Request $request): JsonResponse
