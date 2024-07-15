@@ -98,9 +98,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <button class="btn btn-danger">
-                                        Xoá
-                                    </button>
+                                    <button data-user-id="{{ $user->id }}" class="btn-delete btn btn-danger">Xoá nhân viên</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -110,6 +108,28 @@
         </div>
     </div>
 </div>    
+<div id="modal-accept" class="modal fade" role="dialog" tabindex="-1"> 
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Xác nhận</h4>
+                <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route("admin.user.destroy") }}" method="POST" id="form-accept">
+                    @csrf
+                    @method('delete')
+                    <input type="hidden" name="user_id" id="user-id">
+                    <h4 class="center">Có chắc xoá nhân viên này chứ?</h4>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger">Huỷ</button>
+                <button class="btn-submit-form btn btn-success">Có chứ!</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @push('js')
     <script>
@@ -117,6 +137,19 @@
             $('.select-filter').change(function () {
                 $('#form-inline').submit()
             })
+
+            $('.btn-submit-form').click(function(){
+                $('#modal-accept').modal('toggle');
+                setTimeout(()=> {
+                    $('#form-accept').submit();
+                }, 400);
+            })
         });
+
+        $('.btn-delete').on('click', function(){
+            let user_id = $(this).data('user-id');
+            $('#user-id').val(user_id);
+            $('#modal-accept').modal('show');
+        })
     </script>
 @endpush
