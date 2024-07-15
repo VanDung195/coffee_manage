@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Controller;
+use App\Models\Position;
 use App\Models\Shift;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -67,12 +68,45 @@ class UserController extends Controller
         $user = User::query()
                 ->where('id', $user_id)
                 ->first();
+        $positions = Position::query()
+                    ->where('name', '<>', 'Admin')
+                    ->get();
+        $shifts = Shift::query()
+                ->where('description', '<>', 'Admin')
+                ->get();
         return view('admin.user.edit', [
             'user' => $user,
+            'positions' => $positions,
+            'shifts' => $shifts,
         ]);
     }
-    public function update()
+    public function update(Request $request)
     {
-
+        // dd($request->all());
+        // $id = User::find($request->id);
+        // dd($id);
+        User::query()
+            ->where('id', $request->id)
+            ->update([
+                'name' => $request->name,
+                'birthdate' => $request->birthdate,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'account' => $request->account,
+                'role' => $request->role,
+                'shift_id' => $request->shift,
+            ]);
+        
+        return redirect()->route('admin.user.index')->with('success', 'Cập nhật thông tin nhân viên thành công!');
+    }
+    public function destroy(Request $request)
+    {
+        $user = User::find($request->user_id);
+        if(!isset($user))
+        {
+            return redirect()->back()->with('error', 'Nhân viên không tồn tại trong hệ thống');
+        }
+        User::destroy($request->user_id);
+        return redirect()->back()->with('success','Xoá người dùng thành công');
     }
 }
