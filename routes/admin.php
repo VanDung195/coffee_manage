@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', [TestController::class, 'test']);
 Route::get('/user', [UserController::class, 'index'])->name('user.index');
 Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
-Route::put('/edit/{user_id}', [UserController::class, 'edit'])->name('user.edit');
-Route::put('/update', [UserController::class, 'update'])->name('user.update');
+Route::put('/user/edit/{user_id}', [UserController::class, 'edit'])->name('user.edit');
+Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
+Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.destroy');
 // Route::group([
 //     'as' => 'users',
 //     'prefix' => 'users'],
