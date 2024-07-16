@@ -27,17 +27,19 @@
                     </div>
                     <div class="form-group">
                         <label for="sort">Sắp xếp theo giá</label>
-                        <select name="sort" id="sort" class="form-control select-filter">
-                            <option value="none" selected @if ($selected_sort == 'none') selected @endif>
-                                Mặc định
-                            </option>
-                            <option value="asc" @if ($selected_sort == 'asc') selected @endif>
-                                Giá tăng dần
-                            </option>
-                            <option value="desc" @if ($selected_sort == 'desc') selected @endif>
-                                Giá giảm dần
-                            </option>
-                        </select>
+                        <div class="col-4">
+                            <select name="sort" id="sort" class="form-control select-filter">
+                                <option value="none" selected @if ($selected_sort == 'none') selected @endif>
+                                    Mặc định
+                                </option>
+                                <option value="asc" @if ($selected_sort == 'asc') selected @endif>
+                                    Giá tăng dần
+                                </option>
+                                <option value="desc" @if ($selected_sort == 'desc') selected @endif>
+                                    Giá giảm dần
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </form>
                 <a href="{{ route('admin.menu_items.create') }}" class="btn btn-success">Thêm món</a>
