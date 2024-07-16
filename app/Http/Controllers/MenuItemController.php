@@ -46,14 +46,12 @@ class MenuItemController extends Controller
             });
             // dd($query->toSql(), $query->getBindings());
         }
-
         if(!is_null($selected_sort))
         {
-            if($selected_sort == 'none')
+            if($selected_sort == 'asc' || $selected_sort == 'desc')
             {
-                $selected_sort = '';
+                $query->orderBy('price', $selected_sort);
             }
-            $query->orderBy('price', $selected_sort);
         }
         $data = $query->paginate(10)->appends($request->all());
         
