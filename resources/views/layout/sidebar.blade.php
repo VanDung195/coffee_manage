@@ -60,7 +60,7 @@
                     </a>
                 </li>
                 <li class="side-nav-item">
-                    <a href="#" class="side-nav-link">
+                    <a href="{{ route('admin.menu_categories.index') }}" class="side-nav-link">
                         <i class="uil-invoice"></i>
                         <span> Quản lý loại món </span>
                     </a>
