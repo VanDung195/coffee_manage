@@ -66,7 +66,7 @@
                     </a>
                 </li>
                 <li class="side-nav-item">
-                    <a href="#" class="side-nav-link">
+                    <a href="{{ route('admin.positions.index') }}" class="side-nav-link">
                         <i class="uil-invoice"></i>
                         <span> Quản lý chức vụ </span>
                     </a>
