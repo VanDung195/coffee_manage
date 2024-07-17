@@ -11,14 +11,14 @@
                         <thead> 
                             <tr>
                                 <th>#</th>
-                                <th>Họ tên</th>
+                                <th>Tên loại món</th>
                                 <th>Sửa tên loại món</th>
                                 <th>Xoá loại món</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($categories as $item)
-                                <tr>
+                                <tr id="{{ $item->id }}">
                                     <td>
                                         <a>{{ $item->id }}</a>
                                     </td>
@@ -28,11 +28,6 @@
                                         </a>
                                     </td>
                                     <td>
-                                        {{-- <form action="{{ route('admin.menu_categories.edit', $item->id) }}" method="POST">
-                                            @csrf
-                                            @method('put')
-                                            <button class="btn btn-success">Sửa</button>
-                                        </form> --}}
                                         <form action="{{ route('admin.menu_categories.edit', $item->id) }}" method="POST" style="margin: 0px;"> 
                                             @csrf
                                             @method('put')
@@ -63,12 +58,12 @@
                         @csrf
                         @method('delete')
                         <input type="hidden" name="menu_category_id" id="item-id">
-                        <h4 class="center">Có chắc xoá món này chứ?</h4>
+                        <h4 class="center">Nếu bạn muốn xoá loại món này thì bạn phải xoá tất cả các món có liên quan đến loại món này. Tiếp tục xoá?</h4>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger">Huỷ</button>
-                    <button class="btn-submit-form btn btn-success">Có chứ!</button>
+                    <button class="btn-cancel btn btn-danger">Huỷ</button>
+                    <button class="btn-submit-form btn btn-success">Tôi đã xoá!</button>
                 </div>
             </div>
         </div>
@@ -76,17 +71,53 @@
 @endsection
 @push('js')
     <script>
+        function notify(type,message,icon,color)
+        {
+            $.toast({
+                heading: type,
+                text: message,
+                icon: icon,
+                loader: true,        
+                loaderBg: color  
+            })
+        }
+        // #FF0000 'info'
         $('.btn-delete').on('click', function(){
             let menu_category_id = $(this).data('menu-category-id');
             $('#item-id').val(menu_category_id);
             $('#modal-accept').modal('show');
         })
+        $('.btn-cancel').click(function(){
+            $('#modal-accept').modal('toggle');
+        });
         $(document).ready(function () {
+            // $('.btn-submit-form').click(function(){
+            //     $('#modal-accept').modal('toggle');
+            //     setTimeout(()=> {
+            //         $('#form-accept').submit();
+            //     }, 400);
+            // })
+
             $('.btn-submit-form').click(function(){
-                $('#modal-accept').modal('toggle');
-                setTimeout(()=> {
-                    $('#form-accept').submit();
-                }, 400);
+                let item_id = $('#item-id').val();
+                $.ajax({
+                    type: "delete",
+                    url: '{{ route('admin.menu_categories.destroy') }}',
+                    data: {
+                        menu_category_id: item_id
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        document.getElementById(response.data.id).remove();
+                        $('#modal-accept').modal('toggle');
+                        notify('Thành công,',response.message,'success','#FF0000');
+                    }, 
+                    error: function(error)
+                    {
+                        // $('#modal-accept').modal('toggle');
+                        notify('Lỗi,',error.responseJSON.message,'warning','#FF0000');
+                    }
+                });
             })
         });
     </script>
