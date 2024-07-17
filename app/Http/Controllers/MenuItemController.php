@@ -25,14 +25,6 @@ class MenuItemController extends Controller
     public function index(Request $request)
     {
         $selected_sort = $request->sort;
-        // if($selected_sort == 'asc')
-        // {
-        //     $sort = 'asc';
-        // }
-        // if($selected_sort == 'desc')
-        // {
-        //     $sort = 'desc';
-        // }
         
         $selected_category = $request->get('category');
         $query = $this->model->clone()
@@ -53,13 +45,10 @@ class MenuItemController extends Controller
                 $query->orderBy('price', $selected_sort);
             }
         }
-        $data = $query->paginate(10)->appends($request->all());
+        $data = $query->paginate(15)->appends($request->all());
         
         $menu_categories = MenuCategory::query()
                     ->get();
-        // $menu_items = MenuItem::query()
-        //                 ->get();
-        // dd($data);
         return view('admin.menu_item.index', [
             'data' => $data,
             'menu_categories' => $menu_categories,
@@ -84,11 +73,10 @@ class MenuItemController extends Controller
         $price = $request->price;
         if($name == null || $price == null)
         {
-            // dd($request->name, $request->price);
             return redirect()->back()->with('error', 'Không được để trống');
         }
         $check = MenuItem::query()
-                ->where('menu_category_id', $category)
+                // ->where('menu_category_id', $category)
                 ->where('name', $name)
                 ->first();
         // dd($check);
