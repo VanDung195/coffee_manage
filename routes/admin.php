@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\MenuCategoryController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StatisticController;
+use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\TestController;
 use App\Http\Middleware\AdminMiddleware;
@@ -61,4 +62,7 @@ Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.d
     Route::put('/position/edit/{pos_id}', [PositionController::class, 'edit'])->name('positions.edit');
     Route::put('/position/update', [PositionController::class, 'update'])->name('positions.update');
     Route::delete('/position/destroy', [PositionController::class, 'destroy'])->name('positions.destroy');
+
+    Route::get('/table/index', [TableController::class, 'index'])->name('tables.index');
+    Route::get('/table/create', [TableController::class, 'create'])->name('tables.create');
 // });
