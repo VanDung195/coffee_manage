@@ -71,14 +71,14 @@
                         <span> Quản lý chức vụ </span>
                     </a>
                 </li>
-                <li class="side-nav-item">
+                {{-- <li class="side-nav-item">
                     <a href="#" class="side-nav-link">
                         <i class="uil-invoice"></i>
                         <span> Quản lý ca </span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="side-nav-item">
-                    <a href="#" class="side-nav-link">
+                    <a href="{{ route('admin.tables.index') }}" class="side-nav-link">
                         <i class="uil-invoice"></i>
                         <span> Quản lý bàn </span>
                     </a>
