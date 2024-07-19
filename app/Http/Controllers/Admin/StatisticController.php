@@ -35,6 +35,7 @@ class StatisticController extends Controller
                                         sum(invoice_details.quantity*menu_items.price) as total_price')
                 ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                 ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                // ->where('is_hidden', false)
                 ->whereDate('created_at', $day)
                 ->groupBy('year', 'month', 'day','menu_items.name')
                 ->get();
@@ -157,6 +158,7 @@ class StatisticController extends Controller
             ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
             ->join('menu_items', 'invoice_details.menu_item_id', '=', 'menu_items.id')
             // ->whereBetween('invoices.created_at', [$start_date, $end_date])
+            ->where('is_hidden', false)
             ->whereMonth('invoices.created_at', '=', $month)
             ->whereYear('invoices.created_at', $year)
             ->groupBy('masanpham', 'tensanpham', 'ngaytao')
@@ -184,6 +186,10 @@ class StatisticController extends Controller
         // }
 
         $menu_items = getAndCacheMenuItems();
+        //test
+        // $menu_items = MenuItem::query()
+        //                 ->where('is_hidden', false)
+        //                 ->get();
         foreach ($menu_items as $each) {
             $arr[$each['id']] = [
                 'name' => $each['name'],
@@ -270,6 +276,7 @@ class StatisticController extends Controller
                 sum(invoice_details.quantity) as soluong')
                 ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                 ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                ->where('menu_items.is_hidden', false)
                 ->whereYear('invoices.created_at', $year)
                 ->groupBy('masanpham', 'thang')
                 ->get();
@@ -279,6 +286,9 @@ class StatisticController extends Controller
 
         $arrChart2 = [];
         $menu_items = getAndCacheMenuItems();
+        // $menu_items = MenuItem::query()
+        //                 ->where('is_hidden', false)
+        //                 ->get();
         foreach($menu_items as $each) 
         {
             $arr1[$each['id']] = [
@@ -393,6 +403,7 @@ class StatisticController extends Controller
                         ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                         ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
                         ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
+                        ->where('menu_items.is_hidden', false)
                         ->groupBy('date', 'menu_items.id','menu_items.name', 'id')
                         ->get();
 
@@ -454,6 +465,7 @@ class StatisticController extends Controller
                                         sum(invoice_details.quantity) as quantity')
                             ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                             ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                            ->where('menu_items.is_hidden', false)
                             ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
                             ->groupBy('id', 'month')
                             ->get();
@@ -525,6 +537,7 @@ class StatisticController extends Controller
                                 sum(invoice_details.quantity) as quantity')
                         ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                         ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
+                        ->where('menu_items.is_hidden', false)
                         ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
                         ->groupBy('id', 'year')
                         ->get();
