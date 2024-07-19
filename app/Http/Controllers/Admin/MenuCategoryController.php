@@ -14,6 +14,8 @@ class MenuCategoryController extends Controller
     public function index()
     {
         $categories = MenuCategory::query()
+                    ->where('is_hidden', false)
+                    ->orderBy('is_hidden', 'asc')
                     ->get();
         return view('admin.menu_category.index', [
             'categories' => $categories,
@@ -58,8 +60,9 @@ class MenuCategoryController extends Controller
         // dd($request->menu_category_id);
         $menu_item_check = MenuItem::query()
                             ->where('menu_category_id',$request->menu_category_id)
+                            ->where('is_hidden', false)
                             ->first();
-
+        // dd($menu_item_check->name);
         // dd($menu_item_check);
         // if($menu_item_check != null)
         // {
@@ -75,8 +78,14 @@ class MenuCategoryController extends Controller
 
         }
         // MenuCategory::destroy($request->menu_category_id);
-        $menu_category = MenuCategory::find($request->menu_category_id);
-        $menu_category->delete();
+
+        MenuCategory::query()
+                    ->where('id', $request->menu_category_id)
+                    ->update([
+                        'is_hidden' => true,
+                    ]);
+        // $menu_category = MenuCategory::find($request->menu_category_id);
+        // $menu_category->delete();
         // return redirect()->back();
         return $this->successResponse([
             'id' => $request->menu_category_id,
