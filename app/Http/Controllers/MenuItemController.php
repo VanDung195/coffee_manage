@@ -18,7 +18,7 @@ class MenuItemController extends Controller
 
     public function __construct()
     {
-        $this->model = MenuItem::query();
+        $this->model = MenuItem::query()->where('is_hidden', false);
         $this->table = (new MenuItem())->getTable();
     }
     
@@ -130,7 +130,14 @@ class MenuItemController extends Controller
 
     public function destroy(Request $request)
     {
-        MenuItem::destroy($request->menu_item_id);
+        // MenuItem::query()
+        //         ->where('id', $request->menu_item_id)
+        //         ->update([
+        //             'is_hidden' => 1,
+        //         ]);
+        $menu_item = MenuItem::findOrFail($request->menu_item_id);
+        $menu_item->is_hidden = 1;
+        $menu_item->save();
         return redirect()->back();
     }
     // public function search(Request $request): JsonResponse
