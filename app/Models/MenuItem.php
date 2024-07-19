@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\SystemCacheEnum;
+use App\Enums\SystemCacheKeyEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class MenuItem extends Model
 {
@@ -17,6 +20,31 @@ class MenuItem extends Model
         'deleted_at'
     ];
 
+    // protected static function booted(): void
+    // {
+    //     static::saved(static function($menu_item) {
+    //         Cache::forget(SystemCacheEnum::MENU_ITEMS);
+    //         // cache()->forget(SystemCacheKeyEnum::MENU_ITEMS);
+    //         getAndCacheMenuItems();
+    //     });
+    // }
+    protected static function booted(): void
+    {
+        static::updated(function ($menuItem) {
+            Cache::forget(SystemCacheEnum::MENU_ITEMS);
+            getAndCacheMenuItems();
+        });
+
+        static::created(function ($menuItem) {
+            Cache::forget(SystemCacheEnum::MENU_ITEMS);
+            getAndCacheMenuItems();
+        });
+
+        static::deleted(function ($menuItem) {
+            Cache::forget(SystemCacheEnum::MENU_ITEMS);
+            getAndCacheMenuItems();
+        });
+    }
     public $timestamps = false;
     public function getPriceVNDAttribute()
     {
