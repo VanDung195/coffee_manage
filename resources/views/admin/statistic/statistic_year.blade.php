@@ -3,6 +3,8 @@
     <link rel="stylesheet" href="{{ asset('css/hightcharts.css') }}">
 @endpush
 @section('content')
+<h2>Thống kê theo năm</h2>
+<p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
 <div class="form-group">
     {{-- <input class="form-control col-2" type="number" min="1900" max="2099" step="1" value="{{ date('Y') }}" /> --}}
     {{-- <input class="form-control col-2" id="year" type="year" name="year" value="{{ date('Y') }}"> --}}
