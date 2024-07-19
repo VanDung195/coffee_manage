@@ -14,7 +14,9 @@ if(!function_exists('getAndCacheMenuItems')){
             SystemCacheEnum::MENU_ITEMS,
             84000*30,
             function(){
-                $items = MenuItem::query()->get();
+                $items = MenuItem::query()
+                        ->where('is_hidden', false)
+                        ->get();
                 return $items;
             }
         );
@@ -37,7 +39,7 @@ if(!function_exists('getAndCacheTableName')){
         );
     }
 }
-//except table names: unknow, takeaway (using for change information table) 
+//except table names: unknow, takeaway (use for change information table) 
 if(!function_exists('getAndCacheAvailableTableNames')){
     function getAndCacheAvailableTableNames()
     {
