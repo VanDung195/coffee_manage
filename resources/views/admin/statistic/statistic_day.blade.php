@@ -1,14 +1,25 @@
 @extends('layout.master')
 @push('css')
     <link rel="stylesheet" href="{{ asset('css/hightcharts.css') }}">
+    <style>
+        .btn-submit-form{
+            height: 37.39px;
+            margin-top: 29.2px;
+        }
+    </style>
 @endpush
 @section('content')
 <h1>Thống kê ngày hôm nay hoặc chọn ngày cụ thể để thống kê</h1>
-    <div class="form-group col-2">
-        <label for="example-date">Date</label>
-        <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}">
+<p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
+    <div class="form-row">
+        <div class="form-group col-2">
+            <label for="example-date">Date</label>
+            <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}" maxlength="10">
+        </div>
+        <div class="form-row col-2">
+            <button class="btn btn-submit-form btn-primary" onclick="submitForm(event)">Choose</button>
+        </div>
     </div>
-    <button class="btn btn-primary" onclick="submitForm(event)">Choose</button>
     <div class="form-group" style="margin-top:20px;">
         <label>Tổng doanh thu của tháng: </label>
         <p class="form-control col-2" id="total-price"></p>
