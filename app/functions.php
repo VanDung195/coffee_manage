@@ -31,7 +31,6 @@ if(!function_exists('getAndCacheTableName')){
             function()
             {
                 $tables = Table::query()
-                    ->orderBy('stt', 'asc')
                     ->paginate(20);
                 // $tables = Table::query()->get();
                 return $tables;
@@ -49,7 +48,6 @@ if(!function_exists('getAndCacheAvailableTableNames')){
             function()
             {
                 $tables = Table::query()
-                        ->orderBy('stt', 'asc')
                         ->get()
                         ->toArray();
                 $tables = array_slice($tables, 6);
