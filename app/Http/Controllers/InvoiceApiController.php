@@ -26,13 +26,15 @@ class InvoiceApiController extends Controller
             $query->select('invoice_id', 'menu_item_id', 'quantity');
         }, 'details.menuItems' => function($query) {
             $query->select('id', 'name','price');
-        }])
+        }, 'tables' => function($query) {
+            $query->select('id', 'name');
+        },
+        ])
         // ->select('id','customer_payment', 'remaining_money')
         ->whereIn('id', $table_invoice_id)
         ->orderBy('created_at', 'desc')
         ->get()
         ->toArray();
-
         // dd($invoices);
         $merged_array = [];
         $count = 0;
@@ -56,12 +58,13 @@ class InvoiceApiController extends Controller
                 }
                 $merged_array[$count] = [
                     'table_id' => $table_id,
+                    'table_name' => $item['table_name'],
                     'total_price' => $item['total_price'],
                     // 'created_at' => $item['created_at'],
                     'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                     'checkin_time' => $item['checkin_time'],
                     'checkout_time' => $item['checkout_time'],
-                    'is_paid' => 0,
+                    'is_paid' => $item['is_paid'],
                     'customer_payment' => $customer_payment,
                     'remaining_money' => $remaining_money,
                     'details' => [],
@@ -82,7 +85,10 @@ class InvoiceApiController extends Controller
                 $count++;
             }
         }
-
+        // foreach($invoices as $item)
+        // {
+        //     dd($item);
+        // }
         foreach($invoices as $item)
         {
             $table_id = $item['table_id'];
@@ -95,6 +101,7 @@ class InvoiceApiController extends Controller
             }
             $merged_array[$count]= [
                 'table_id' => $table_id,
+                'table_name' => $item['tables']['name'],
                 'total_price' => $item['total_price'],
                 'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                 // 'created_at' => $item['created_at'],
