@@ -24,7 +24,10 @@ class InvoiceController extends Controller
     {
         // dd($request->all());
         try {
-            $tableId = $request->input('table-id');
+            $tableId = $request->input('table_id');
+            $table_name = Table::query()
+                            ->where('id', $tableId)
+                            ->value('name');
             $allData = $request->all();
             $ItemsId = $allData['id'];
             if(in_array('0', $ItemsId))
@@ -79,9 +82,9 @@ class InvoiceController extends Controller
                 ]);
                 $invoice_id = $invoice->id;
 
-                if($tableId != 'unknow' || $tableId != 'ta')
+                if($table_name != 'unknow' || $table_name != 'ta')
                 {
-                    Table::where('name', $tableId)->update([
+                    Table::where('id', $tableId)->update([
                         'status' => TableStausEnum::getKey(0),
                         'invoice_id' => $invoice_id,
                     ]);
@@ -112,6 +115,7 @@ class InvoiceController extends Controller
                 $message = 'Tạo hoá đơn thành công!';
                 return $this->successResponse([
                     'table_id' => $tableId,
+                    'table_name' => $table_name,
                     'details' => $invoice_details,
                     'total_price' => $total_price,
                     // 'created_at' => $now->format('Y:m:d H:i:s'),
@@ -157,6 +161,7 @@ class InvoiceController extends Controller
             // }
             $invoice[$tableId] = [
                 'table_id' => $tableId,
+                'table_name' => $table_name,
                 'details' => $invoice_details,
                 'total_price' => $total_price,
                 'created_at' => $now->format('d-m-Y'),
@@ -174,6 +179,7 @@ class InvoiceController extends Controller
             $message = 'Thanh cong roi nhe!';
             return $this->successResponse([
                 'table_id' => $tableId,
+                'table_name' => $table_name,
                 'details' => $invoice_details,
                 'total_price' => $total_price,
                 // 'created_at' => $now->format('Y:m:d H:i:s'),
@@ -654,8 +660,6 @@ class InvoiceController extends Controller
                 'new_key' => $new_key,
             ], 'Thanh cong roi nhe!');
         }
-
-
     }
 
     public function redirect_success()
