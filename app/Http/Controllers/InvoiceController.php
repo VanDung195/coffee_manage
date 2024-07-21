@@ -147,12 +147,17 @@ class InvoiceController extends Controller
                     'thanh_tien' => $thanh_tien,
                 ];
             }
+            // session()->flush();
+            // dd('Before setting invoice', session()->all());
 
+            // dd(1);
             if (!session()->has('invoice')) {
-                // session()->prepend('invoice', []);
                 session()->put('invoice', []);
             }
+
             $invoice = session()->get('invoice');
+            // dd($invoice);
+
             //thêm 1 trường hợp nữa đó là nếu trong csdl bàn đó bận rồi thì không cho đặt
             // if(!empty($invoice[$tableId]))
             // {
@@ -505,20 +510,31 @@ class InvoiceController extends Controller
         // dd($request->all());
         $payment_status_old = $request->payment_status_old;
         $payment_status_new = $request->payment_status_new;
-        $old_key = $request->from_table;
-        $new_key = $request->to_table;
 
+        //old key id
+        $old_key = $request->from_table_id;
+        $new_key = $request->to_table_id;
+
+        //old key name
+        $old_key_name = Table::query()
+                    ->where('id', $old_key)->value('name');
+        $new_key_name = Table::query()
+                ->where('id', $new_key)->value('name');
         $invoices = session()->get('invoice');
         $keys = [];
         if(!empty($invoices))
         {
             $keys = array_keys($invoices);
         }
-        if(!empty($invoices) && $payment_status_old == 0 || $payment_status_old == 2 )
+        // dd($invoices, $new_key);
+        // dd($payment_status_old);
+        // dd(array_key_exists($new_key, $invoices));
+        if(!empty($invoices) && (int)$payment_status_old == 0 || (int)$payment_status_old == 2 )
         {
             //Nếu muốn đổi 2 bàn đã tồn tại cho nhau và cả 2 đều chưa thanh toán trước (session)    
             if(array_key_exists($new_key, $invoices))
             {
+                // dd(1);
                 //Đoạn này là đổi array_keys
                 $new_key_index = array_search($new_key, $keys);
                 $old_key_index = array_search($old_key, $keys);
@@ -530,12 +546,16 @@ class InvoiceController extends Controller
 
                 //Đổi array_values trong mảng invoices
                 $invoices[$old_key]['table_id'] = $old_key;
+                $invoices[$old_key]['table_name'] = $old_key_name;
                 $invoices[$new_key]['table_id'] = $new_key;
+                $invoices[$new_key]['table_name'] = $new_key_name;
                 session()->put('invoice', $invoices);
                 // dd('da ton tai array key');                
                 return $this->successResponse([
                     'old_key' => $old_key,
                     'new_key' => $new_key,
+                    'old_key_name' => $old_key_name,
+                    'new_key_name' => $new_key_name,
                 ],'thanh cong roi nhe');
             }
             
@@ -552,19 +572,19 @@ class InvoiceController extends Controller
             if(!array_key_exists($new_key, $invoices))
             {
                 $invoice_id_new_key = Table::query()
-                                        ->where('name', $new_key)
+                                        ->where('id', $new_key)
                                         // ->pluck('invoice_id');
                                         ->value('invoice_id');
+
                 // dd($invoice_id_new_key[0]);
                 Table::query()
-                    ->where('name', $new_key)
+                    ->where('id', $new_key)
                     ->update([
                         'status' => TableStausEnum::getKey(1),
                         'invoice_id' => 0,
                     ]);
-
                 Table::query()
-                    ->where('name', $old_key)
+                    ->where('id', $old_key)
                     ->update([
                         'status' => TableStausEnum::getKey(0),
                         'invoice_id' => $invoice_id_new_key,
@@ -587,18 +607,21 @@ class InvoiceController extends Controller
             $keys[array_search($old_key, $keys)] = $new_key;
             $invoices = array_combine($keys, $invoices);
             $invoices[$new_key]['table_id'] = $new_key;
+            $invoices[$new_key]['table_name'] = $new_key_name;
             session()->put('invoice', $invoices);
             
             return $this->successResponse([
                 'old_key' => $old_key,
                 'new_key' => $new_key,
+                'old_key_name' => $old_key_name,
+                'new_key_name' => $new_key_name,
             ], 'Thanh cong roi nhe');
         }
         if($payment_status_old == 1)
         {
             $table_invoice = Table::query()
-                            ->whereIn('name', [$new_key, $old_key])
-                            ->pluck('invoice_id', 'name');
+                            ->whereIn('id', [$new_key, $old_key])
+                            ->pluck('invoice_id', 'id');
             // dd($table_invoice);
             $invoice_id_new_key = $table_invoice[$new_key];
             $invoice_id_old_key = $table_invoice[$old_key];
@@ -609,9 +632,9 @@ class InvoiceController extends Controller
             {
                 // dd(1123);
                 Table::query()
-                    ->whereIn('name', [$new_key, $old_key])
+                    ->whereIn('id', [$new_key, $old_key])
                     ->update([
-                        'invoice_id' => DB::raw("case when name = '$new_key' then $invoice_id_old_key else $invoice_id_new_key end"),
+                        'invoice_id' => DB::raw("case when id = '$new_key' then $invoice_id_old_key else $invoice_id_new_key end"),
                     ]);
 
                 DB::transaction(function() use ($invoice_id_new_key, $new_key, $invoice_id_old_key, $old_key) {
@@ -631,6 +654,8 @@ class InvoiceController extends Controller
                 return $this->successResponse([
                     'old_key' => $old_key,
                     'new_key' => $new_key,
+                    'old_key_name' => $old_key_name,
+                    'new_key_name' => $new_key_name,
                 ], 'Thanh cong roi nhe!');
             }
 
@@ -642,22 +667,27 @@ class InvoiceController extends Controller
                 $keys[array_search($new_key, $keys)] = $old_key;
                 $invoices = array_combine($keys, $invoices);
                 $invoices[$old_key]['table_id'] = $old_key;
+                $invoices[$old_key]['table_name'] = $old_key_name;
                 session()->put('invoice', $invoices);
             }
             Table::query()
-                ->whereIn('name', [$new_key, $old_key])
+                ->whereIn('id', [$new_key, $old_key])
                 ->update([
-                    'status' => DB::raw("case when name = '$new_key' then'" . TableStausEnum::getKey(0) . "'else'" . TableStausEnum::getKey(1) . "'end"),
-                    'invoice_id' => DB::raw("case when name = '$new_key' then $invoice_id_old_key else 0 end"),
+                    'status' => DB::raw("case when id = '$new_key' then'" . TableStausEnum::getKey(0) . "'else'" . TableStausEnum::getKey(1) . "'end"),
+                    'invoice_id' => DB::raw("case when id = '$new_key' then $invoice_id_old_key else 0 end"),
                 ]);
 
             Invoice::query()
                 ->where('id', $invoice_id_old_key)
-                ->update(['table_id' => $new_key]);
+                ->update([
+                    'table_id' => $new_key,
+                ]);
 
             return $this->successResponse([
                 'old_key' => $old_key,
                 'new_key' => $new_key,
+                'old_key_name' => $old_key_name,
+                'new_key_name' => $new_key_name,
             ], 'Thanh cong roi nhe!');
         }
     }
