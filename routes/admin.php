@@ -65,4 +65,6 @@ Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.d
 
     Route::get('/table/index', [TableController::class, 'index'])->name('tables.index');
     Route::get('/table/create', [TableController::class, 'create'])->name('tables.create');
+    Route::post('/table/store', [TableController::class, 'store'])->name('tables.store');
+    Route::put('/table/edit/{table_name}', [TableController::class, 'edit'])->name('tables.edit');
 // });
