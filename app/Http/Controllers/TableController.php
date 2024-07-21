@@ -31,14 +31,24 @@ class TableController extends Controller
             'is_paids' => $is_paids,
         ]);
     }
+    //delete invoice
     public function update(Request $request) 
     {
-        Table::query()
-        ->where('name',$request->table_name)
-        ->update([
-            'status' => TableStausEnum::getKey(1),
-            'invoice_id' => 0,
-        ]);
+        $invoices = session()->get('invoice');
+        if(isset($invoices[$request->table_id]))
+        {
+            unset($invoices[$request->table_id]);
+            session()->put('invoice', $invoices);
+        }else
+        {
+            Table::query()
+            ->where('id', $request->table_id)
+            ->update([
+                'status' => TableStausEnum::getKey(1),
+                'invoice_id' => 0,
+            ]);
+        }
+        
 
         // $key_to_delete = null;
         // foreach ($invoices as $key => $value) {
@@ -52,12 +62,7 @@ class TableController extends Controller
         // {
         //     unset($invoices[$key_to_delete]);
         // }
-        $invoices = session()->get('invoice');
-        if(isset($invoices[$request->table_name]))
-        {
-            unset($invoices[$request->table_name]);
-            session()->put('invoice', $invoices);
-        }
+        
 
         return 1;
     }
