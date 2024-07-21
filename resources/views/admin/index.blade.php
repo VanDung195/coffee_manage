@@ -267,7 +267,7 @@
                     <tr data-status="${response.is_paid}" class="order_table_class_${response.table_id}">
                         <td border="1" class="set-row" id="new-row-${response.table_id}" rowspan="${rowspanCount}">
                             <p id="p-table-id-${response.table_id}" class="p-table">
-                                <span class="span-table-class-${response.table_id}">${response.table_id}</span>
+                                <span id="span-table-id-${response.table_id}">${response.table_id}</span>
                                 <span>${response.is_qr ? '(QR)' : ''}</span>
                                 <span id="new-row-remove-${response.table_id}" class="new-invoice-check badge badge-success p-2s">(New)</span>
                             </p>
@@ -572,6 +572,7 @@
                     //invoice
                     let divapi = document.createElement("div");
                     response.data.invoices.forEach(function(item, index) {
+                        console.log(item);
                         let table_id_api = item.table_id;
                         let table_name = item.table_name;
 
@@ -579,7 +580,7 @@
                         let show_detail_api = 'show_detail_' + table_id_api;
                         //mọi phần tử trong Set là duy nhất, không trùng lặp và cung cấp các phương thức hiệu quả để kiểm tra các phần tử
                         // const invalid_table_id = new Set(['unknow', 'unknow2', 'takeaway']);
-                        const invalid_table_id = new Set(['takeaway']);
+                        const invalid_table_id = new Set([5]);
                         // if(table_id_api != 'unknow' && table_id_api != 'unknow2' && table_id_api != 'takeaway')
                         if(!invalid_table_id.has(table_id_api))
                         {
@@ -704,7 +705,7 @@
                                                     <input type="hidden" class="from-table-id" name="table_id" value="${item.table_id}">
                                                     <div class="form-group col-5">
                                                         <label>Từ bàn</label>
-                                                        <p class="from-table form-control">${item.table_name}</p>
+                                                        <p class="from-table-name form-control">${item.table_name}</p>
                                                     </div>
                                                     <div class="icon-swap form-group"> 
                                                         <i style="font-size: 35px" class=" uil-exchange-alt"></i>
@@ -713,7 +714,7 @@
                                                         <label>Tới bàn</label>
                                                         <select name="to_table" class="select-to-table">
                                                             @foreach ($table_names_available as $item)
-                                                                <option value="{{ $item['name'] }}" data-table="{{ $item['name'] }}">
+                                                                <option value="{{ $item['id'] }}" data-table="{{ $item['name'] }}">
                                                                     {{ $item['name'] }}
                                                                 </option>
                                                             @endforeach
@@ -738,7 +739,7 @@
                         order_table += `
                             <td border="1" class="set-row" rowspan="${rowspanCount}">
                                 <p id="p-table-id-${item.table_id}" class="p-table">
-                                    <span class="span-table-class-${item.table_id}">${item.table_name}</span>
+                                    <span id="span-table-id-${item.table_id}">${item.table_name}</span>
                                     <span>${item.is_qr ? '(QR)' : ''}</span>
                                 </p>
                                 ${item.checkin_time}<br>${item.created_at}
@@ -952,7 +953,7 @@
                                                     <label>Tới bàn</label>
                                                     <select name="to_table" class="select-to-table">
                                                         @foreach ($table_names_available as $item)
-                                                            <option value="{{ $item['name'] }}" data-table="{{ $item['name'] }}">
+                                                            <option value="{{ $item['id'] }}" data-table="{{ $item['name'] }}">
                                                                 {{ $item['name'] }}
                                                             </option>
                                                         @endforeach
@@ -989,7 +990,7 @@
                         <tr data-status="${response.data.is_paid}" class="order_table_class_${table_id}">
                             <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">
                                 <p id="p-table-id-${data.table_id}" class="p-table">
-                                    <span class="span-table-class-${data.table_id}">${data.table_id}</span>
+                                    <span id="span-table-id-${data.table_id}">${data.table_id}</span>
                                     <span>${data.is_qr ? '(QR)' : ''}</span>
                                     <span class="new-invoice-check badge badge-success p-2s">(New)</span>
                                 </p>
@@ -1262,6 +1263,7 @@
             $(modal_change_invoice).modal('show');
             console.log(123);
         });
+
         $(document).on('click', '.btn-submit-change-invoice', function(){
             let modal_content = $(this).closest('.modal-content');
             let modal = $(this).closest('.modal-change-invoice');
@@ -1274,37 +1276,39 @@
             let payment_status_old = modal_content.find('.payment-status').val();
             let csrf_token = modal_content.find('input[name="_token"]').val();
 
-            let modal_class_new = '.modal-change-invoice-'+to_table;
+            let modal_class_new = '.modal-change-invoice-'+to_table_id;
             let payment_status_new = $(modal_class_new).find('.payment-status').val();
-            console.log(modal_class_new);
             console.log(payment_status_new);
             console.log("day la ajax de doi thong tin ban");
             $.ajax({
                 type: 'post',
                 url: '{{ route('table_update') }}',
                 data: {
-                    from_table: from_table_id,
-                    to_table: to_table_id,
+                    from_table_id: from_table_id,
+                    to_table_id: to_table_id,
                     payment_status_old: payment_status_old,
                     payment_status_new: payment_status_new,
                     _token: csrf_token
                 },
                 dataType: "json",
                 success: function (response) {
+                    console.log('day la response tra lai');
+                    console.log(response);
                     $(modal).modal('toggle');
                     let new_key = response.data.new_key;
                     let old_key = response.data.old_key;
+
+                    let new_key_name = response.data.new_key_name;
+                    let old_key_name = response.data.old_key_name;
                     // let new_key_id = 'p-table-id-' + new_key;
                     // let old_key_id = 'p-table-id-' + old_key;
-                    let span_class_old_key = 'span-table-class-' + old_key;
-                    let span_class_new_key = 'span-table-class-' + new_key;
+                    let span_id_old_key = 'span-table-id-' + old_key;
+                    let span_id_new_key = 'span-table-id-' + new_key;
                     // let id_p_table_new = document.getElementById(new_key_id);
                     // let id_p_table_old = document.getElementById(old_key_id);
-                    let span_class_table_new = document.getElementsByClassName(span_class_new_key);
-                    let span_class_table_old = document.getElementsByClassName(span_class_old_key);
+                    let span_id_table_new = document.getElementById(span_id_new_key);
+                    let span_id_table_old = document.getElementById(span_id_old_key);
 
-                    console.log(span_class_table_new);
-                    console.log(span_class_table_old);
                     //modal invoice old la luon luon co vi co moi doi duoc ban chu. Con cai new thif hen xui vaix
                     // let id_modal_invoice_old = 'invoice_detail_' + old_key;
                     let id_modal_invoice_new = 'invoice_detail_' + new_key;
@@ -1331,21 +1335,28 @@
                     //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
                     if(modal_invoice_new != null)  //done
                     {
+                        console.log(span_id_table_new);
+                        console.log(span_id_table_old);
+                        // console.log(response);
                         console.log('co modal invoice new nhe!!!!!');
                         //data table change
-                        let class_invoice_new = '.modal-change-invoice-' + new_key;
-                        let modal_invoice_new = $(class_invoice_new).find('.from-table').html(old_key);
+                        let class_invoice_new = '.modal-change-invoice-'+new_key;
+                        // let modal_invoice_new = $(class_invoice_new).find('.from-table-name').html(old_key_name);
+                        $(class_invoice_new).find('.from-table-name').html(old_key_name);
+                        $(class_invoice_new).find('.from-table-id').val(old_key);
+                        // console.log($('.modal-change-invoice'+new_key));
                         // id_p_table_new.innerHTML = old_key;
                         //Đối sang dùng id cho khoẻ
-                        span_class_table_new[0].textContent = old_key;
+                        span_id_table_new.textContent = old_key_name;
                         // id_p_table_new.id = old_key_id;
-                        span_class_table_new[0].className = span_class_old_key;
-
-                        modal_content.find('.from-table').html(new_key);
-                        span_class_table_old[0].textContent = new_key;
+                        span_id_table_new.id = span_id_old_key;
+                        modal_content.find('.from-table-name').html(new_key_name);
+                        modal_content.find('.from-table-id').val(new_key); //
+                        
+                        span_id_table_old.textContent = new_key_name;
                         // id_p_table_old.textContent = new_key;
                         // id_p_table_old.id = new_key_id;
-                        span_class_table_old[0].className = span_class_new_key;
+                        span_id_table_old.id = span_id_new_key;
 
                         //modal invoice change 
                         invoice_detail_old.id = 'invoice_detail_'+new_key;
@@ -1361,8 +1372,8 @@
                         div_invoice_detail_old.id = 'div_invoice_detail_'+new_key;
                         div_invoice_detail_new.id = 'div_invoice_detail_'+old_key;
 
-                        div_invoice_detail_old.querySelector('h3').innerHTML = 'Bàn số: '+new_key;
-                        div_invoice_detail_new.querySelector('h3').innerHTML = 'Bàn số: '+old_key;
+                        div_invoice_detail_old.querySelector('h3').innerHTML = 'Bàn số: '+new_key_name;
+                        div_invoice_detail_new.querySelector('h3').innerHTML = 'Bàn số: '+old_key_name;
 
                         elements_old.forEach(function(element){
                             element.className = 'order_table_class_'+new_key;
@@ -1375,11 +1386,11 @@
                     else
                     {
                         console.log(123);
-                        modal_content.find('.from-table').html(new_key);
-                        span_class_table_old[0].textContent = new_key;
+                        modal_content.find('.from-table').html(new_key_name);
+                        span_id_table_old.textContent = new_key_name;
                         // id_p_table_old.innerHTML = new_key;
                         // id_p_table_old.id = new_key_id;
-                        span_class_table_old[0].className = span_class_new_key;
+                        span_id_table_old.id = span_id_new_key;
 
                         let btn_show_table_new = "show_table_" + new_key;
                         let btn_show_invoice_detail_new = "show_detail_" + new_key;
@@ -1395,7 +1406,7 @@
                         btn_delete_modal_old.attr('onclick', `deleteInvoice('${new_key}', 'modal_invoice')`);
                         div_invoice_detail_old.id = 'div_invoice_detail_'+new_key;
                         invoice_detail_old.id = 'invoice_detail_'+new_key;
-                        div_invoice_detail_old.querySelector('h3').innerHTML = 'Bàn số: '+new_key;
+                        div_invoice_detail_old.querySelector('h3').innerHTML = 'Bàn số: '+new_key_name;
 
                         elements_old.forEach(function(element){
                             element.className = 'order_table_class_'+new_key;
