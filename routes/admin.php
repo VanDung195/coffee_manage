@@ -67,4 +67,6 @@ Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.d
     Route::get('/table/create', [TableController::class, 'create'])->name('tables.create');
     Route::post('/table/store', [TableController::class, 'store'])->name('tables.store');
     Route::put('/table/edit/{table_name}', [TableController::class, 'edit'])->name('tables.edit');
+    Route::put('/table/update', [TableController::class, 'update'])->name('tables.update');
+    Route::delete('table/destroy', [TableController::class, 'destroy'])->name('tables.destroy');
 // });
