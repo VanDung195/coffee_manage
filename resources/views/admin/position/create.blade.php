@@ -41,6 +41,14 @@
 @endsection
 @push('js')
     <script>
-        
+        function notifyError(error)
+        {
+            $.NotificationApp.send("Error",error,"bottom-left","red","Icon")
+        }
+        @if(session('error'))
+            $(document).ready(function() {
+                notifyError("{{ session('error') }}");
+            });
+        @endif
     </script>
 @endpush
