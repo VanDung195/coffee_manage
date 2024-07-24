@@ -12,8 +12,12 @@ class Table extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        'invoice_id',
+        'name',
         'status',
+        'is_paid',
+        'floor',
+        'invoice_id',
+        'is_hidden',
     ];
 
     public function invoice(): BelongsTo
