@@ -84,7 +84,7 @@ class AuthController extends Controller
                 ->where('account', $request->account)->first();
 
         if(isset($user)) {
-            return redirect()->route('login')->with('error', 'trung');
+            return redirect()->route('login')->with('error', 'Tài khoản đã tồn tại trong hệ thống!');
         }
 
         $password = Hash::make($request->password);
@@ -98,9 +98,11 @@ class AuthController extends Controller
             $user->phone = $request->account;
             $user->role = $request->role;
             $user->shift_id = $request->shift;
+            $user->phone = $request->phone;
+            $user->is_hidden = 0;
         }
         $user->save();
-        return redirect()->route('table');
+        return redirect()->route('admin.user.index')->with('success', 'Thêm nhân viên thành công');
     }
     public function logout()
     {
