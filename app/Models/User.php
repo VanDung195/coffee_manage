@@ -31,6 +31,7 @@ class User extends Model implements AuthenticatableContract
         'updated_at',
         'remember_token',
         'shift_id',
+        'is_hidden',
     ];
 
     public function shift(): BelongsTo
