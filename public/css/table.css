@@ -1,17 +1,19 @@
 .btn-table{
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background-color: black;
     border: 1px solid black;
-    margin: 20px;
+    margin: 12px;
     color: rgb(14, 225, 52);
+    font-size: 12px;
 }
 .btn-show-invoice-detail {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
+    font-size: 12px;
     background-color: black;
     border: 1px solid black;
-    margin: 20px;
+    margin: 12px;
     color: red;
 }
 .btn-update-quantity {
