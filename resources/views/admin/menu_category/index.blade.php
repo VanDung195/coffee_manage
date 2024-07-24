@@ -120,5 +120,24 @@
                 });
             })
         });
+
+        function notifyError(error)
+        {
+            $.NotificationApp.send("Error",error,"bottom-left","red","Icon")
+        }
+        function notifySuccess(success)
+        {
+            $.NotificationApp.send("Success",success,"bottom-left","green","Icon")
+        }
+        @if(session('error'))
+            $(document).ready(function() {
+                notifyError("{{ session('error') }}");
+            });
+        @endif
+        @if(session('success'))
+            $(document).ready(function() {
+                notifySuccess("{{ session('success') }}");
+            });
+        @endif
     </script>
 @endpush
