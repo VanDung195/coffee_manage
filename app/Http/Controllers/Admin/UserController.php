@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResponseTrait;
 use App\Models\Position;
 use App\Models\Shift;
 use App\Models\User;
@@ -12,12 +13,14 @@ use Illuminate\Support\Facades\View as FacadesView;
 
 class UserController extends Controller
 {
+    use ResponseTrait;
+
     protected object $model;
     protected string $table;
     
     public function __construct()
     {
-        $this->model = User::query();
+        $this->model = User::query()->where('is_hidden', false);
         $this->table = (new User())->getTable();
         FacadesView::share('title', ucwords($this->table));  
         FacadesView::share('table', $this->table);
@@ -104,9 +107,18 @@ class UserController extends Controller
         $user = User::find($request->user_id);
         if(!isset($user))
         {
-            return redirect()->back()->with('error', 'Nhân viên không tồn tại trong hệ thống');
+            // return redirect()->back()->with('error', 'Nhân viên không tồn tại trong hệ thống');
+            return $this->errorResponse('Nhân viên này không tồn tại trong hệ thống! Hãy thử lại su');
         }
-        User::destroy($request->user_id);
-        return redirect()->back()->with('success','Xoá người dùng thành công');
+        // User::destroy($request->user_id);
+        User::query()
+                ->where('id', $request->user_id)
+                ->update([
+                    'is_hidden' => true,
+                ]);
+        // return redirect()->back()->with('success','Xoá người dùng thành công');
+        return $this->successResponse([
+            'user_id' => $request->user_id,
+        ],'Xoá nhân viên thành công!');
     }
 }
