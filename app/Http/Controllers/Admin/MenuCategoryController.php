@@ -31,8 +31,9 @@ class MenuCategoryController extends Controller
     {
         MenuCategory::create([
             'name' => $request->menu_category_name,
+            'is_hidden' => false,
         ]);
-        return redirect()->route('admin.menu_categories.index')->with('success', 'Thanh cong roi nhe');
+        return redirect()->route('admin.menu_categories.index')->with('success', 'Thêm loại món thành công!');
     }
 
     public function edit($item_id)
@@ -52,7 +53,7 @@ class MenuCategoryController extends Controller
                     ->update([
                         'name' => $request->name,
                     ]);
-        return redirect()->route('admin.menu_categories.index')->with('success', 'thanh cong roi nhe');
+        return redirect()->route('admin.menu_categories.index')->with('success', 'Cập nhật loại món thành công!');
     }
 
     public function destroy(Request $request)
