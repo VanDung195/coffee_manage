@@ -17,7 +17,7 @@ class MenuItem extends Model
         'menu_category_id',
         'name',
         'price',
-        'deleted_at'
+        'is_hidden'
     ];
 
     // protected static function booted(): void
