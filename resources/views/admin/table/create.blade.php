@@ -24,10 +24,6 @@
                                 <label for="name">Tên bàn (VD: T2_9)</label>
                                 <input type="text" name="name" id="name" class="form-control" placeholder="VD: T(Tầng)_(Số bàn)" required>
                             </div>
-                            {{-- <div class="form-group col-1">
-                                <label for="price">Tầng</label>
-                                <input type="number" name="price" id="price" placeholder="VD: 2 = 2.000vnđ" class="form-control" required>
-                            </div> --}}
                             <div class="form-group col-1">
                                 <label for="">Chọn tầng</label>
                                 <select name="floor" id="floor" class="form-control">
@@ -62,11 +58,19 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    console.log(response);
+                    let routeUrl = '{{ route('admin.tables.index') }}';
+                    window.location.href = routeUrl;
+                },
+                error: function(error) {
+                    $.toast({
+                        heading: 'Lỗi',
+                        text: error.responseJSON.message,
+                        showHideTransition: 'fade',
+                        icon: 'error'
+                    })
                 }
             });
             })
-            
         });
     </script>
 @endpush
