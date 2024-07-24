@@ -19,7 +19,7 @@
                     </thead>
                     <tbody>
                         @foreach ($positions as $position)
-                            <tr>
+                            <tr id="tr-position-id-{{ $position->id }}">
                                 <td>
                                     <a>{{ $position->id }}</a>
                                 </td>
@@ -52,20 +52,22 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Xác nhận</h4>
+                <h4 class="modal-title">Xoá chức vụ</h4>
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('admin.positions.destroy') }}" method="POST" id="form-accept">
+                {{-- <form action="{{ route('admin.positions.destroy') }}" method="POST" id="form-accept">
                     @csrf
                     @method('delete')
                     <input type="hidden" name="pos_id" id="pos-id">
                     <h4 class="center">Nếu bạn muốn xoá loại món này thì bạn phải xoá tất cả các món có liên quan đến loại món này. Tiếp tục xoá?</h4>
-                </form>
+                </form> --}}
+                <input type="hidden" name="pos_id" id="pos-id">
+                <h4 class="center">Hãy đảm bảo không còn nhân viên nào thuộc chức vụ này! Xác nhận?</h4>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel btn btn-danger">Huỷ</button>
-                <button class="btn-submit-form btn btn-success">Tôi đã xoá!</button>
+                <button class="btn-accept btn btn-success">Tôi đã xoá!</button>
             </div>
         </div>
     </div>
@@ -78,13 +80,64 @@
             $('#pos-id').val(pos_id);
             $('#modal-accept').modal('show');
         })
+        $('.btn-cancel').on('click', function() {
+            $('#modal-accept').modal('toggle');
+        })
         $(document).ready(function () {
-            $('.btn-submit-form').click(function(){
-                $('#modal-accept').modal('toggle');
-                setTimeout(()=> {
-                    $('#form-accept').submit();
-                }, 400);
+            // $('.btn-submit-form').click(function(){
+            //     $('#modal-accept').modal('toggle');
+            //     setTimeout(()=> {
+            //         $('#form-accept').submit();
+            //     }, 400);
+            // })
+            $('.btn-accept').on('click', function(){
+                let pos_id = $('#pos-id').val();
+                $.ajax({
+                    type: "delete",
+                    url: '{{ route('admin.positions.destroy') }}',
+                    data: {
+                        pos_id: pos_id,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        let id = response.data.pos_id;
+                        $.toast({
+                            heading: 'Thành công',
+                            text: response.message,
+                            showHideTransition: 'slide',
+                            icon: 'success'
+                        })
+                        $('#tr-position-id-'+id).remove();
+                        $('#modal-accept').modal('toggle');
+                    },
+                    error: function(error) {
+                        $.toast({
+                            heading: 'Lỗi',
+                            text: error.responseJSON.message,
+                            showHideTransition: 'fade',
+                            icon: 'error'
+                        })
+                    }
+                });
             })
         });
+        function notifyError(error)
+        {
+            $.NotificationApp.send("Error",error,"bottom-left","red","Icon")
+        }
+        function notifySuccess(success)
+        {
+            $.NotificationApp.send("Success",success,"bottom-left","green","Icon")
+        }
+        @if(session('error'))
+            $(document).ready(function() {
+                notifyError("{{ session('error') }}");
+            });
+        @endif
+        @if(session('success'))
+            $(document).ready(function() {
+                notifySuccess("{{ session('success') }}");
+            });
+        @endif
     </script>
 @endpush
