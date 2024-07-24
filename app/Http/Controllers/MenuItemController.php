@@ -82,14 +82,16 @@ class MenuItemController extends Controller
         // dd($check);
         if($check)
         {
-            return redirect()->back()->with('error','Trùng');
+            return redirect()->back()->with('error','Tên món đã tồn tại trong hệ thống!');
         }
         MenuItem::create([
             'menu_category_id' => $category,
             'name' => $name,
             'price' => $price * 1000,
+            'is_hidden' => false,
         ]);
-        return redirect()->back()->with('success', 'Thêm món thành công rồi nhé!');
+        // return redirect()->back()->with('success', 'Thêm món thành công rồi nhé!');
+        return redirect()->route('admin.menu_items.index')->with('success', 'Thêm món thành công rồi nhé!');
     }
 
     public function edit($item_id)
@@ -135,10 +137,22 @@ class MenuItemController extends Controller
         //         ->update([
         //             'is_hidden' => 1,
         //         ]);
+        // dd($request->all());
+        $check = MenuItem::query()
+                ->where('id', $request->menu_item_id)
+                ->value('id');
+        // dd($check);
+        if(is_null($check))
+        {
+            return $this->errorResponse('Lỗi, hãy thử lại sau!');
+        }
         $menu_item = MenuItem::findOrFail($request->menu_item_id);
         $menu_item->is_hidden = 1;
         $menu_item->save();
-        return redirect()->back();
+        // return redirect()->back();
+        return $this->successResponse([
+            'menu_item_id' => $request->menu_item_id,
+        ], 'Xoá món thành công!');
     }
     // public function search(Request $request): JsonResponse
     // {
