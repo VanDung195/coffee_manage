@@ -59,7 +59,7 @@
                     </thead>
                     <tbody>
                         @foreach ($data as $item)
-                            <tr>
+                            <tr id="tr-menu-item-id-{{ $item->id }}">
                                 <td>
                                     <a>
                                         {{ $item->id }}
@@ -116,16 +116,18 @@
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <form action="{{ route("admin.menu_items.destroy") }}" method="POST" id="form-accept">
+                {{-- <form action="{{ route("admin.menu_items.destroy") }}" method="POST" id="form-accept">
                     @csrf
                     @method('delete')
                     <input type="hidden" name="menu_item_id" id="item-id">
-                    <h4 class="center">Có chắc xoá món này chứ?</h4>
-                </form>
+                    <h4 class="center">Hạn chế xoá món! Xác nhận?</h4>
+                </form> --}}
+                <input type="hidden" name="menu_item_id" id="menu-item-id">
+                <h4 class="center">Xác nhận?</h4>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger">Huỷ</button>
-                <button class="btn-submit-form btn btn-success">Có chứ!</button>
+                <button class="btn-accept btn btn-success">Có chứ!</button>
             </div>
         </div>
     </div>
@@ -142,20 +144,71 @@
         // }
         $('.btn-delete').on('click', function(){
             let menu_item_id = $(this).data('menu-item-id');
-            $('#item-id').val(menu_item_id);
+            $('#menu-item-id').val(menu_item_id);
             $('#modal-accept').modal('show');
         })
         $(document).ready(function () {
             $('.select-filter').change(function(){
                 $('#form-inline').submit();
             });
-
-            $('.btn-submit-form').click(function(){
-                $('#modal-accept').modal('toggle');
-                setTimeout(()=> {
-                    $('#form-accept').submit();
-                }, 400);
+            $('.btn-accept').on('click', function() {
+                let menu_item_id = $('#menu-item-id').val();
+                $.ajax({
+                    type: "delete",
+                    url: '{{ route('admin.menu_items.destroy') }}',
+                    data: {
+                        menu_item_id: menu_item_id,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        let id = response.data.menu_item_id;
+                        $.toast({
+                            heading: 'Thành công',
+                            text: response.message,
+                            showHideTransition: 'slide',
+                            icon: 'success'
+                        })
+                        $('#tr-menu-item-id-'+id).remove();
+                        $('#modal-accept').modal('toggle');
+                    },
+                    error: function(error) {
+                        $.toast({
+                            heading: 'Lỗi',
+                            text: error.responseJSON.message,
+                            showHideTransition: 'fade',
+                            icon: 'error'
+                        })
+                    }
+                });
             })
+            // $('.btn-submit-form').click(function(){
+            //     $('#modal-accept').modal('toggle');
+            //     setTimeout(()=> {
+            //         $('#form-accept').submit();
+            //     }, 400);
+            // })
+
         });
+
+
+        function notifyError(error)
+        {
+            $.NotificationApp.send("Error",error,"bottom-left","red","Icon")
+        }
+        function notifySuccess(success)
+        {
+            $.NotificationApp.send("Success",success,"bottom-left","green","Icon")
+        }
+        @if(session('error'))
+            $(document).ready(function() {
+                notifyError("{{ session('error') }}");
+            });
+        @endif
+        @if(session('success'))
+            $(document).ready(function() {
+                notifySuccess("{{ session('success') }}");
+            });
+        @endif
     </script>
 @endpush
