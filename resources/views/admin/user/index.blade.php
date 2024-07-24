@@ -51,7 +51,7 @@
                     </thead>
                     <tbody>
                         @foreach ($users as $user)
-                            <tr>
+                            <tr id="tr-user-id-{{ $user->id }}">
                                 <td>
                                     <a href="{{route("admin.user.show", $user)}}">
                                         {{$user->id}}
@@ -102,7 +102,7 @@
                                 </td>
                             </tr>
                         @endforeach
-                </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -116,16 +116,18 @@
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <form action="{{ route("admin.user.destroy") }}" method="POST" id="form-accept">
+                {{-- <form action="{{ route("admin.user.destroy") }}" method="POST" id="form-accept">
                     @csrf
                     @method('delete')
                     <input type="hidden" name="user_id" id="user-id">
                     <h4 class="center">Có chắc xoá nhân viên này chứ?</h4>
-                </form>
+                </form> --}}
+                <input type="hidden" name="user_id" id="user-id">
+                <h4 class="center">Có chắc xoá nhân viên này chứ? Lưu ý: Nhân viên này chỉ ẩn chứ chưa xoá!</h4>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger">Huỷ</button>
-                <button class="btn-submit-form btn btn-success">Có chứ!</button>
+                <button class="btn-accept btn btn-success">Có chứ!</button>
             </div>
         </div>
     </div>
@@ -138,18 +140,68 @@
                 $('#form-inline').submit()
             })
 
-            $('.btn-submit-form').click(function(){
-                $('#modal-accept').modal('toggle');
-                setTimeout(()=> {
-                    $('#form-accept').submit();
-                }, 400);
+            // $('.btn-submit-form').click(function(){
+            //     $('#modal-accept').modal('toggle');
+            //     setTimeout(()=> {
+            //         $('#form-accept').submit();
+            //     }, 400);
+            // })
+            $('.btn-delete').on('click', function(){
+                let user_id = $(this).data('user-id');
+                $('#user-id').val(user_id);
+                $('#modal-accept').modal('show');
+            })
+
+            $('.btn-accept').on('click', function(){
+                let user_id = $('#user-id').val();
+                $.ajax({
+                    type: "delete",
+                    url: '{{ route('admin.user.destroy') }}',
+                    data: {
+                        user_id: user_id,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        let id = response.data.user_id;
+                        $.toast({
+                            heading: 'Thành công',
+                            text: response.message,
+                            showHideTransition: 'slide',
+                            icon: 'success'
+                        })
+                        $('#tr-user-id-'+id).remove();
+                        $('#modal-accept').modal('toggle');
+                    },
+                    error: function(error) {
+                        $.toast({
+                            heading: 'Lỗi',
+                            text: error.responseJSON.message,
+                            showHideTransition: 'fade',
+                            icon: 'error'
+                        })
+                    }
+                });
             })
         });
 
-        $('.btn-delete').on('click', function(){
-            let user_id = $(this).data('user-id');
-            $('#user-id').val(user_id);
-            $('#modal-accept').modal('show');
-        })
+        function notifyError(error)
+        {
+            $.NotificationApp.send("Error",error,"bottom-left","red","Icon")
+        }
+        function notifySuccess(success)
+        {
+            $.NotificationApp.send("Success",success,"bottom-left","green","Icon")
+        }
+        @if(session('error'))
+            $(document).ready(function() {
+                notifyError("{{ session('error') }}");
+            });
+        @endif
+        @if(session('success'))
+            $(document).ready(function() {
+                notifySuccess("{{ session('success') }}");
+            });
+        @endif
     </script>
 @endpush
