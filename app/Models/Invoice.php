@@ -33,6 +33,31 @@ class Invoice extends Model
     {
         return $this->belongsTo(Table::class, 'table_id');
     }
+    public function users(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function getCreatedAtFormattedAttribute()
+    {
+        return date('d-m-Y', strtotime($this->created_at));
+    }
+
+    public function getTotalPriceFormattedAttribute()
+    {
+        return number_format($this->total_price, 0, ',', '.');
+    }
+
+    public function getCustomerPaymentFormattedAttribute()
+    {
+        return number_format($this->customer_payment, 0, ',', '.');
+    }
+
+    public function getRemainingMoneyFormattedAttribute()
+    {
+        return number_format($this->remaining_money, 0, ',', '.');
+    }
+
     protected static function booted()
     {
         static::creating(static function($object){
