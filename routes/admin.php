@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\MenuCategoryController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\UserController;
@@ -69,4 +70,6 @@ Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.d
     Route::put('/table/edit/{table_name}', [TableController::class, 'edit'])->name('tables.edit');
     Route::put('/table/update', [TableController::class, 'update'])->name('tables.update');
     Route::delete('table/destroy', [TableController::class, 'destroy'])->name('tables.destroy');
+    
+    Route::get('/invoice/index', [InvoiceController::class, 'index'])->name('invoices.index');
 // });
