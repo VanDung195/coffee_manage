@@ -48,7 +48,7 @@
                     </a>
                 </li> --}}
                 <li class="side-nav-item">
-                    <a href="#" class="side-nav-link">
+                    <a href="{{ route('admin.invoices.index') }}" class="side-nav-link">
                         <i class="uil-invoice"></i>
                         <span> Hoá đơn </span>
                     </a>
