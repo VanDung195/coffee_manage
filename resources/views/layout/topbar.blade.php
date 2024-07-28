@@ -70,7 +70,7 @@
 
         </form> --}}
 
-        <div class="dropdown-menu dropdown-menu-animated dropdown-lg" id="search-dropdown">
+        {{-- <div class="dropdown-menu dropdown-menu-animated dropdown-lg" id="search-dropdown">
             <!-- item-->
             <div class="dropdown-header noti-title">
                 <h5 class="text-overflow mb-2">Found <span class="text-danger">17</span> results</h5>
@@ -122,6 +122,6 @@
                     </div>
                 </a>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>
