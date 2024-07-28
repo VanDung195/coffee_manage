@@ -1,11 +1,15 @@
 @extends('layout.master')
+@push('css')
+    <style>
+        
+    </style>
+@endpush
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                {{-- <a href="{{ route('admin.positions.create') }}" class="btn btn-success">Thêm chức vụ</a> --}}
-                <form id="form-inline" class="form-inline">
+                <form id="form-inline" class="form-inline" style="width: 65%;float: left;">
                     <div class="form-group">
                         <label>Sắp xếp theo giá: </label>
                         <div class="col-4">
@@ -39,7 +43,29 @@
                         </div>
                     </div>
                 </form>
-                <h4>Lưu ý: Chỉ được chọn 1 trong 2 kiểu sắp xếp!!!</h4>
+                {{-- <form class="form-inline" action="" style="float: right;">
+                    <label>Tìm kiếm: </label>
+                    <div class="form-group col-3">
+                        <input class="form-control" type="text">
+                    </div>
+                </form> --}}
+                <div class="app-search col-3" style="float: right;">
+                    <form>
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Nhập id hoặc tên thu ngân" id="top-search" style="border: 1px solid rgb(255, 255, 255);"
+                                @if (isset($search))
+                                    value="{{ $search }}"
+                                @else
+                                    value=""
+                                @endif
+                            >
+                            <span class="mdi mdi-magnify search-icon"></span>
+                            <div class="input-group-append">
+                                <button class="btn btn-search btn-primary" type="submit">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
@@ -159,11 +185,10 @@
                         @endforeach
                     </tbody>
                 </table>
-                {{-- <nav>
-                    <ul class="pagination pagination-rounded mb-0">
-                        {{ $invoices->links() }}
-                    </ul>
-                </nav> --}}
+                {{-- <ul class="pagination pagination-info" style="float: right;">
+                    {{ $invoices->appends(request()->all())->links() }}
+                </ul> --}}
+                {{-- {{ $invoices->appends(request()->all())->links() }} --}}
             </div>
         </div>
     </div>
@@ -193,6 +218,9 @@
                 setTimeout(()=> {
                     $('#form-inline').submit();
                 }, 300);
+            })
+            $('.btn-search').on('click', function(event) {
+                // event.preventDefault();
             })
         });
     </script>
