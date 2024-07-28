@@ -137,29 +137,33 @@ class AttendanceController extends Controller
                                     ->whereNull('payroll_date')
                                     ->orderBy('created_at', 'desc')
                                     ->first();
+            // dd($last_salary_infor->created_at->diffInDays(Carbon::now()));
             // dd($last_salary_infor);
             // dd(($last_salary_infor->work_hours + $work_hours) * $position->salary);
             if($last_salary_infor && $last_salary_infor->created_at->diffInDays(Carbon::now()) <= 30)
             {
-                if($attendance_user && $attendance_user->status == 1 && $status == 2)
+                // dd($attendance_user->status, $status);
+                if($attendance_user && $attendance_user->status == 1 && (int)$status == 2)
                 {
-
+                    // dd(1);
+                    $new_work_hours = $last_salary_infor->work_hours - 4;
                     $last_salary_infor->update([
-                        'work_hours' => $last_salary_infor->work_hours - 4,
-                        'total_amount' => ($last_salary_infor->work_hours - 4) * $position->salary,
+                        'work_hours' => $new_work_hours,
+                        'total_amount' => $new_work_hours * $position->salary,
                     ]);
                 }
-                if($attendance_user && $attendance_user->status == 2 && $status == 1)
+                if($attendance_user && $attendance_user->status == 2 && (int)$status == 1)
                 {
-
+                    // dd(2);
                     $work_hours = $status == 1 ? 4 : 0;
                     $last_salary_infor->update([
                         'work_hours' => $last_salary_infor->work_hours + $work_hours,
                         'total_amount' => ($last_salary_infor->work_hours + $work_hours) * $position->salary,
                     ]);
                 }
-                if($attendance_user && $attendance_user->status == 1 && $status==1)
+                if($attendance_user && $attendance_user->status == 1 && (int)$status == 1)
                 {
+                    // dd(3);
                     // $work_hours = $status == 1 ? 4 : 0;
                     $last_salary_infor->update([
                         'work_hours' => $last_salary_infor->work_hours + 4,
@@ -169,6 +173,7 @@ class AttendanceController extends Controller
             }
             else
             {
+                dd(2);
                 if($last_salary_infor)
                 {
                     $last_salary_infor->update([
