@@ -59,7 +59,8 @@ class InvoiceController extends Controller
         // }
         $selected_sort_total_price = $request->sort_total_price;
         $selected_sort_date = $request->sort_date;
-
+        $search = $request->search;
+        
         $query = $this->model->newQuery()
                 ->with(['details' => function($query) {
                     $query->select('invoice_id', 'menu_item_id', 'quantity');
@@ -117,13 +118,25 @@ class InvoiceController extends Controller
             $query->orderBy('id', 'desc');
         }
 
+        if(!is_null($search) && is_numeric($search))
+        {
+            $query->where('id', $search);
+        }
+        if(!is_null($search) && !is_numeric($search))
+        {
+            // $query->where('name', 'LIKE', "%{$search}%");
+            $query->whereHas('users', function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%");
+            });
+        }
         // $invoices = $query->paginate(15)->appends($request->all());
-        $invoices = $query->paginate(15)->appends($appends);
+        $invoices = $query->paginate(500)->appends($appends);
         // dd($invoices);
         return view('admin.invoice.index',[
             'invoices' => $invoices,
             'selected_sort_total_price' => $selected_sort_total_price,
             'selected_sort_date' => $selected_sort_date,
+            'search' => $search,
         ]);
     }
 }
