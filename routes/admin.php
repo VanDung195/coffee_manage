@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\MenuCategoryController;
 use App\Http\Controllers\Admin\PositionController;
+use App\Http\Controllers\Admin\ShiftController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\TableController;
@@ -72,4 +73,7 @@ Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.d
     Route::delete('table/destroy', [TableController::class, 'destroy'])->name('tables.destroy');
     
     Route::get('/invoice/index', [InvoiceController::class, 'index'])->name('invoices.index');
+
+    Route::get('/shift/index', [ShiftController::class, 'index'])->name('shifts.index');
+    Route::get('/shift/get', [ShiftController::class, 'getData'])->name('shifts.get_data');
 // });
