@@ -72,7 +72,7 @@ class AttendanceController extends Controller
                         ->get();
             foreach($attendances as $attendance)
             {
-                $statuses[$attendance->user_id] = $attendance->status;
+                $statuses[$attendance->user_id] = (int)$attendance->status;
             }
             return view('attendance.index',[
                 'users' => $users,
@@ -93,7 +93,7 @@ class AttendanceController extends Controller
         // dd($request->all(), $this->hour, $this->date);
         $statuses = $request->get('statuses');
         $shift_id = $this->shift_id;
-
+        // dd($statuses);
         //kiểm tra ngày đấy và ca đấy đã tồn tại trong cơ sở dữ liệu chưa
         $attendance = Attendance::query()
                     ->where([
@@ -107,9 +107,10 @@ class AttendanceController extends Controller
                 'shift_id' => $shift_id,
             ]);
         }
-
+        
         foreach ($statuses as $user_id => $status) 
         {
+            // echo $status;
             $attendance_user = AttendanceUser::where('attendance_id', $attendance->id)
                                              ->where('user_id', $user_id)
                                              ->first();
@@ -121,14 +122,26 @@ class AttendanceController extends Controller
                             ->update([
                                 'status' => $status,
                             ]);
-            } else {  //thêm vào bảng lương
-                AttendanceUser::create([
-                    'attendance_id' => $attendance->id,
-                    'user_id' => $user_id,
-                    'status' => (int) $status,
-                ]);
+            } else {  
+                // dd('attendance user not found', $attendance->id, $user_id, $status);
+                // dd($attendance->id, $user_id, $status);
+                // AttendanceUser::create([
+                //     'attendance_id' => $attendance->id,
+                //     'user_id' => $user_id,
+                //     'status' => (int) $status,
+                // ]);
+                $attendance_user = new AttendanceUser();
+                $attendance_user->attendance_id = $attendance->id;
+                $attendance_user->user_id = $user_id;
+                $attendance_user->status = $status;
+                $attendance_user->save();
             }
-
+            // dd($attendance_user->status, $status);
+            // if ($attendance_user) {
+            //     dd($attendance_user->status, $status);
+            // } else {
+            //     dd('Attendance user not found', $status);
+            // }
 
             $user = User::find($user_id);
             $position = Position::find($user->role);
@@ -137,6 +150,7 @@ class AttendanceController extends Controller
                                     ->whereNull('payroll_date')
                                     ->orderBy('created_at', 'desc')
                                     ->first();
+            
             // dd($last_salary_infor->created_at->diffInDays(Carbon::now()));
             // dd($last_salary_infor);
             // dd(($last_salary_infor->work_hours + $work_hours) * $position->salary);
@@ -161,19 +175,19 @@ class AttendanceController extends Controller
                         'total_amount' => ($last_salary_infor->work_hours + $work_hours) * $position->salary,
                     ]);
                 }
-                if($attendance_user && $attendance_user->status == 1 && (int)$status == 1)
+                if($attendance_user && $attendance_user->status == 1 && (int)$status === 1)
                 {
                     // dd(3);
                     // $work_hours = $status == 1 ? 4 : 0;
+                    $new_work_hours = $last_salary_infor->work_hours + 4;
                     $last_salary_infor->update([
-                        'work_hours' => $last_salary_infor->work_hours + 4,
-                        'total_amount' => ($last_salary_infor->work_hours + 4) * $position->salary,
+                        'work_hours' => $new_work_hours,
+                        'total_amount' => $new_work_hours * $position->salary,
                     ]);
                 }
             }
             else
             {
-                dd(2);
                 if($last_salary_infor)
                 {
                     $last_salary_infor->update([
