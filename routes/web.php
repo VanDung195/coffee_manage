@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Models\Attendance;
 use App\Models\Invoice;
@@ -37,7 +38,8 @@ Route::get('/api', [InvoiceApiController::class, 'index'])->name('api.invoices')
 Route::get('/update', [TableController::class, 'update'])->name('table.update');
 
 // Route::get('/index',[TableController::class, 'index'])->name('table')->middleware(AdminMiddleware::class);
-Route::get('/index',[TableController::class, 'index'])->name('table')->middleware(AdminMiddleware::class);
+// Route::get('/index',[TableController::class, 'index'])->name('table')->middleware(AdminMiddleware::class);
+Route::get('/index',[TableController::class, 'index'])->name('table');
 
 Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
@@ -61,3 +63,6 @@ Route::get('/attendance', [AttendanceController::class, 'index'])->name('attenda
 Route::post('/attendance/store', [AttendanceController::class, 'attendance'])->name('attendance.store');
 
 Route::get('/qr_order/{table_id}', [TableController::class, 'qr_show'])->name('qr.show');
+
+
+Route::get('/user/index', [UserController::class, 'index'])->name('user.index');
