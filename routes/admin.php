@@ -75,5 +75,6 @@ Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.d
     Route::get('/invoice/index', [InvoiceController::class, 'index'])->name('invoices.index');
 
     Route::get('/shift/index', [ShiftController::class, 'index'])->name('shifts.index');
-    Route::get('/shift/get', [ShiftController::class, 'getData'])->name('shifts.get_data');
+    Route::get('/shift/get', [ShiftController::class, 'getData'])->name('shifts.get_data');   //get data from id
+    Route::put('/shift/update', [ShiftController::class, 'update'])->name('shifts.update');
 // });
