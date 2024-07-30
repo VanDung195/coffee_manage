@@ -6,16 +6,44 @@ use App\Enums\TableIsPaidEnum;
 use App\Enums\TableStausEnum;
 use App\Models\MenuItem;
 use App\Models\Table;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Psr\Log\NullLogger;
 
 class TableController extends Controller
 {
+    public function __construct()
+    {
+        $now = Carbon::now('Asia/Bangkok');
+        $this->date = $now->format('Y-m-d');
+        $this->hour = (int) $now->format('H'); 
+
+        switch (true) {
+            case $this->hour >= 6 && $this->hour <= 11:
+                $this->shift_id = 1;
+                break;
+            case $this->hour >= 12 && $this->hour <= 17:
+                $this->shift_id = 2;
+                break;
+            case $this->hour >= 18 && $this->hour <= 24:
+                $this->shift_id = 3;
+                break;
+            default:
+                $this->shift_id = 3; 
+                break;
+        }
+    }
+
     public function index()
     {
         if(!user()){
             return redirect()->route('login');
         }
+        if(user()->shift_id != $this->shift_id && user()->role != 0 && user()->role != 1)
+        {
+            return redirect()->route('user.index');
+        }
+
         // $tables = Table::query()
         // ->orderBy('stt', 'asc')
         // ->paginate(13);
