@@ -14,6 +14,7 @@ class ShiftController extends Controller
     public function index() 
     {
         $shifts = Shift::query()
+                ->where('time', '<>', 0)
                 ->get();
         return view('admin.shift.index', [
             'shifts' => $shifts,
@@ -30,5 +31,30 @@ class ShiftController extends Controller
         return $this->successResponse([
             'shift' => $shift,
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        $id = $request->id;
+        $time = (int)$request->time;
+        $description = $request->description;
+
+        if(!is_numeric($time))
+        {
+            return $this->errorResponse('Giờ phải là một số nguyên!!');
+        }
+
+        $shift = Shift::findOrFail($id);
+
+        $shift->time = $time;
+        $shift->description = $description;
+
+        $shift->save();
+
+        return $this->successResponse([
+            'id' => $id,   
+            'time' => $time,
+            'description' => $description,
+        ], 'Cập nhật ca thành công!!!');
     }
 }
