@@ -49,7 +49,8 @@ class AuthController extends Controller
             $available_role = [1, 2, 3];
             if(!in_array(user()->role, $available_role))
             {
-                return redirect()->route('table');
+                // return redirect()->route('table');
+                return redirect()->route('user.index');
             }
             return redirect()->route('table');
         }
