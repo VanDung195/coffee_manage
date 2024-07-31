@@ -66,3 +66,4 @@ Route::get('/qr_order/{table_id}', [TableController::class, 'qr_show'])->name('q
 
 
 Route::get('/user/index', [UserController::class, 'index'])->name('user.index');
+Route::put('/user/edit/{user_id}', [UserController::class, 'edit'])->name('user.edit');
