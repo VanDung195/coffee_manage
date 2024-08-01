@@ -15,12 +15,24 @@
             <!-- Profile -->
             <div class="card">
                 <div class="card-body profile-user-box">
-
                     <div class="row">
                         <div class="col-sm-8">
                             <div class="media">
-                                <span class="float-left m-2 mr-4"><img src="assets/images/users/avatar-2.jpg"
-                                        style="height: 100px;" alt="" class="rounded-circle img-thumbnail"></span>
+                                {{-- <span class="float-left m-2 mr-4">
+                                    <img src="assets/images/users/avatar-2.jpg" style="height: 100px;" alt="" class="rounded-circle img-thumbnail">
+                                </span> --}}
+
+                                <span class="float-left m-2 mr-4">
+                                    <label for="filePhoto" style="cursor: pointer;" title="Click để thay đổi ảnh (kích thước ảnh tối đa 512KB)">
+                                        <img src="assets/images/users/avatar-2.jpg" style="height: 100px;" alt="" class="rounded-circle img-thumbnail" id="profile-img">
+                                    </label>
+                                    <form id="formUpLoadPhoto" style="display:none">
+                                        @csrf
+                                        <input type="file" name="file_photo" id="file-photo" accept="image/x-png,image/gif,image/jpeg">
+                                    </form>
+                                </span>
+
+
                                 <div class="media-body">
 
                                     <h4 class="my-1">{{ $name }}</h4>
@@ -42,13 +54,18 @@
 
                         <div class="col-sm-4">
                             <div class="text-center mt-sm-0 mt-3 text-sm-right">
-                                <form action="{{ route('user.edit', $id) }}">
+                                {{-- <form action="{{ route('user.edit') }}" method="post">
                                     @csrf
                                     @method('put')
                                     <button class="btn btn-light">
                                         <i class="mdi mdi-account-edit mr-1"></i> Edit Profile
                                     </button>
-                                </form>
+                                </form> --}}
+
+                                <a href="{{ route('user.edit') }}" class="btn btn-light">
+                                    <i class="mdi mdi-account-edit mr-1"></i> Edit Profile
+                                </a>
+
                                 {{-- <button type="button" class="btn btn-light">
                                     <i class="mdi mdi-account-edit mr-1"></i> Edit Profile
                                 </button> --}}
@@ -167,3 +184,80 @@
     </div>
     <!-- end row -->
 @endsection
+@push('js')
+    <script>
+        /*
+        $(document).ready(function () {
+            $('#profile-img').on('click', function() {
+                $('#file-photo').click();
+            })
+
+            $('#file-photo').on('change', function () {
+                var file = this.files[0];
+                if (file) {
+                    // Kiểm tra kích thước ảnh (tối đa 512KB)
+                    if (file.size > 512 * 1024) {
+                        alert('Kích thước ảnh tối đa 512KB');
+                        return;
+                    }
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#profile-img').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });*/
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Lấy các phần tử cần thiết
+            const fileInput = document.getElementById('file-photo');
+            const profileImg = document.getElementById('profile-img');
+
+            // Thêm sự kiện click cho label để mở hộp thoại chọn tệp
+            profileImg.parentElement.addEventListener('click', function () {
+                fileInput.click();
+            });
+
+            // Thêm sự kiện change cho input file để cập nhật ảnh khi người dùng chọn ảnh mới
+            fileInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    // Kiểm tra kích thước ảnh (tối đa 512KB)
+                    if (file.size > 512 * 1024) {
+                        alert('Kích thước ảnh tối đa 512KB');
+                        return;
+                    }
+                    
+                    // Hiển thị ảnh đã chọn
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profileImg.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        @if(session('error'))
+            $(document).ready(function() {
+                notifyError("{{ session('error') }}");
+            });
+        @endif
+        @if(session('success'))
+            $(document).ready(function() {
+                notifySuccess("{{ session('success') }}");
+            });
+        @endif
+    </script>
+@endpush
+
+{{-- <span class="float-left m-2 mr-4">
+    <label for="filePhoto" style="cursor: pointer;" title="Click để thay đổi ảnh (kích thước ảnh tối đa 512KB)">
+        <img src="assets/images/users/avatar-2.jpg" style="height: 100px;" alt="" class="rounded-circle img-thumbnail" id="profile-img">
+    </label>
+    <form id="formUpLoadPhoto" style="display:none">
+        @csrf
+        <input type="file" name="file_photo" id="file-photo" accept="image/x-png,image/gif,image/jpeg">
+    </form>
+</span> --}}
