@@ -48,6 +48,9 @@ Route::get('/register', [AuthController::class, 'register'])->name('register')->
 Route::post('/register', [AuthController::class, 'process_register'])->name('process_register')->middleware(AdminMiddleware::class);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/reset-password', [AuthController::class, 'reset_password'])->name('reset_password');
+Route::put('/reset', [AuthController::class, 'reset'])->name('reset');
+
 
 Route::get('/search', [MenuItemController::class, 'search'])->name('item.search');
 
