@@ -120,4 +120,57 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
+
+    public function reset_password()
+    {
+        return view('auth.resetpassword');
+    }
+
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|min:8|max:15',
+            'confirm_password' => 'required|min:8|max:15'
+        ], [
+            'old_password.required' => 'Không được để trống!',
+            'new_password.required' => 'Không được để trống!',
+            'new_password.min' => 'Tối thiểu 8 ký tự!',
+            'new_password.max' => 'Tối đa 15 ký tự!',
+            'confirm_password.required' => 'Không được để trống!',
+            'confirm_password.min' => 'Tối thiểu 8 ký tự!',
+            'confirm_password.max' => 'Tối đa 15 ký tự!',
+        ]);
+        
+        $errors = [];
+        if(!Hash::check($request->old_password, user()->password))
+        {
+            // return back()->withErrors([
+            //     'old_password' => 'Mật khẩu cũ không chính xác.',
+            // ]);
+            $errors['old_password'] = 'Mật khẩu cũ không chính xác.';
+        }
+        if(Hash::check($request->new_password, user()->password))
+        {
+            $errors['new_password'] = 'Mật khẩu mới trùng với mật khẩu cũ.';
+        }
+        if($request->confirm_password != $request->new_password)
+        {
+            // return back()->withErrors([
+            //     'confirm_password' => 'Mật khẩu mới không khớp. Hãy nhập lại.'
+            // ]);
+            $errors['confirm_password'] = 'Mật khẩu mới không khớp. Hãy nhập lại.';
+        }
+        if(!empty($errors))
+        {
+            return back()->withErrors($errors);
+        }
+
+        $user = User::findOrFail(user()->id);
+        $new_password = Hash::make($request->new_password);
+        $user->password = $new_password;
+        $user->save();
+        user()->fresh();
+        return redirect()->route('user.index')->with('success', 'Thanh cong roi nhe.');
+    }
 }
