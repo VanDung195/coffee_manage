@@ -326,7 +326,7 @@
                                 </li>
                             </td>
                             <td rowspan="${rowspanCount}">
-                                <button type="button" data-table-id="${response.table_id}" class="btn-change-invoice btn btn-danger btn-sm">Change</button>
+                                <button type="button" data-table-id="${response.table_id}" class="btn-change-invoice btn btn-danger btn-sm" id="btn-change-invoice-${response.table_id}">Change</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 ${response.customer_payment}
@@ -785,7 +785,7 @@
                                         </li>
                                     </td>
                                     <td rowspan="${rowspanCount}">
-                                        <button type="button" data-table-id="${item.table_id}" class="btn-change-invoice btn btn-danger btn-sm">Change</button>
+                                        <button type="button" data-table-id="${item.table_id}" class="btn-change-invoice btn btn-danger btn-sm" id="btn-change-invoice-${item.table_id}">Change</button>
                                     </td>
                                     <td rowspan="${rowspanCount}'">
                                         ${item.customer_payment}
@@ -1049,7 +1049,7 @@
                                 </li>
                             </td>
                             <td rowspan="${rowspanCount}">
-                                <button type="button" data-table-id="${table_id}" class="btn-change-invoice btn btn-danger btn-sm">Change</button>
+                                <button type="button" data-table-id="${table_id}" class="btn-change-invoice btn btn-danger btn-sm" id="btn-change-invoice-${table_id}">Change</button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 ${response.data.customer_payment}
@@ -1245,8 +1245,8 @@
                     // });
 
                 },
-                error: function(response) {
-                    console.log(response.responseJSON.message);
+                error: function(error) {
+                    console.log(error);
                     $.toast({
                         heading: 'Error',
                         text: response.responseJSON.message,
@@ -1259,10 +1259,11 @@
 
         $(document).on('click', '.btn-change-invoice', function(){
             let table_id = $(this).data('table-id');
-            let modal_change_invoice = '.modal-change-invoice-' + table_id;
+            console.log(table_id);
+            let modal_change_invoice = '.modal-change-invoice-'+table_id;
             // let modal_change_invoice_id = '#modal-change-invoice-id-'+table_id;
             $(modal_change_invoice).modal('show');
-            console.log(123);
+            // console.log(123);
         });
 
         $(document).on('click', '.btn-submit-change-invoice', function(){
@@ -1334,6 +1335,17 @@
 
                     let elements_old = document.querySelectorAll('.order_table_class_'+old_key);
                     let elements_new = document.querySelectorAll('.order_table_class_'+new_key);
+
+                    let class_invoice_new = '.modal-change-invoice-'+new_key;
+                    let class_invoice_old = '.modal-change-invoice-'+old_key;
+
+                    let class_invoice_new_without_dot = 'modal-change-invoice-'+new_key;
+                    let class_invoice_old_without_dot = 'modal-change-invoice-'+old_key;
+
+                    let btn_change_invoice_id_old = 'btn-change-invoice-'+old_key;
+                    let btn_change_invoice_id_new = 'btn-change-invoice-'+new_key;
+                    let btn_change_invoice_old = $('#'+btn_change_invoice_id_old);
+                    let btn_change_invoice_new = $('#'+btn_change_invoice_id_new);
                     //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
                     if(modal_invoice_new != null)  //done
                     {
@@ -1342,11 +1354,7 @@
                         // console.log(response);
                         console.log('co modal invoice new nhe!!!!!');
                         //data table change
-                        let class_invoice_new = '.modal-change-invoice-'+new_key;
-                        let class_invoice_old = '.modal-change-invoice-'+old_key;
-
-                        let class_invoice_new_without_dot = 'modal-change-invoice-'+new_key;
-                        let class_invoice_old_without_dot = 'modal-change-invoice-'+old_key;
+                        
 
                         // let id_modal_change_invoice_new = '#modal-change-invoice-id-'+new_key;
                         // let id_modal_change_invoice_old = '#modal-change-invoice-id-'+old_key;
@@ -1366,7 +1374,11 @@
                         $(class_invoice_new).find('.from-table-name').html(old_key_name);
                         $(class_invoice_new).find('.from-table-id').val(old_key);
                         $(class_invoice_new).removeClass(class_invoice_new_without_dot).addClass(class_invoice_old_without_dot); ////
-
+                        
+                        // btn_change_invoice_new.attr('data-table-id', old_key);
+                        btn_change_invoice_new.data('table-id', old_key);
+                        btn_change_invoice_new.attr('id', btn_change_invoice_id_old); 
+                        
                         // console.log($('.modal-change-invoice'+new_key));
                         // id_p_table_new.innerHTML = old_key;
                         //Đối sang dùng id cho khoẻ
@@ -1377,6 +1389,10 @@
                         modal_content.find('.from-table-name').html(new_key_name);
                         modal_content.find('.from-table-id').val(new_key); 
                         modal_content.closest(class_invoice_old).removeClass(class_invoice_old_without_dot).addClass(class_invoice_new_without_dot);
+
+                        // btn_change_invoice_old.attr('data-table-id', new_key);
+                        btn_change_invoice_old.data('table-id', new_key);
+                        btn_change_invoice_old.attr('id', btn_change_invoice_id_new);
 
                         span_id_table_old.textContent = new_key_name;
                         // id_p_table_old.textContent = new_key;
@@ -1411,11 +1427,19 @@
                     else
                     {
                         console.log(123);
-                        modal_content.find('.from-table').html(new_key_name);
+                        modal_content.find('.from-table-name').html(new_key_name);
+                        modal_content.find('.from-table-id').val(new_key); 
+                        modal_content.closest(class_invoice_old).removeClass(class_invoice_old_without_dot).addClass(class_invoice_new_without_dot);
+
+                        // btn_change_invoice_old.attr('data-table-id', new_key);
+                        btn_change_invoice_old.data('table-id', new_key);
+                        btn_change_invoice_old.attr('id', btn_change_invoice_id_new);
+
+                        // modal_content.find('.from-table').html(new_key_name);
                         span_id_table_old.textContent = new_key_name;
+                        span_id_table_old.id = span_id_new_key;
                         // id_p_table_old.innerHTML = new_key;
                         // id_p_table_old.id = new_key_id;
-                        span_id_table_old.id = span_id_new_key;
 
                         let btn_show_table_new = "show_table_" + new_key;
                         let btn_show_invoice_detail_new = "show_detail_" + new_key;
