@@ -106,6 +106,11 @@ if(!function_exists('isManager')) {
         return user() && user()->role === UserRoleEnum::MANAGER;
     }
 }
+if(!function_exists('isCashier')) {
+    function isCashier() {
+        return user() && user()->role === UserRoleEnum::CASHIER;
+    }
+}
 if(!function_exists('getRoleByValue')){
     function getRoleByValue($value){
         return UserRoleEnum::getKey($value);
