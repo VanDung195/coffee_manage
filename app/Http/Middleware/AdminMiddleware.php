@@ -15,7 +15,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!isAdmin() && !isManager())
+        if(!isAdmin() && !isManager() && !isCashier())
         {
             return redirect()->route('login');
         }
