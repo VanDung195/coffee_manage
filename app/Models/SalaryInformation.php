@@ -41,15 +41,17 @@ class SalaryInformation extends Model
         {
             return $this->work_hours / 4;
         }
-        return 'Chưa';
+        return 0;
     }
 
     public function getAbsentNumberAttribute()
     {
         $work_days = $this->work_hours / 4;
-        $total_day = $this->created_at->diffInDays(Carbon::now());
+        $total_day = $this->created_at->diffInDays(Carbon::now()) + 1; //+1 để bao gồm cả ngày tạo
+        $absent_days = $total_day - $work_days;
 
-        return $total_day - $work_days;
+        //đảm bảo số ngày vắng không âm
+        return max(0, $absent_days);
     }
 
     public function getSalaryFormattedAttribute()
