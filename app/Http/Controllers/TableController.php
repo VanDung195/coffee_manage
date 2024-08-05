@@ -69,6 +69,7 @@ class TableController extends Controller
             session()->put('invoice', $invoices);
         }else
         {
+            // dd(1);
             Table::query()
             ->where('id', $request->table_id)
             ->update([
@@ -96,12 +97,39 @@ class TableController extends Controller
     }
     public function qr_show(Request $request)
     {
-        $table_id = $request->table_id;
-        $items = getAndCacheMenuItems();
-        // $table_name = "T1_1";
-        return view('qr.index',[ 
-            'items' => $items,
-            'table_name' => $table_id,
+        // $table_name = $request->table_name;
+        $table_name = $request->table_name;
+        $valid_table = Table::query()
+                    ->where('name', $table_name)
+                    ->first();
+        $valid_table_id = getAndCacheInvalidTableForQROrder();
+        // if(in_array($table_name, $invalid_table_name))
+        // {
+        //     return view('error_page.notfound',[
+        //         'error_title' => 'Không tìm thấy bàn: '.$table_name,
+        //         'error_message' => 'Quý khách vui lòng không được sửa đường dẫn!!!!',
+        //     ]);
+        // }
+        // dd($valid_table);
+        // dd($valid_table_id);
+        if(!is_null($valid_table) && in_array($valid_table->id, $valid_table_id))
+        {
+            $items = getAndCacheMenuItems();
+            return view('qr.index',[ 
+                'items' => $items,
+                'table_name' => $table_name,
+                'table_id' => $valid_table->id,
+            ]);
+        }
+        // if(is_null($table_id))
+        // {
+        //     
+        // }
+        return view('error_page.notfound',[
+            'error_title' => 'Không tìm thấy bàn: '.$table_name,
+            'error_message' => 'Quý khách vui lòng không được sửa đường dẫn!!!!',
         ]);
     }
 }
+
+//// sửa cái này và bên InvoiceController sửa cái store_qr
