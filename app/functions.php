@@ -90,6 +90,32 @@ if(!function_exists('getAndCachePositions'))
         );
     }
 }
+if(!function_exists('getAndCacheInvalidTableForQROrder'))
+{
+    function getAndCacheInvalidTableForQROrder()
+    {
+        return cache()->remember(
+            SystemCacheEnum::INVALIDTABLE,
+            84000 * 30,
+            function() 
+            {
+                //query builder
+                // $invalid_table_name = Table::query()
+                //         ->where(function($query) {
+                //             $query->where('name', 'not like', 'unknow%')
+                //             ->orWhere('name', '<>', 'takeaway');
+                //         })->pluck('name')->toArray();
+                //eloquent
+                $invalid_table_id = Table::where(function($query) {
+                    $query->where('name', 'NOT LIKE', 'unknow%')
+                          ->where('name', '<>', 'takeaway');
+                })->pluck('id')->toArray();
+
+                return $invalid_table_id;
+            }
+        );
+    }
+}
 if(!function_exists('user')) {
     function user(){
         return auth()->user();
