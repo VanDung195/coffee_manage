@@ -28,6 +28,7 @@ class InvoiceController extends Controller
             $table_name = Table::query()
                             ->where('id', $tableId)
                             ->value('name');
+
             $allData = $request->all();
             $ItemsId = $allData['id'];
             if(in_array('0', $ItemsId))
@@ -362,6 +363,9 @@ class InvoiceController extends Controller
             }
 
             $tableId = $request->input('table_id');
+            $table_name = Table::query()
+                        ->where('id', $tableId)
+                        ->value('name');
             $allData = $request->all();
             $ItemsId = $allData['id'];
             $menuItems = MenuItem::query()
@@ -419,6 +423,7 @@ class InvoiceController extends Controller
 
             $invoice[$tableId] = [
                 'table_id' => $tableId,
+                'table_name' => $table_name,
                 'details' => $invoice_details,
                 'total_price' => $total_price,
                 'created_at' => $now->format('d-m-Y'),
