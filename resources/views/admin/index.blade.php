@@ -255,14 +255,28 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @vite(['resources/js/app.js'])
     <script type="module">
+        let soundEnabled = false;
+
+        function enableSound() {
+            soundEnabled = true;
+        }
+        document.addEventListener('click', enableSound);
         window.Echo.channel('order-channel')
             .listen('InvoicePlaced', (response) => {
-                let audio = new Audio('/sound_effect/order_sound_effect.mp3');
-                audio.play();
-                console.log(response);
+                // let audio = new Audio('/sound_effect/ting_sound_effect.mp3');
+                // audio.play();
+                // console.log(response);
+                // console.log(123);
+                if (soundEnabled) {
+                let audio = new Audio('/sound_effect/ting_sound_effect.mp3');
+                    audio.play().catch(error => {
+                        console.error('Error playing audio:', error);
+                    });
+                }
+                
                 let formatTotalPrice = response.total_price.toLocaleString('vi-VN');
                 let rowspanCount = Math.max(response.details.length, 1);
-
+                
                 let order_table = `
                     <tr data-status="${response.is_paid}" class="order_table_class_${response.table_id}">
                         <td border="1" class="set-row" id="new-row-${response.table_id}" rowspan="${rowspanCount}">
@@ -394,23 +408,24 @@
                 div2.setAttribute("id", "div_invoice_detail_" + response.table_id);
                 document.getElementById("append_modal_invoice_detail").appendChild(div2);
 
-                const invalid_table_id = new Set(['unknow', 'unknow2', 'unknow3', 'unknow4', 'unknow5', 'takeaway']);
-                if(!invalid_table_id.has(response.table_id))
+                const invalid_table_id = new Set([5]);
+                if(!invalid_table_id.has(table_id))
                 {
                     document.getElementById(show_table).style.display = 'none';
                     document.getElementById(show_detail).style.display = 'block';
                 }
-
                 let table = document.getElementById('order-table-id');
                 let rows = table.getElementsByTagName('tr');
-                if( rows.length == 1 && response.is_paid == 0 || response.is_paid == 2)
+                if(rows.length == 1 && response.is_paid == 0 || rows.length == 1 && response.is_paid == 2)
                 {
                     console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
                     let targetRow = document.querySelector('.order-table tr:first-child');
                     targetRow.insertAdjacentHTML('afterend', order_table);
                 }
 
-                if(response.is_paid == 0  || response.is_paid == 2 && rows.length > 1) {
+                if(response.is_paid == 0 || response.is_paid == 2 && rows.length > 1) {
+                    console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table nhưng ở if thứ 2');
+                    
                     Array.from(rows).some((row, index) => {
                         if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
                             row.insertAdjacentHTML('afterend', order_table);
@@ -419,7 +434,58 @@
                         return false;
                     });
                 }
+               /*
+                const invalid_table_id = new Set([5]);
+                if(!invalid_table_id.has(table_id))
+                {
+                    console.log('if1');
+                    document.getElementById(show_table).style.display = 'none';
+                    document.getElementById(show_detail).style.display = 'block';
+                }
+                let table = document.getElementById('order-table-id');
+                let rows = table.getElementsByTagName('tr');
+                if(response.is_paid == 1 && rows.length > 1)
+                {
+                    console.log('if2');
+                    for(let i = 0; i < rows.length; i++)
+                    {
+                        if(rows[i+1] == undefined)
+                        {
+                    console.log('if3');
+                            
+                            rows[i].insertAdjacentHTML('afterend', order_table);
+                            break;
+                        }
+                        if(rows[i+1].getAttribute('data-status') == '1')
+                        {
+                    console.log('if4');
 
+                            rows[i].insertAdjacentHTML('afterend', order_table);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                }
+                if(response.is_paid == 1 && rows.length == 1 || response.is_paid == 0 && rows.length == 1)
+                {
+                    console.log('if5');
+                    let targetRow = document.querySelector('.order-table tr:first-child');
+                    targetRow.insertAdjacentHTML('afterend', order_table);
+                }
+                if(response.is_paid == 0 && rows.length > 1) {
+                    console.log('if6');
+
+                    Array.from(rows).some((row, index) => {
+                        if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
+                    console.log('if7');
+
+                            row.insertAdjacentHTML('afterend', order_table);
+                            return true; 
+                        }
+                        return false;
+                    });
+                }*/
+                
                 let modal_change_invoice = `
                     <div id="modal-change-invoice-id-${response.table_id}" class="modal-change-invoice-${response.table_id} modal fade" role="dialog">
                             <div class="modal-container-change-invoice modal-dialog modal-sm">
