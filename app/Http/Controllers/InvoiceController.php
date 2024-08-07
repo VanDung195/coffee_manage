@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\MenuItem;
 use App\Models\Table;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -700,5 +701,34 @@ class InvoiceController extends Controller
     public function redirect_success()
     {
         return view('qr.success');
+    }
+
+    public function generatePDF()
+    {
+        $invoice_s = session()->get('invoice');
+        // dd($invoice[7]);
+        $invoice = $invoice_s[7];
+
+        $pdf = Pdf::loadView('test_print',[
+            'invoice' => $invoice,
+        ]);
+
+        // $pdf->setPaper('A4', 'portrait')->setOptions([
+        //     'isHtml5ParserEnabled' => true, 
+        //     'isRemoteEnabled' => true,
+        //     'defaultFont' => 'DejaVu Sans'
+        // ]);
+        //[, , width, bottom]
+        $pdf->setPaper([0, 0, 400, 1000], 'portrait')->setOptions([
+            'isHtml5ParserEnabled' => true, 
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'DejaVu Sans'
+        ]);
+
+        return $pdf->stream('invoice.pdf');
+        // dd($invoice);
+        // return view('test_print', [
+        //     'invoice' => $invoice,
+        // ]);
     }
 }
