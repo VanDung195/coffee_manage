@@ -31,6 +31,7 @@ Route::get('/test', [TestController::class, 'test']);
 Route::get('/test2', [TestController::class, 'test2'])->name('test2');
 Route::get('/test3', [TestController::class, 'test3']);
 Route::get('test_view', [TestController::class, 'test_view']);
+Route::get('test/print', [TestController::class, 'test_print']);
 
 Route::get('/testApi', [InvoiceApiController::class, 'index']);
 
@@ -60,12 +61,14 @@ Route::post('/store_qr', [InvoiceController::class, 'store_qr'])->name('invoice.
 Route::post('/update_tot', [InvoiceController::class, 'update'])->name('invoice.update');
 Route::get('/success', [InvoiceController::class, 'redirect_success'])->name('redirect_success');
 
+Route::get('/invoice/print', [InvoiceController::class, 'generatePDF'])->name('generatePDF');
+
 Route::get('/create', [TestController::class, 'create']); //test
 
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
 Route::post('/attendance/store', [AttendanceController::class, 'attendance'])->name('attendance.store');
 
-Route::get('/qr_order/{table_id}', [TableController::class, 'qr_show'])->name('qr.show');
+Route::get('/qr_order/{table_name}', [TableController::class, 'qr_show'])->name('qr.show');
 
 
 Route::get('/user/index', [UserController::class, 'index'])->name('user.index');
