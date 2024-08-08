@@ -62,6 +62,7 @@ Route::post('/update_tot', [InvoiceController::class, 'update'])->name('invoice.
 Route::get('/success', [InvoiceController::class, 'redirect_success'])->name('redirect_success');
 
 Route::get('/invoice/print', [InvoiceController::class, 'generatePDF'])->name('generatePDF');
+Route::get('/invoice/getInformation', [InvoiceController::class, 'getInvoiceInformation'])->name('getInvoiceInformation');
 
 Route::get('/create', [TestController::class, 'create']); //test
 
