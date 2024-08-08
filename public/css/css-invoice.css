@@ -1,0 +1,72 @@
+.invoice {
+    /* max-width: 400px; */
+    width: 400px;
+    /* margin: 30px auto; */
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.invoice .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo img {
+    width: 80px;
+}
+
+.title h1 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.title p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.title span {
+    font-weight: bold;
+}
+
+.customer-info, .products, .total, .footer {
+    margin-top: 20px;
+}
+
+.table-invoice {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-invoice th, 
+.table-invoice td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.table-invoice th {
+    background-color: #f2f2f2;
+}
+
+.total {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.total p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.footer p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
