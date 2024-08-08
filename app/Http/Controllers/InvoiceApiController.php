@@ -69,6 +69,7 @@ class InvoiceApiController extends Controller
                     'remaining_money' => $remaining_money,
                     'details' => [],
                     'is_qr' => $item['is_qr'],
+                    'invoice_id' => -1,
                 ];
                 foreach($item['details'] as $each)
                 {
@@ -114,9 +115,11 @@ class InvoiceApiController extends Controller
                 // 'remaining_money' => $item['remaining_money'],
                 'details' => $item['details'],
                 'is_qr' => 0,
+                'invoice_id' => $item['id'],
             ];
             $count++;
         }
+        // dd($merged_array);
         $message = 'Get api thanh cong';
         $table_names_available = getAndCacheAvailableTableNames();
         // return $this->successResponse($invoices,$message);
