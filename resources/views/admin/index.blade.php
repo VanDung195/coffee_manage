@@ -1,5 +1,6 @@
 @extends('layout.master')
 @push('css')
+{{-- <link href="{{ asset('css/css-invoice.css') }}" rel="stylesheet" type="text/css"> --}}
     <style>
         /* Chrome, Safari, Edge, Opera */
         input::-webkit-outer-spin-button,
@@ -32,6 +33,7 @@
         }
     </style>
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/css-invoice.css') }}">
 @endpush
 @section('content')
     <div id="left">
@@ -144,7 +146,7 @@
                                 hoá đơn</button>
                             {{-- <button class="btn-submit-invoice-test btn btn-primary" type="button">test</button> --}}
                             {{-- <button class="btn-submit-invoice btn btn-success" type="button" onclick="submitForm()">Tạo hoá đơn</button> --}}
-                            <button class="btn-submit-invoice btn btn-success" type="button">Tạo hoá đơn</button>
+                            <button class="btn-submit-invoice btn btn-success" type="button">Xuất hoá đơn</button>
                         </div>
                     </div>
                 </div>
@@ -252,6 +254,7 @@
     </div>
 @endsection
 @push('js')
+    <script src="{{ asset('js/html2canvas.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @vite(['resources/js/app.js'])
     <script type="module">
@@ -434,58 +437,6 @@
                         return false;
                     });
                 }
-               /*
-                const invalid_table_id = new Set([5]);
-                if(!invalid_table_id.has(table_id))
-                {
-                    console.log('if1');
-                    document.getElementById(show_table).style.display = 'none';
-                    document.getElementById(show_detail).style.display = 'block';
-                }
-                let table = document.getElementById('order-table-id');
-                let rows = table.getElementsByTagName('tr');
-                if(response.is_paid == 1 && rows.length > 1)
-                {
-                    console.log('if2');
-                    for(let i = 0; i < rows.length; i++)
-                    {
-                        if(rows[i+1] == undefined)
-                        {
-                    console.log('if3');
-                            
-                            rows[i].insertAdjacentHTML('afterend', order_table);
-                            break;
-                        }
-                        if(rows[i+1].getAttribute('data-status') == '1')
-                        {
-                    console.log('if4');
-
-                            rows[i].insertAdjacentHTML('afterend', order_table);
-                            inserted = true;
-                            break;
-                        }
-                    }
-                }
-                if(response.is_paid == 1 && rows.length == 1 || response.is_paid == 0 && rows.length == 1)
-                {
-                    console.log('if5');
-                    let targetRow = document.querySelector('.order-table tr:first-child');
-                    targetRow.insertAdjacentHTML('afterend', order_table);
-                }
-                if(response.is_paid == 0 && rows.length > 1) {
-                    console.log('if6');
-
-                    Array.from(rows).some((row, index) => {
-                        if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
-                    console.log('if7');
-
-                            row.insertAdjacentHTML('afterend', order_table);
-                            return true; 
-                        }
-                        return false;
-                    });
-                }*/
-                
                 let modal_change_invoice = `
                     <div id="modal-change-invoice-id-${response.table_id}" class="modal-change-invoice-${response.table_id} modal fade" role="dialog">
                             <div class="modal-container-change-invoice modal-dialog modal-sm">
@@ -555,8 +506,10 @@
         // });
         //đảm bảo DOM content được load trước khi thêm sự kiện (chắc không cần)
         document.addEventListener('DOMContentLoaded', function() {
-
         });
+
+        
+
 
         $('.select-item').on('change', function() {
             var selectedValue = $(this).val();
@@ -826,7 +779,11 @@
                                 order_table += `
                                     <td class="set-row" rowspan="${rowspanCount}">${item.total_price.toLocaleString('vi-VN')}</td>
                                     <td rowspan="${rowspanCount}"> 
-                                        <button class="btn btn-success btn-sm">Xuất</button>
+                                        <button data-invoice-id="${item.invoice_id}"
+                                                data-table-id="${item.table_id}" 
+                                                class="btn btn-generate-invoice btn-success btn-sm">
+                                            Xuất
+                                        </button>
                                     </td>
                                     <td rowspan="${rowspanCount}">
                                         <li class="list-inline-item ml-2">
@@ -1056,7 +1013,7 @@
                         <tr data-status="${response.data.is_paid}" class="order_table_class_${table_id}">
                             <td border="1" class="set-row" id="new-row-${table_id}" rowspan="${rowspanCount}">
                                 <p id="p-table-id-${data.table_id}" class="p-table">
-                                    <span id="span-table-id-${data.table_id}">${data.table_id}</span>
+                                    <span id="span-table-id-${data.table_id}">${data.table_name}</span>
                                     <span>${data.is_qr ? '(QR)' : ''}</span>
                                     <span class="new-invoice-check badge badge-success p-2s">(New)</span>
                                 </p>
@@ -1331,7 +1288,99 @@
             $(modal_change_invoice).modal('show');
             // console.log(123);
         });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $(document).on('click', '.btn-generate-invoice', function () { 
+            console.log(123);
+            let invoice_id = $(this).data('invoice-id');
+            let table_id = $(this).data('table-id');
+            $.ajax({
+                type: "get",
+                url: '{{ route('getInvoiceInformation') }}',
+                data: {
+                    invoice_id: invoice_id,
+                    table_id: table_id,
+                },
+                // dataType: "json",
+                success: function (response) {
+                    // console.log(response);
+                    let invoice = response.data.invoice;
+                    console.log(invoice);
+                    let invoiceHtml = `
+                        <div class="invoice" id="invoice">
+                            <div class="header">
+                                <div class="title">
+                                    <h1>Quán đồ án 1</h1>
+                                    <p>Số hoá đơn: <span>${invoice.table_name}</span></p>
+                                    <p>Ngày xuất hoá đơn: <span>${invoice.created_at}</span></p>
+                                </div>
+                            </div>
+                            <div class="products">
+                                <h2>Danh sách sản phẩm</h2>
+                                <table class="table-invoice">
+                                    <thead>
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá thành</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    invoice.details.forEach(function (item, index) {
+                        invoiceHtml += `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.price}</td>
+                            </tr>
+                        `;
+                    }); //end foreach
 
+                    invoiceHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="total">
+                            <p><strong>Tổng cộng:</strong> ${invoice.total_price} VND</p>
+                            <p><strong>Phương thức thanh toán:</strong> Tiền mặt</p>
+                        </div>
+                        <div class="footer">
+                            <p>Người lập hoá đơn: Hồ Văn Dũng</p>
+                            <p>Liên hệ: 0000000000</p>
+                        </div>
+                    </div>
+                    `;
+
+                    var tempDiv = $('<div>').html(invoiceHtml).appendTo('body');
+
+                    // html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
+                    //     var imgData = canvas.toDataURL('image/png');
+                    //     var link = document.createElement('a');
+                    //     link.href = imgData;
+                    //     link.download = 'invoice-' + invoice.table_id + '.png';
+                    //     link.click();
+                    //     URL.revokeObjectURL(link.href); 
+                    //     tempDiv.remove();
+                    // });
+
+
+                    html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
+                        canvas.toBlob(function(blob) {
+                            var link = document.createElement('a');
+                            var url = URL.createObjectURL(blob);
+                            link.href = url;
+                            link.download = 'invoice-' + invoice.table_id + '.png';
+                            link.click();
+                            URL.revokeObjectURL(url); 
+                            tempDiv.remove();
+                        }, 'image/png');
+                    }).catch(function(error) {
+                        console.error('Error capturing the canvas:', error);
+                    });
+                }   
+            });
+        })
+////////////////////////////////////////////////////////////////////////////////////////////
         $(document).on('click', '.btn-submit-change-invoice', function(){
             let modal_content = $(this).closest('.modal-content');
             let modal = $(this).closest('.modal');
