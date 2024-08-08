@@ -703,32 +703,53 @@ class InvoiceController extends Controller
         return view('qr.success');
     }
 
-    public function generatePDF()
+    // public function generatePDF()
+    // {
+    //     $invoice_s = session()->get('invoice');
+    //     // dd($invoice[7]);
+    //     $invoice = $invoice_s[7];
+
+    //     $pdf = Pdf::loadView('test_print',[
+    //         'invoice' => $invoice,
+    //     ]);
+
+    //     // $pdf->setPaper('A4', 'portrait')->setOptions([
+    //     //     'isHtml5ParserEnabled' => true, 
+    //     //     'isRemoteEnabled' => true,
+    //     //     'defaultFont' => 'DejaVu Sans'
+    //     // ]);
+    //     //[, , width, bottom]
+    //     $pdf->setPaper([0, 0, 400, 1000], 'portrait')->setOptions([
+    //         'isHtml5ParserEnabled' => true, 
+    //         'isRemoteEnabled' => true,
+    //         'defaultFont' => 'DejaVu Sans'
+    //     ]);
+
+    //     return $pdf->stream('invoice.pdf');
+    //     // dd($invoice);
+    //     // return view('test_print', [
+    //     //     'invoice' => $invoice,
+    //     // ]);
+    // }
+
+    public function getInvoiceInformation(Request $request)
     {
-        $invoice_s = session()->get('invoice');
-        // dd($invoice[7]);
-        $invoice = $invoice_s[7];
+        //session thi invoice_id = -1 va chi co table_id
+        // dd($request->all());
+        $invoice_id = (int)$request->invoice_id;
+        $table_id = $request->table_id;
+        //khi đã thanh toán và xuất hoá đơn rồi nhưng khách hàng vẫn muỗn xuất thêm 1 hoá đơn nữa thì
+        if($invoice_id > 0)  //lam sau
+        {
+            dd(1);
+        }
 
-        $pdf = Pdf::loadView('test_print',[
-            'invoice' => $invoice,
-        ]);
-
-        // $pdf->setPaper('A4', 'portrait')->setOptions([
-        //     'isHtml5ParserEnabled' => true, 
-        //     'isRemoteEnabled' => true,
-        //     'defaultFont' => 'DejaVu Sans'
-        // ]);
-        //[, , width, bottom]
-        $pdf->setPaper([0, 0, 400, 1000], 'portrait')->setOptions([
-            'isHtml5ParserEnabled' => true, 
-            'isRemoteEnabled' => true,
-            'defaultFont' => 'DejaVu Sans'
-        ]);
-
-        return $pdf->stream('invoice.pdf');
+        // $invoice_session = session()->get('invoice');
+        // $invoice = $invoice_session[$table_id];
+        $invoice = session('invoice')[$table_id];
         // dd($invoice);
-        // return view('test_print', [
-        //     'invoice' => $invoice,
-        // ]);
+        return $this->successResponse([
+            'invoice' => $invoice,
+        ], 'Thanh cong roi nhe!!!');
     }
 }
