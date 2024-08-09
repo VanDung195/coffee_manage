@@ -38,14 +38,43 @@
 }
 
 #left{
+    /* overflow: hidden; */
     width: 20%;
     float: left;
+    /* flex: 1; Cho phép hai div chiếm cùng một không gian */
+    overflow-y: auto; /* Thêm thanh cuộn dọc nếu nội dung dài hơn chiều cao của div */
+    height: 650px; /* Đặt chiều cao cố định cho các div */
+    /* padding: 10px; Thêm khoảng cách bên trong các div */
+    box-sizing: border-box;
 }
 #right{
     width: 80%;
     float: right;
+    /* flex: 1; Cho phép hai div chiếm cùng một không gian */
+    overflow-y: auto; /* Thêm thanh cuộn dọc nếu nội dung dài hơn chiều cao của div */
+    height: 650px; /* Đặt chiều cao cố định cho các div */
+    /* padding: 10px; Thêm khoảng cách bên trong các div */
+    box-sizing: border-box;
 }
 
+.header {
+    text-align: center;
+    /* position: sticky; 
+    top: 0;
+    padding: 10px;
+    z-index: 1;  */
+}
+
+#left::-webkit-scrollbar, #right::-webkit-scrollbar {
+    width: 3px; /* Chiều rộng của thanh cuộn */
+}
+#left::-webkit-scrollbar-thumb, #right::-webkit-scrollbar-thumb {
+    background-color: #888; /* Màu của phần thanh cuộn có thể kéo */
+    border-radius: 10px; /* Góc bo tròn cho thanh cuộn */
+}
+#left::-webkit-scrollbar-thumb:hover, #right::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Màu của thanh cuộn khi hover */
+}
 /* //////// */
 /* body {
     font-family: Arial, sans-serif;
@@ -104,9 +133,7 @@
   height: 110px;
 }  */
 
-.header {
-    text-align: center;
-}
+
 #check{
     margin-left: 20px;
 }
