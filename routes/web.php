@@ -75,3 +75,7 @@ Route::get('/qr_order/{table_name}', [TableController::class, 'qr_show'])->name(
 Route::get('/user/index', [UserController::class, 'index'])->name('user.index');
 Route::get('/user/editprofile', [UserController::class, 'edit'])->name('user.edit');
 Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
+
+
+
+Route::get('/putInvoiceToSession', [InvoiceController::class, 'putInvoice'])->name('putInvoice');
