@@ -40,8 +40,8 @@
         <div class="header">
             <h1>Bàn</h1>
         </div>
+        <button data-button-id="6" class="btn btn-click-me btn-danger">click me</button>
         <div>
-
         </div>
         @foreach ($tables as $table)
             <div class="show-table" id="show_table_{{ $table->id }}" style="display: block;float: left;">
@@ -158,7 +158,6 @@
             <h1>Quản Lý Hoá Đơn</h1>
         </div>
     </div>
-
     {{-- Div chứa modal invoice detail --}}
     <div id="append_modal_invoice_detail"></div>
     <div id="modal-invoice-change"></div>
@@ -268,7 +267,22 @@
             .listen('InvoicePlaced', (response) => {
                 // let audio = new Audio('/sound_effect/ting_sound_effect.mp3');
                 // audio.play();
-                // console.log(response);
+                console.log(response);
+                $.ajax({
+                    type: "get",
+                    url: '{{ route('putInvoice') }}',
+                    data: {
+                        invoice: response,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log('success to process invoice');
+                    },
+                    error: function(status ,error) {
+                        console.error('AJAX request failed:', status, error);
+                    }
+                });
                 // console.log(123);
                 if (soundEnabled) {
                 let audio = new Audio('/sound_effect/ting_sound_effect.mp3');
@@ -421,14 +435,13 @@
                 let rows = table.getElementsByTagName('tr');
                 if(rows.length == 1 && response.is_paid == 0 || rows.length == 1 && response.is_paid == 2)
                 {
-                    console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
+                    // console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
                     let targetRow = document.querySelector('.order-table tr:first-child');
                     targetRow.insertAdjacentHTML('afterend', order_table);
                 }
 
                 if(response.is_paid == 0 || response.is_paid == 2 && rows.length > 1) {
-                    console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table nhưng ở if thứ 2');
-                    
+                    // console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table nhưng ở if thứ 2');
                     Array.from(rows).some((row, index) => {
                         if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
                             row.insertAdjacentHTML('afterend', order_table);
@@ -1288,7 +1301,25 @@
             $(modal_change_invoice).modal('show');
             // console.log(123);
         });
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        $(document).on('click', '.btn-click-me', function() {
+            console.log(123);
+            
+            let table_id = $(this).data('button-id');
+            $.ajax({
+                type: "get",
+                url: '{{ route('table.update') }}',
+                data: {
+                    table_id
+                },
+                // dataType: "dataType",
+                success: function (response) {
+                    
+                }
+            });
+        })
+
         $(document).on('click', '.btn-generate-invoice', function () { 
             console.log(123);
             let invoice_id = $(this).data('invoice-id');
