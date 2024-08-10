@@ -63,7 +63,7 @@ class InvoiceApiController extends Controller
                     // 'created_at' => $item['created_at'],
                     'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                     'checkin_time' => $item['checkin_time'],
-                    'checkout_time' => $item['checkout_time'],
+                    'checkout_time' => $item['checkout_time'] ? $item['checkout_time'] : null,
                     'is_paid' => $item['is_paid'],
                     'customer_payment' => $customer_payment,
                     'remaining_money' => $remaining_money,
@@ -79,7 +79,7 @@ class InvoiceApiController extends Controller
                         'menu_items' => [
                             'id' => (int)$each['id'],
                             'name' => $each['name'],
-                            'price' => $each['price'],
+                            'price' => (float)$each['price'],
                         ],
                     ];
                 }
@@ -95,6 +95,7 @@ class InvoiceApiController extends Controller
             $table_id = $item['table_id'];
             $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
             $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
+            $total_price = number_format($item['total_price'], 0, ',', '.');
             if($item['remaining_money'] < 0 || $item['customer_payment'] == null)
             {
                 $customer_payment = 'Không';
@@ -103,7 +104,7 @@ class InvoiceApiController extends Controller
             $merged_array[$count]= [
                 'table_id' => $table_id,
                 'table_name' => $item['tables']['name'],
-                'total_price' => $item['total_price'],
+                'total_price' => $total_price,
                 'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                 // 'created_at' => $item['created_at'],
                 'checkin_time' => $item['checkin_time'],
