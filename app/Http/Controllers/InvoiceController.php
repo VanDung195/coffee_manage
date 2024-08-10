@@ -602,13 +602,28 @@ class InvoiceController extends Controller
         //khi đã thanh toán và xuất hoá đơn rồi nhưng khách hàng vẫn muỗn xuất thêm 1 hoá đơn nữa thì
         if($invoice_id > 0)  //lam sau
         {
-            dd(1);
+            $data = Invoice::with(['details' => function($query) {
+                $query->select('invoice_id', 'menu_item_id', 'quantity');
+            }, 'details.menuItems' => function($query) {
+                $query->select('id', 'name','price');
+            }, 'tables' => function($query) {
+                $query->select('id', 'name');
+            },
+            ])
+            ->where('id', $invoice_id)
+            ->get()
+            ->toArray();
+            dd($data);
+            $invoice = [
+                
+            ];
+            
         }
         // $invoice_session = session()->get('invoice');
         // $invoice = $invoice_session[$table_id];
         //chưa thanh toán
         $invoice = session('invoice')[$table_id];
-        // dd($invoice);
+        dd($invoice);
         // $table_id = $invoice->table_id;
         // $table_name = $invoice_table_name;
         // $total_price = $invoice->total_price;
