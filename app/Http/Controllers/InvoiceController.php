@@ -175,7 +175,8 @@ class InvoiceController extends Controller
                 'created_at' => $now->format('d-m-Y'),
                 // 'created_at' => $now->format('Y:m:d H:i:s'),
                 'checkin_time' => $now->format('H:i:s'),
-                'checkout_time' => $now->format('H:i:s'),
+                // 'checkout_time' => $now->format('H:i:s'),
+                'checkout_time' => null,
                 'customer_payment' => $customer_payment,
                 'remaining_money' => $remaining_money,
                 'is_paid' => $request->is_paid,
@@ -194,7 +195,8 @@ class InvoiceController extends Controller
                 // 'created_at' => $now->format('Y:m:d H:i:s'),
                 'created_at' => $now->format('d-m-Y'),
                 'checkin_time' => $now->format('H:i:s'),
-                'checkout_time' => $now->format('H:i:s'),
+                // 'checkout_time' => $now->format('H:i:s'),
+                'checkout_time' => 'Không',
                 'customer_payment' => $customer_payment_response,
                 'remaining_money' => $remaining_money_response,
                 'is_paid' => $request->is_paid,
@@ -272,35 +274,38 @@ class InvoiceController extends Controller
                     'thanh_tien' => $thanh_tien,
                 ];
             }
-            if (!session()->has('invoice')) {
-                session()->put('invoice', []);
-            }
-            $invoice = session()->get('invoice');
+            // if (!session()->has('invoice')) {
+            //     session()->put('invoice', []);
+            // }
+            // $invoice = session()->get('invoice');
 
-            $invoice[$tableId] = [
-                'table_id' => $tableId,
-                'table_name' => $table_name,
-                'details' => $invoice_details,
-                'total_price' => $total_price,
-                'created_at' => $now->format('d-m-Y'),
-                'checkin_time' => $now->format('H:i:s'),
-                'checkout_time' => $now->format('H:i:s'),
-                'customer_payment' => $customer_payment,
-                'remaining_money' => $remaining_money,
-                'is_paid' => $request->is_paid,
-                'is_qr' => 1,
-            ];
-            session()->put('invoice', $invoice);
+            // $invoice[$tableId] = [
+            //     'table_id' => $tableId,
+            //     'table_name' => $table_name,
+            //     'details' => $invoice_details,
+            //     'total_price' => $total_price,
+            //     'created_at' => $now->format('d-m-Y'),
+            //     'checkin_time' => $now->format('H:i:s'),
+            //     'checkout_time' => $now->format('H:i:s'),
+            //     'customer_payment' => $customer_payment,
+            //     'remaining_money' => $remaining_money,
+            //     'is_paid' => $request->is_paid,
+            //     'is_qr' => 1,
+            // ];
+            // session()->put('invoice', $invoice);
+            // dd($customer_payment_response, $remaining_money_response);
             event(new InvoicePlaced(
                 $tableId,
                 $table_name,
                 $invoice_details,
-                $total_price,
+                (float)$total_price,
                 $now->format('d-m-Y'),
                 $now->format('H:i:s'),
                 $now->format('H:i:s'),
                 $customer_payment_response,
                 $remaining_money_response,
+                $customer_payment,
+                $remaining_money,
                 $request->is_paid,
                 1,
             ));
@@ -588,7 +593,7 @@ class InvoiceController extends Controller
     //     // ]);
     // }
 
-    public function getInvoiceInformation(Request $request)
+    public function generateInvoice(Request $request)
     {
         //session thi invoice_id = -1 va chi co table_id
         // dd($request->all());
@@ -599,11 +604,16 @@ class InvoiceController extends Controller
         {
             dd(1);
         }
-
         // $invoice_session = session()->get('invoice');
         // $invoice = $invoice_session[$table_id];
+        //chưa thanh toán
         $invoice = session('invoice')[$table_id];
         // dd($invoice);
+        // $table_id = $invoice->table_id;
+        // $table_name = $invoice_table_name;
+        // $total_price = $invoice->total_price;
+        // $created_at = $invoice->created_at;
+
         return $this->successResponse([
             'invoice' => $invoice,
         ], 'Thanh cong roi nhe!!!');
@@ -618,12 +628,15 @@ class InvoiceController extends Controller
             session()->put('invoice', []);
         }
         $invoice = session()->get('invoice');
+        //vì đã xử lý ở hàm store qr rồi nên ở đây không cần
+        // $customer_payment = $request->customer_payment * 1000;
+        // $remaining_money = $customer_payment - $total_price;
         // dd($data);
         $invoice[(int)$data['table_id']] = [
             'table_id' => (int)$data['table_id'],
             'table_name' => $data['table_name'],
             'details' => $data['details'],
-            'total_price' => $data['total_price'],
+            'total_price' => (float)$data['total_price'],
             'created_at' => $data['created_at'],
             'checkin_time' => $data['checkin_time'],
             'checkout_time' => $data['checkout_time'],
