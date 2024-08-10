@@ -40,7 +40,7 @@
         <div class="header">
             <h1>Bàn</h1>
         </div>
-        <button data-button-id="6" class="btn btn-click-me btn-danger">click me</button>
+        <button data-button-id="6" class="btn btn-click-me btn-danger">click me for delete!!</button>
         <div>
         </div>
         @foreach ($tables as $table)
@@ -267,7 +267,7 @@
             .listen('InvoicePlaced', (response) => {
                 // let audio = new Audio('/sound_effect/ting_sound_effect.mp3');
                 // audio.play();
-                console.log(response);
+                // console.log(response);
                 $.ajax({
                     type: "get",
                     url: '{{ route('putInvoice') }}',
@@ -298,7 +298,7 @@
                     <tr data-status="${response.is_paid}" class="order_table_class_${response.table_id}">
                         <td border="1" class="set-row" id="new-row-${response.table_id}" rowspan="${rowspanCount}">
                             <p id="p-table-id-${response.table_id}" class="p-table">
-                                <span id="span-table-id-${response.table_id}">${response.table_id}</span>
+                                <span id="span-table-id-${response.table_id}">${response.table_name}</span>
                                 <span>${response.is_qr ? '(QR)' : ''}</span>
                                 <span id="new-row-remove-${response.table_id}" class="new-invoice-check badge badge-success p-2s">(New)</span>
                             </p>
@@ -325,14 +325,18 @@
                     }
                     order_table += `
                         <td>${item['name']}</td>
-                        <td class="price">${item['price']}</td>
+                        <td class="price">${item['price'].toLocaleString('vi-VN')}</td>
                         <td>${item['quantity']}</td>
                     `;
                     if (count == 1) {
                         order_table += `
-                            <td class="set-row" rowspan="${rowspanCount}">${response.total_price}</td>
+                            <td class="set-row" rowspan="${rowspanCount}">${response.total_price.toLocaleString('vi-VN')}</td>
                             <td rowspan="${rowspanCount}"> 
-                                <button class="btn btn-success btn-sm">Xuất</button>
+                                <button data-invoice-id="-1"
+                                        data-table-id="${response.table_id}"
+                                        class="btn btn-generate-invoice-${response.table_id} btn-generate-invoice btn-success btn-sm">
+                                    Xuất
+                                </button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
@@ -360,10 +364,10 @@
                                 <button type="button" data-table-id="${response.table_id}" class="btn-change-invoice btn btn-danger btn-sm" id="btn-change-invoice-${response.table_id}">Change</button>
                             </td>
                             <td rowspan="${rowspanCount}">
-                                ${response.customer_payment}
+                                ${response.customer_payment.toLocaleString('vi-VN')}
                             </td>
                             <td rowspan="${rowspanCount}">
-                                ${response.remaining_money}
+                                ${response.remaining_money.toLocaleString('vi-VN')}
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <button onclick="deleteInvoice('${response.table_id}','order_table')" class="btn btn-delete-invoice btn-danger btn-sm">Xoá</button>
@@ -404,7 +408,7 @@
                                 }
                             </div> 
                             <div class="form-group col-6" style="margin-left: 60px;">
-                                <h4>Tổng tiền: ${response.total_price}</h4>
+                                <h4>Tổng tiền: ${response.total_price.toLocaleString('vi-VN')}</h4>
                             </div>
                             
                         </div>
@@ -588,7 +592,7 @@
                 error: function() {
                     modal_body.find('.remaining-money').html('NULL');
                     modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", true);
-                    console.log('Sai con mịa nó rồi!!!');
+                    console.log('Sai rồi!!!');
                 }
             });
         });
@@ -631,39 +635,43 @@
                                         <div class="modal-body">
                                             <h3>Bàn số: ${table_name}</h3>
                             `;
-                        // console.log(item);
                         //invoice detail
                         item.details.forEach(function(item, index) {
-                            // console.log(item);
                             modal_invoice_api += `
                             <div class="items form-row">
                                 <div class="form-group col-6">
                                     <label>Tên món: </label>
-                                    <input type="text" class="form-control" value="${item.menu_items.name}">
+                                    <p class="form-control">${item.menu_items.name}</p>
                                 </div>
                                 <div class="form-group col-2">
                                     <label>Số lượng: </label>
-                                    <input type="text" class="form-control" id="" value="${item.quantity}">
+                                    <p class="form-control">${item.quantity}</p>
                                 </div>
                                 <div class="form-group col-2">
                                     <label>Giá: </label>
-                                    <input type="text" class="form-control" value="${(item.menu_items.price).toLocaleString('vi-VN')}" name="" id="">
+                                    <p class="form-control">${(item.menu_items.price).toLocaleString('vi-VN')}</p>
                                 </div>
                                 <div class="form-group col-2">
                                     <label>Thành tiền: </label>
-                                    <input type="text" class="form-control" value="${(item.quantity * item.menu_items.price).toLocaleString('vi-VN')}" name="" id="">
+                                    <p class="form-control">${(item.quantity * item.menu_items.price).toLocaleString('vi-VN')}"</p>
                                 </div>
                             </div>
                             `;
                         }); //end foreach
+                        console.log(item.is_paid);
                         modal_invoice_api += `
                             <div class="form-row" style="margin-top: 30px;">
                                     <div class="form-group col-5" id="div-paid">
-                                        ${item.is_paid ? 
-                                            `<input type="text" class="form-control" value="Đã thanh toán">` : 
-                                            `<input type="text" class="form-control" value="Chưa thanh toán">`
-                                        }
-                                    </div> 
+                                            ${function() {
+                                                const text = {
+                                                    0: item.is_qr == 1 ? 'Chưa thanh toán trước (QR code)' : 'Chưa thanh toán (Cashier)',
+                                                    1: 'Đã thanh toán (Cashier)',
+                                                    2: 'Thanh toán luôn (QR code)'
+                                                };
+                                                const badgeText = text[item.is_paid];
+                                                return `<p class="form-control">${badgeText}</p>`;
+                                            }()}									
+                                        </div>
                                     <div class="form-group col-6" style="margin-left: 60px;">
                                         <h4>Tổng tiền: ${(item.total_price).toLocaleString('vi-VN')}</h4>
                                     </div>
@@ -671,7 +679,11 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" onclick="deleteInvoice('${table_id_api}', 'modal_invoice')" class="btn btn-delete-invoice btn-danger">Xoá hoá đơn</button>
-                                <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
+                                <button data-invoice-id="${item.invoice_id}"
+                                    data-table-id="${table_id_api}" 
+                                    class="btn btn-generate-invoice-${table_id_api} btn-generate-invoice btn-success">
+                                    Xuất hoá đơn
+                                </button>
                             </div>
                             </div>
                             </div>
@@ -785,7 +797,7 @@
                             }
                             order_table += `
                                 <td>${detail.menu_items.name}</td>
-                                <td class="price">${detail.menu_items.price}</td>
+                                <td class="price">${detail.menu_items.price.toLocaleString('vi-VN')}</td>
                                 <td>${detail.quantity}</td>
                             `;
                             if (count == 1) {
@@ -794,7 +806,7 @@
                                     <td rowspan="${rowspanCount}"> 
                                         <button data-invoice-id="${item.invoice_id}"
                                                 data-table-id="${item.table_id}" 
-                                                class="btn btn-generate-invoice btn-success btn-sm">
+                                                class="btn btn-generate-invoice-${item.table_id} btn-generate-invoice btn-success btn-sm">
                                             Xuất
                                         </button>
                                     </td>
@@ -947,6 +959,7 @@
                 contentType: false,
                 success: function(response) {
                     let table_id = response.data.table_id;
+                    let invoice_id = response.data.invoice_id;
                     let table_name = response.data.table_name;
                     let total_price = response.data.total_price;
                     let formatTotalPrice = total_price.toLocaleString('vi-VN');
@@ -1067,14 +1080,18 @@
                         }
                         order_table += `
                             <td>${item['name']}</td>
-                            <td class="price">${item['price']}</td>
+                            <td class="price">${item['price'].toLocaleString('vi-VN')}</td>
                             <td>${item['quantity']}</td>
                         `;
                         if (count == 1) {
                             order_table += `
                             <td class="set-row" rowspan="${rowspanCount}">${formatTotalPrice}</td>
                             <td rowspan="${rowspanCount}"> 
-                                <button class="btn btn-success btn-sm">Xuất</button>
+                                <button data-invoice-id="${invoice_id}"
+                                    data-table-id="${table_id}"
+                                    class="btn btn-generate-invoice btn-success btn-sm">
+                                    Xuất
+                                </button>
                             </td>
                             <td rowspan="${rowspanCount}">
                                 <li class="list-inline-item ml-2">
@@ -1118,7 +1135,11 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" onclick="deleteInvoice('${table_id}', 'modal_invoice')" class="btn btn-danger">Xoá hoá đơn</button>
-                        <button type="button" onclick="exportInvoice()" class="btn btn-success">Xuất hoá đơn</button>
+                        <button data-invoice-id="${invoice_id}"
+                            data-table-id="${table_id}"
+                            class="btn btn-generate-invoice-${table_id} btn-generate-invoice btn-success">
+                            Xuất hoá đơn
+                        </button>
                     </div>
                     </div>
                     </div>
@@ -1319,23 +1340,31 @@
                 }
             });
         })
-
-        $(document).on('click', '.btn-generate-invoice', function () { 
-            console.log(123);
+        $(document).on('click', '.btn-generate-invoice', function () {
             let invoice_id = $(this).data('invoice-id');
             let table_id = $(this).data('table-id');
+
+            if(invoice_id < 0)
+            {
+
+            }
+            
+            if(invoice_id > 0)
+            {
+
+            }
             $.ajax({
-                type: "get",
-                url: '{{ route('getInvoiceInformation') }}',
+                type: "GET",
+                url: '{{ route('generateInvoice') }}',
                 data: {
                     invoice_id: invoice_id,
                     table_id: table_id,
                 },
-                // dataType: "json",
                 success: function (response) {
-                    // console.log(response);
                     let invoice = response.data.invoice;
-                    console.log(invoice);
+                    console.log('Invoice data:', invoice);
+
+                    // Xây dựng nội dung HTML cho hóa đơn
                     let invoiceHtml = `
                         <div class="invoice" id="invoice">
                             <div class="header">
@@ -1357,60 +1386,143 @@
                                     </thead>
                                     <tbody>
                     `;
-                    invoice.details.forEach(function (item, index) {
+
+                    // Thêm sản phẩm vào bảng
+                    invoice.details.forEach(function (item) {
                         invoiceHtml += `
                             <tr>
                                 <td>${item.name}</td>
                                 <td>${item.quantity}</td>
-                                <td>${item.price}</td>
+                                <td>${item.price.toLocaleString('vi-VN')}</td>
                             </tr>
                         `;
-                    }); //end foreach
+                    });
 
                     invoiceHtml += `
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="total">
+                                <p><strong>Tổng cộng:</strong> ${invoice.total_price.toLocaleString('vi-VN')} VND</p>
+                                <p><strong>Phương thức thanh toán:</strong> Tiền mặt</p>
+                            </div>
+                                <p class="footer-p">Người lập hoá đơn: Hồ Văn Dũng</p>
+                                <p class="footer-p">Liên hệ: 0000000000</p>
                         </div>
-                        <div class="total">
-                            <p><strong>Tổng cộng:</strong> ${invoice.total_price} VND</p>
-                            <p><strong>Phương thức thanh toán:</strong> Tiền mặt</p>
-                        </div>
-                        <div class="footer">
-                            <p>Người lập hoá đơn: Hồ Văn Dũng</p>
-                            <p>Liên hệ: 0000000000</p>
-                        </div>
-                    </div>
                     `;
 
-                    var tempDiv = $('<div>').html(invoiceHtml).appendTo('body');
-
-                    // html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
-                    //     var imgData = canvas.toDataURL('image/png');
-                    //     var link = document.createElement('a');
-                    //     link.href = imgData;
-                    //     link.download = 'invoice-' + invoice.table_id + '.png';
-                    //     link.click();
-                    //     URL.revokeObjectURL(link.href); 
-                    //     tempDiv.remove();
-                    // });
-
+                    let tempDiv = $('<div>').html(invoiceHtml).appendTo('body');
 
                     html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
                         canvas.toBlob(function(blob) {
-                            var link = document.createElement('a');
-                            var url = URL.createObjectURL(blob);
+                            let link = document.createElement('a');
+                            let url = URL.createObjectURL(blob);
                             link.href = url;
-                            link.download = 'invoice-' + invoice.table_id + '.png';
+                            link.download = `invoice-${invoice.table_id}.png`;
                             link.click();
-                            URL.revokeObjectURL(url); 
-                            tempDiv.remove();
+                            URL.revokeObjectURL(url); // Giải phóng URL
+                            tempDiv.remove(); // Xóa div tạm thời
                         }, 'image/png');
                     }).catch(function(error) {
                         console.error('Error capturing the canvas:', error);
                     });
-                }   
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
             });
-        })
+        });
+        // $(document).on('click', '.btn-generate-invoice', function () { 
+        //     console.log(123);
+        //     let invoice_id = $(this).data('invoice-id');
+        //     let table_id = $(this).data('table-id');
+        //     $.ajax({
+        //         type: "get",
+        //         url: ,
+        //         data: {
+        //             invoice_id: invoice_id,
+        //             table_id: table_id,
+        //         },
+        //         // dataType: "json",
+        //         success: function (response) {
+        //             // console.log(response);
+        //             let invoice = response.data.invoice;
+        //             console.log(invoice);
+        //             let invoiceHtml = `
+        //                 <div class="invoice" id="invoice">
+        //                     <div class="header">
+        //                         <div class="title">
+        //                             <h1>Quán đồ án 1</h1>
+        //                             <p>Số hoá đơn: <span>${invoice.table_name}</span></p>
+        //                             <p>Ngày xuất hoá đơn: <span>${invoice.created_at}</span></p>
+        //                         </div>
+        //                     </div>
+        //                     <div class="products">
+        //                         <h2>Danh sách sản phẩm</h2>
+        //                         <table class="table-invoice">
+        //                             <thead>
+        //                                 <tr>
+        //                                     <th>Sản phẩm</th>
+        //                                     <th>Số lượng</th>
+        //                                     <th>Giá thành</th>
+        //                                 </tr>
+        //                             </thead>
+        //                             <tbody>
+        //             `;
+        //             invoice.details.forEach(function (item, index) {
+        //                 invoiceHtml += `
+        //                     <tr>
+        //                         <td>${item.name}</td>
+        //                         <td>${item.quantity}</td>
+        //                         <td>${item.price.toLocaleString('vi-VN')}</td>
+        //                     </tr>
+        //                 `;
+        //             }); //end foreach
+
+        //             invoiceHtml += `
+        //                         </tbody>
+        //                     </table>
+        //                 </div>
+        //                 <div class="total">
+        //                     <p><strong>Tổng cộng:</strong> ${invoice.total_price.toLocaleString('vi-VN')} VND</p>
+        //                     <p><strong>Phương thức thanh toán:</strong> Tiền mặt</p>
+        //                 </div>
+        //                 <div class="footer">
+        //                     <p>Người lập hoá đơn: Hồ Văn Dũng</p>
+        //                     <p>Liên hệ: 0000000000</p>
+        //                 </div>
+        //             </div>
+        //             `;
+
+        //             var tempDiv = $('<div>').html(invoiceHtml).appendTo('body');
+
+        //             // html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
+        //             //     var imgData = canvas.toDataURL('image/png');
+        //             //     var link = document.createElement('a');
+        //             //     link.href = imgData;
+        //             //     link.download = 'invoice-' + invoice.table_id + '.png';
+        //             //     link.click();
+        //             //     URL.revokeObjectURL(link.href); 
+        //             //     tempDiv.remove();
+        //             // });
+
+
+        //             html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
+        //                 canvas.toBlob(function(blob) {
+        //                     var link = document.createElement('a');
+        //                     var url = URL.createObjectURL(blob);
+        //                     link.href = url;
+        //                     link.download = 'invoice-' + invoice.table_id + '.png';
+        //                     link.click();
+        //                     URL.revokeObjectURL(url); 
+        //                     tempDiv.remove();
+        //                 }, 'image/png');
+        //             }).catch(function(error) {
+        //                 console.error('Error capturing the canvas:', error);
+        //             });
+        //         }   
+        //     });
+        // })
 ////////////////////////////////////////////////////////////////////////////////////////////
         $(document).on('click', '.btn-submit-change-invoice', function(){
             let modal_content = $(this).closest('.modal-content');
