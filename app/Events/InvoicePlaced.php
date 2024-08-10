@@ -21,13 +21,17 @@ class InvoicePlaced implements ShouldBroadcast
     public $created_at;
     public $checkin_time;
     public $checkout_time;
+    public $customer_payment_response;
+    public $remaining_money_response;
     public $customer_payment;
     public $remaining_money;
     public $is_paid;
     public $is_qr;
 
 
-    public function __construct($table_id, $table_name, $details, $total_price, $created_at, $checkin_time, $checkout_time, $customer_payment, $remaining_money, $is_paid, $is_qr)
+    public function __construct($table_id, $table_name, $details, $total_price, $created_at, $checkin_time, 
+                                $checkout_time, $customer_payment_response, $remaining_money_response, 
+                                $customer_payment, $remaining_money, $is_paid, $is_qr)
     {
         $this->table_id = $table_id;
         $this->table_name = $table_name;
@@ -36,6 +40,8 @@ class InvoicePlaced implements ShouldBroadcast
         $this->created_at = $created_at;
         $this->checkin_time = $checkin_time;
         $this->checkout_time = $checkout_time;
+        $this->customer_payment = $customer_payment_response;
+        $this->remaining_money = $remaining_money_response;
         $this->customer_payment = $customer_payment;
         $this->remaining_money = $remaining_money;
         $this->is_paid = $is_paid;
