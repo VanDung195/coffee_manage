@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\MenuItem;
 use App\Models\Table;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -602,6 +603,7 @@ class InvoiceController extends Controller
         //khi đã thanh toán và xuất hoá đơn rồi nhưng khách hàng vẫn muỗn xuất thêm 1 hoá đơn nữa thì
         if($invoice_id > 0)  //lam sau
         {
+            dd(1);
             $data = Invoice::with(['details' => function($query) {
                 $query->select('invoice_id', 'menu_item_id', 'quantity');
             }, 'details.menuItems' => function($query) {
@@ -613,17 +615,31 @@ class InvoiceController extends Controller
             ->where('id', $invoice_id)
             ->get()
             ->toArray();
-            dd($data);
+            $invoice = [];
+            $invoice_id = $data['id'];
+            $user_name = User::query()
+                        ->where('id', $data['user_id'])
+                        ->value('name');
+            $table_name = Table::query()
+                        ->where('id', $data['table_id'])
+                        ->value('name');
+            $total_price = $data['total_price'];
+            $created_at = date('d-m-Y', strtotime($data['created_at']));
+            $checkin_time = $data['checkin_time'];
+            $checkout_time = $data['checkout_time'];
+            $customer_payment = $data['customer_payment'];
+            // foreach ($data['details'] as $item) {
+            // }
+            $table_id = $data['table_id'];
             $invoice = [
                 
             ];
-            
         }
         // $invoice_session = session()->get('invoice');
         // $invoice = $invoice_session[$table_id];
         //chưa thanh toán
         $invoice = session('invoice')[$table_id];
-        dd($invoice);
+        // dd($invoice);
         // $table_id = $invoice->table_id;
         // $table_name = $invoice_table_name;
         // $total_price = $invoice->total_price;
