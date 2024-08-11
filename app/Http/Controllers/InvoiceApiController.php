@@ -47,12 +47,14 @@ class InvoiceApiController extends Controller
             // dd($session_invoices_reverse);
             foreach($session_invoices as $item)
             {
+                $customer_payment_check = true;
                 $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
                 $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
                 $table_id = $item['table_id'];
 
                 if($item['remaining_money'] < 0 || $item['customer_payment'] == null)
                 {
+                    $customer_payment_check = false;
                     $customer_payment = 'Không';
                     $remaining_money = 'Không';
                 }
@@ -70,6 +72,7 @@ class InvoiceApiController extends Controller
                     'details' => [],
                     'is_qr' => $item['is_qr'],
                     'invoice_id' => -1,
+                    'customer_payment_check' => $customer_payment_check,
                 ];
                 foreach($item['details'] as $each)
                 {
@@ -93,11 +96,13 @@ class InvoiceApiController extends Controller
         foreach($invoices as $item)
         {
             $table_id = $item['table_id'];
+            $customer_payment_check = true;
             $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
             $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
             $total_price = number_format($item['total_price'], 0, ',', '.');
             if($item['remaining_money'] < 0 || $item['customer_payment'] == null)
             {
+                $customer_payment_check = false;
                 $customer_payment = 'Không';
                 $remaining_money = 'Không';
             }
@@ -117,6 +122,7 @@ class InvoiceApiController extends Controller
                 'details' => $item['details'],
                 'is_qr' => 0,
                 'invoice_id' => $item['id'],
+                'customer_payment_check' => $customer_payment_check,
             ];
             $count++;
         }
