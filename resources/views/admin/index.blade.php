@@ -67,6 +67,7 @@
                             <form action="{{ route('invoice.store') }}" method="POST" class="form-create">
                                 @csrf
                                 <input type="hidden" name="table_id" id="table_id" class="form-control" value="{{ $table->id }}" readonly>  
+                                <input type="hidden" name="is_create" value="true">
                                 <input type="text" class="form-control" name="table-id" id="table-id"
                                     value="{{ $table->name }}" readonly>
                                 <div class="item form-row">
@@ -587,15 +588,29 @@
                 contentType: false,
                 success: function(response) {
                     console.log(response);
-                    
-                    modal_body.find('.remaining-money').html(response.data.toLocaleString('vi-VN'));
-                    modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", false);
+                    let remaining_money = response.data.remaining_money;
+                    let is_create = response.data.is_create;
+                    if(is_create == 'true')
+                    {
+                        modal_body.find('.remaining-money').html(remaining_money.toLocaleString('vi-VN'));
+                        modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", false);
+                    } else {
+                        modal_body.find('.remaining-money').html(remaining_money.toLocaleString('vi-VN'));
+                        modal_body.closest('.modal-content').find('.btn-generate-invoice').prop( "disabled", false);
+                    }
                     // document.getElementById('remaining-money').innerHTML = response.data.toLocaleString(
                     //     'vi-VN');
                 },
-                error: function() {
-                    modal_body.find('.remaining-money').html('NULL');
-                    modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", true);
+                error: function(error) {
+                    let is_create = error.responseJSON.message;
+                    if(is_create == 'true')
+                    {
+                        modal_body.find('.remaining-money').html('NULL');
+                        modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", true);
+                    } else {
+                        modal_body.find('.remaining-money').html('NULL');
+                        modal_body.closest('.modal-content').find('.btn-generate-invoice').prop( "disabled", true);
+                    }
                     console.log('Sai rồi!!!');
                 }
             });
@@ -641,8 +656,8 @@
                                             <form class="form-create">
                                             @csrf
                                             <h3>Bàn số: ${table_name}</h3>
-                                            <input type="hidden" name="table_id" value="${table_id_api}" readonly>
-                                            <input type="hidden" name="table_id" value="${item.customer_payment_check}" readonly>
+                                            <input type="hidden" name="paid" value="${item.customer_payment_check}" readonly>
+                                            <input type="hidden" name="is_create" value="false" readonly>
                             `;
                         //invoice detail
                         item.details.forEach(function(item, index) {
@@ -717,7 +732,7 @@
                                 <button type="button" onclick="deleteInvoice('${table_id_api}', 'modal_invoice')" class="btn btn-delete-invoice btn-danger">Xoá hoá đơn</button>
                                 <button data-invoice-id="${item.invoice_id}"
                                     data-table-id="${table_id_api}" 
-                                    class="btn btn-submit-invoice btn-generate-invoice-${table_id_api} btn-generate-invoice btn-success">
+                                    class="btn btn-generate-invoice-${table_id_api} btn-generate-invoice btn-success">
                                     Xuất hoá đơn
                                 </button>
                             </div>
@@ -1376,21 +1391,107 @@
                 }
             });
         })
-        $(document).on('click', '.btn-generate-invoice', function () {
-            let invoice_id = $(this).data('invoice-id');
+        $(document).on('click', '.btn-generate-invoice, .btn-show-invoice-detail', function () {
+            // let invoice_id = $(this).data('invoice-id');
             let table_id = $(this).data('table-id');
+            let invoice_detail = '#invoice_detail_' + table_id;
+            $(invoice_detail).modal('show');
 
-            if(invoice_id < 0)
-            {
-                let invoice_detail = '#invoice_detail_'+table_id;
+            let btn_generate_invoice = $(invoice_detail).find('.btn-generate-invoice');
+            let invoice_id = $(btn_generate_invoice).data('invoice-id');
+            console.log(invoice_id);
+            
+            // if (invoice_id < 0) {
+            //     let invoice_detail = '#invoice_detail_' + table_id;
+            //     $(invoice_detail).modal('show').on('shown.bs.modal', function () {
+            //         $(this).one('click', '.btn-generate-invoice', function () {
+            //             let nested_invoice_id = $(this).data('invoice-id');
+            //             let modal_content = $(this).closest('.modal-content');
+            //             let modal_body = modal_content.find('.modal-body');
+            //             let customer_payment = modal_body.find('.customer-payment').val();
+
+            //             console.log('Clicked button inside modal with nested_invoice_id:', nested_invoice_id);
+
+            //             $.ajax({
+            //                 type: "GET",
+            //                 url: '{{ route('generateInvoice') }}',
+            //                 data: {
+            //                     invoice_id: nested_invoice_id,
+            //                     table_id: table_id,
+            //                     customer_payment: customer_payment,
+            //                 },
+            //                 success: function (response) {
+            //                     console.log(response);
+            //                 },
+            //                 error: function (xhr, status, error) {
+            //                     console.error('AJAX Error:', status, error);
+            //                 }
+            //             });
+            //         });
+            //     });
+            // }
+            if (invoice_id < 0) {
+                // let invoice_detail = '#invoice_detail_' + table_id;
+                // $(invoice_detail).modal('show');
                 $(invoice_detail).off('click', '.btn-generate-invoice');
-                $(invoice_detail).modal('show');
-                
                 $(invoice_detail).on('click', '.btn-generate-invoice', function () {
-                    let nested_invoice_id = $(this).data('table-id');
-                    console.log('Clicked button inside modal with invoice_id:', nested_invoice_id);
+                    let nested_invoice_id = $(this).data('invoice-id');
+                    let modal_content = $(this).closest('.modal-content');
+                    let modal_body = modal_content.find('.modal-body');
+                    let customer_payment = modal_body.find('.customer-payment').val();
+
+                    console.log('Clicked button inside modal with nested_invoice_id:', nested_invoice_id);
+
+                    $.ajax({
+                        type: "GET",
+                        url: '{{ route('generateInvoice') }}',
+                        data: {
+                            invoice_id: nested_invoice_id,
+                            table_id: table_id,
+                            customer_payment: customer_payment,
+                        },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('AJAX Error:', status, error);
+                        }
+                    });
                 });
-                /*
+            }
+
+            // if (invoice_id < 0) {
+            //     let invoice_detail = '#invoice_detail_' + table_id;
+            //     $(invoice_detail).off('click', '.btn-generate-invoice');
+            //     $(invoice_detail).modal('show');
+
+            //     $(invoice_detail).one('click', '.btn-generate-invoice', function () {
+            //         let nested_invoice_id = $(this).data('table-id');
+            //         let modal_content = $(this).closest('.modal-content');
+            //         let modal_body = modal_content.find('.modal-body');
+            //         let customer_payment = modal_body.find('.customer-payment');
+            //         console.log('Clicked button inside modal with invoice_id:', nested_invoice_id);
+
+            //         $.ajax({
+            //             type: "GET",
+            //             url: '{{ route('generateInvoice') }}',
+            //             data: {
+            //                 invoice_id: invoice_id,
+            //                 table_id: table_id,
+            //                 customer_payment: customer_payment,
+            //             },
+            //             success: function (response) {
+            //                 console.log(response);
+            //             },
+            //             error: function (xhr, status, error) {
+            //                 console.error('AJAX Error:', status, error);
+            //             }
+            //         });
+            //     });
+            // }
+
+            /*
+            if (invoice_id > 0) {
                 $.ajax({
                     type: "GET",
                     url: '{{ route('generateInvoice') }}',
@@ -1444,15 +1545,15 @@
                                     <p><strong>Tổng cộng:</strong> ${invoice.total_price.toLocaleString('vi-VN')} VND</p>
                                     <p><strong>Phương thức thanh toán:</strong> Tiền mặt</p>
                                 </div>
-                                    <p class="footer-p">Người lập hoá đơn: Hồ Văn Dũng</p>
-                                    <p class="footer-p">Liên hệ: 0000000000</p>
+                                <p class="footer-p">Người lập hoá đơn: Hồ Văn Dũng</p>
+                                <p class="footer-p">Liên hệ: 0000000000</p>
                             </div>
                         `;
 
                         let tempDiv = $('<div>').html(invoiceHtml).appendTo('body');
 
-                        html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
-                            canvas.toBlob(function(blob) {
+                        html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function (canvas) {
+                            canvas.toBlob(function (blob) {
                                 let link = document.createElement('a');
                                 let url = URL.createObjectURL(blob);
                                 link.href = url;
@@ -1461,89 +1562,7 @@
                                 URL.revokeObjectURL(url); // Giải phóng URL
                                 tempDiv.remove(); // Xóa div tạm thời
                             }, 'image/png');
-                        }).catch(function(error) {
-                            console.error('Error capturing the canvas:', error);
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('AJAX Error:', status, error);
-                    }
-                });*/
-            }
-            
-            if(invoice_id > 0)
-            {
-                    $.ajax({
-                    type: "GET",
-                    url: '{{ route('generateInvoice') }}',
-                    data: {
-                        invoice_id: invoice_id,
-                        table_id: table_id,
-                    },
-                    success: function (response) {
-                        let invoice = response.data.invoice;
-                        console.log('Invoice data:', invoice);
-
-                        // Xây dựng nội dung HTML cho hóa đơn
-                        let invoiceHtml = `
-                            <div class="invoice" id="invoice">
-                                <div class="header">
-                                    <div class="title">
-                                        <h1>Quán đồ án 1</h1>
-                                        <p>Số hoá đơn: <span>${invoice.table_name}</span></p>
-                                        <p>Ngày xuất hoá đơn: <span>${invoice.created_at}</span></p>
-                                    </div>
-                                </div>
-                                <div class="products">
-                                    <h2>Danh sách sản phẩm</h2>
-                                    <table class="table-invoice">
-                                        <thead>
-                                            <tr>
-                                                <th>Sản phẩm</th>
-                                                <th>Số lượng</th>
-                                                <th>Giá thành</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                        `;
-
-                        // Thêm sản phẩm vào bảng
-                        invoice.details.forEach(function (item) {
-                            invoiceHtml += `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.price.toLocaleString('vi-VN')}</td>
-                                </tr>
-                            `;
-                        });
-
-                        invoiceHtml += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="total">
-                                    <p><strong>Tổng cộng:</strong> ${invoice.total_price.toLocaleString('vi-VN')} VND</p>
-                                    <p><strong>Phương thức thanh toán:</strong> Tiền mặt</p>
-                                </div>
-                                    <p class="footer-p">Người lập hoá đơn: Hồ Văn Dũng</p>
-                                    <p class="footer-p">Liên hệ: 0000000000</p>
-                            </div>
-                        `;
-
-                        let tempDiv = $('<div>').html(invoiceHtml).appendTo('body');
-
-                        html2canvas(document.getElementById('invoice'), { scale: 2 }).then(function(canvas) {
-                            canvas.toBlob(function(blob) {
-                                let link = document.createElement('a');
-                                let url = URL.createObjectURL(blob);
-                                link.href = url;
-                                link.download = `invoice-${invoice.table_id}.png`;
-                                link.click();
-                                URL.revokeObjectURL(url); // Giải phóng URL
-                                tempDiv.remove(); // Xóa div tạm thời
-                            }, 'image/png');
-                        }).catch(function(error) {
+                        }).catch(function (error) {
                             console.error('Error capturing the canvas:', error);
                         });
                     },
@@ -1551,8 +1570,10 @@
                         console.error('AJAX Error:', status, error);
                     }
                 });
-            }
+            }*/
         });
+
+
         // $(document).on('click', '.btn-generate-invoice', function () { 
         //     console.log(123);
         //     let invoice_id = $(this).data('invoice-id');
@@ -1892,11 +1913,11 @@
         // function showInvoiceDetail(table_name) {
         //     $(table_name).modal("show");
         // }
-        $('.btn-show-invoice-detail').on('click', function(){
-            let table_id = $(this).data('table-id');
-            let modal_name = '#invoice_detail_'+table_id;
-            $(modal_name).modal("show");
-        })
+        // $('.btn-show-invoice-detail').on('click', function(){
+        //     let table_id = $(this).data('table-id');
+        //     let modal_name = '#invoice_detail_'+table_id;
+        //     $(modal_name).modal("show");
+        // })
 
         function close_modal() {
             $('#modal-invoice').modal('toggle');
@@ -2044,7 +2065,6 @@
             $('.btn-close').click(function() {
                 $("#modal-invoice").modal('toggle');
                 $("#search").val('');
-
             })
 
             //reset modal khi đóng modal
