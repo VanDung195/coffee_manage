@@ -322,6 +322,7 @@ class InvoiceController extends Controller
     public function update(Request $request)
     {
         // dd($request->all());
+        $is_create = $request->is_create;
         $all_data = $request->all();
         $items_id = $all_data['id'];
         $menu_items = MenuItem::query()
@@ -363,13 +364,16 @@ class InvoiceController extends Controller
 
         $remaining_money = $customer_payment - $total_price;
         if ($remaining_money < 0 && $customer_payment != null) {
-            return $this->errorResponse();
+            return $this->errorResponse($is_create);
         }
         if($customer_payment == null)
         {
             return $this->successResponse(0);
         }
-        return $this->successResponse($remaining_money);
+        return $this->successResponse([
+            'remaining_money' => $remaining_money,
+            'is_create' => $is_create,
+        ]);
     }
 
     //update table infonation
@@ -601,44 +605,62 @@ class InvoiceController extends Controller
         $invoice_id = (int)$request->invoice_id;
         $table_id = $request->table_id;
         //khi đã thanh toán và xuất hoá đơn rồi nhưng khách hàng vẫn muỗn xuất thêm 1 hoá đơn nữa thì
-        if($invoice_id > 0)  //lam sau
-        {
-            dd(1);
-            $data = Invoice::with(['details' => function($query) {
-                $query->select('invoice_id', 'menu_item_id', 'quantity');
-            }, 'details.menuItems' => function($query) {
-                $query->select('id', 'name','price');
-            }, 'tables' => function($query) {
-                $query->select('id', 'name');
-            },
-            ])
-            ->where('id', $invoice_id)
-            ->get()
-            ->toArray();
-            $invoice = [];
-            $invoice_id = $data['id'];
-            $user_name = User::query()
-                        ->where('id', $data['user_id'])
-                        ->value('name');
-            $table_name = Table::query()
-                        ->where('id', $data['table_id'])
-                        ->value('name');
-            $total_price = $data['total_price'];
-            $created_at = date('d-m-Y', strtotime($data['created_at']));
-            $checkin_time = $data['checkin_time'];
-            $checkout_time = $data['checkout_time'];
-            $customer_payment = $data['customer_payment'];
-            // foreach ($data['details'] as $item) {
-            // }
-            $table_id = $data['table_id'];
-            $invoice = [
+        // if($invoice_id > 0)  //lam sau
+        // {
+        //     dd(1);
+        //     $data = Invoice::with(['details' => function($query) {
+        //         $query->select('invoice_id', 'menu_item_id', 'quantity');
+        //     }, 'details.menuItems' => function($query) {
+        //         $query->select('id', 'name','price');
+        //     }, 'tables' => function($query) {
+        //         $query->select('id', 'name');
+        //     },
+        //     ])
+        //     ->where('id', $invoice_id)
+        //     ->get()
+        //     ->toArray();
+        //     $invoice = [];
+        //     $invoice_id = $data['id'];
+        //     $user_name = User::query()
+        //                 ->where('id', $data['user_id'])
+        //                 ->value('name');
+        //     $table_name = Table::query()
+        //                 ->where('id', $data['table_id'])
+        //                 ->value('name');
+        //     $total_price = $data['total_price'];
+        //     $created_at = date('d-m-Y', strtotime($data['created_at']));
+        //     $checkin_time = $data['checkin_time'];
+        //     $checkout_time = $data['checkout_time'];
+        //     $customer_payment = $data['customer_payment'];
+        //     // foreach ($data['details'] as $item) {
+        //     // }
+        //     $table_id = $data['table_id'];
+        //     $invoice = [
                 
-            ];
+        //     ];
+        // }
+        $now = Carbon::now('Asia/Bangkok');
+        $invoice = [];
+        if($invoice_id < 0)
+        {
+            // dd($request->all());
+            $customer_payment = $request->customer_payment;
+            $data = session('invoice')[$table_id];
+            $remaining_money = $customer_payment - $data['total_price'];
+            if(is_null($customer_payment) || $remaining_money < 0)
+            {
+                return $this->errorResponse('Error!!!');
+            }
+            ///////////////lam cai nay nhe!!!!
+            // $table_id = $data['table_id'];
+            $data['checkout_time'] = $now->format('H:i:s');
+            $data['remaining_money'] = $remaining_money;
+            session()->put('invoice', $data);
+            dd($data);
+            // dd($data['customer_payment']);
+            // dd($invoice_session);
         }
-        // $invoice_session = session()->get('invoice');
-        // $invoice = $invoice_session[$table_id];
         //chưa thanh toán
-        $invoice = session('invoice')[$table_id];
         // dd($invoice);
         // $table_id = $invoice->table_id;
         // $table_name = $invoice_table_name;
