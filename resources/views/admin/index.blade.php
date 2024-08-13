@@ -68,8 +68,26 @@
                                 @csrf
                                 <input type="hidden" name="table_id" id="table_id" class="form-control" value="{{ $table->id }}" readonly>  
                                 <input type="hidden" name="is_create" value="true">
-                                <input type="text" class="form-control" name="table-id" id="table-id"
-                                    value="{{ $table->name }}" readonly>
+                                {{-- <input type="text" class="form-control" name="table-id" id="table-id"
+                                    value="11111" readonly> --}}
+                                <div class="form-row">
+                                    <div class="form-group col-3">
+                                        <label>Bàn số</label>
+                                        <p id="table-id">{{ $table->name }}</p>
+                                    </div>
+                                    <div class="form-group col-5">
+                                        <label for="">Ten thu ngan</label>
+                                        <p class="form-control">asdasd</p>
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label for="">Gio vao</label>
+                                        <p class="form-control">asdasd</p>
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label for="">Gio ra</label>
+                                        <p class="form-control">asdasdasdasd</p>
+                                    </div>
+                                </div>
                                 <div class="item form-row">
                                     <div class="div-select form-group col-5" id="div-select">
                                         <label for="">Món</label>
@@ -526,7 +544,132 @@
         document.addEventListener('DOMContentLoaded', function() {
         });
 
-        
+        function modal_invoice(table_id,table_name,customer_payment_check,user_name,checkin_time,
+                                checkout_time,details,is_qr,is_paid,total_price,customer_payment,
+                                remaining_money,invoice_id)
+        {
+            console.log('123123123123123123121232131231231231231231212312313213254354345354');
+            let modal_invoice_api = `
+                <div id="invoice_detail_${table_id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Hoá đơn chi tiết</h4>
+                                <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="form-create">
+                                @csrf
+                                <input type="hidden" name="paid" value="${customer_payment_check}" readonly>
+                                <input type="hidden" name="is_create" value="false" readonly>
+                                <div class="form-row">
+                                    <div class="form-group col-1">
+                                        <label>Bàn số</label>
+                                        <p id="table-id">${table_name}</p>
+                                    </div>
+                                    <div class="form-group col-5">
+                                        <label for="">Tên người lập</label>
+                                        <p class="form-control">${user_name}</p>
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label for="">Giờ vào</label>
+                                        <p class="form-control">${checkin_time}</p>
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label for="">Giờ ra</label>
+                                        <p class="form-control">${checkout_time}</p>
+                                    </div>
+                                </div>
+                `;
+
+            //invoice detail
+            details.forEach(function(item, index) {
+                modal_invoice_api += `
+                <div class="items form-row">
+                    <div class="form-group col-6">
+                        <label>Tên món: </label>
+                        <input type="hidden" name="id[]" value="${item.menu_item_id}" readonly>
+                        <p class="form-control">${item.menu_items.name}</p>
+                    </div>
+                    <div class="form-group col-2">
+                        <label>Số lượng: </label>
+                        <input type="hidden" name="quantity[]" value="${item.quantity}" readonly>
+                        <p class="form-control">${item.quantity}</p>
+                    </div>
+                    <div class="form-group col-2">
+                        <label>Giá: </label>
+                        <p class="form-control">${(item.menu_items.price).toLocaleString('vi-VN')}</p>
+                    </div>
+                    <div class="form-group col-2">
+                        <label>Thành tiền: </label>
+                        <p class="form-control">${(item.quantity * item.menu_items.price).toLocaleString('vi-VN')}</p>
+                    </div>
+                </div>
+                `;
+            }); //end foreach
+            console.log(item.is_paid);
+            modal_invoice_api += `
+                    <div class="form-row" style="margin-top: 30px;">
+                        <div class="form-group col-3" id="div-paid">
+                            <label for="">Trạng thái thanh toán: </label>
+                                ${function() {
+                                    const text = {
+                                        0: is_qr == 1 ? 'Chưa thanh toán trước (QR code)' : 'Chưa thanh toán (Cashier)',
+                                        1: 'Đã thanh toán (Cashier)',
+                                        2: 'Thanh toán luôn (QR code)'
+                                    };
+                                    const badgeText = text[is_paid];
+                                    return `<p class="form-control">${badgeText}</p>`;
+                                }()}									
+                        </div>
+                        <div class="form-group col-3" style="margin-left: 5px;">
+                            <label for="">Tổng tiền: </label>
+                            <p class="form-control">${(total_price).toLocaleString('vi-VN')}</p>
+                        </div>
+                        ${item.customer_payment_check ? 
+                            `<div class="form-group col-2">
+                                <label for="">Số tiền khách trả: </label>
+                                <p class="form-control">${customer_payment}</p>
+                            </div>
+                            <div class="form-group col-2">
+                                <label for="">Tiền thừa: </label>
+                                <p class="remaining-money form-control">${remaining_money}</p>
+                            </div>` 
+                        : 
+                            `<div class="form-group col-2">
+                                <label for="">Tiền thừa: </label>
+                                <input class="customer-payment form-control" type="number" name="customer_payment"
+                                placeholder="VD: 1 = 1.000 VND" inputmode="numeric">
+                                <span id="customer-payment-error" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-2">
+                                <label for="">Tiền thừa: </label>
+                                <p class="remaining-money form-control">0</p>
+                                <span id="remaining-money-error" class="text-danger"></span>
+                            </div>` 
+                        }
+                            </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="deleteInvoice('${table_id}', 'modal_invoice')" class="btn btn-delete-invoice btn-danger">Xoá hoá đơn</button>
+                    <button data-invoice-id="${invoice_id}"
+                        data-table-id="${table_id}" 
+                        class="btn btn-generate-invoice-${table_id} btn-generate-invoice btn-success">
+                        Xuất hoá đơn
+                    </button>
+                </div>
+                </div>
+                </div>
+                </div>
+            `;
+
+            let diva = document.createElement("div");
+            diva.innerHTML = modal_invoice_api;
+            diva.classList.add("form-group");
+            diva.setAttribute("id", "div_invoice_detail_" + table_id);
+            document.getElementById("append_modal_invoice_detail").appendChild(diva);
+        }
 
 
         $('.select-item').on('change', function() {
@@ -623,7 +766,7 @@
                 success: function(response) {
                     // console.log(response.data[0].total_price);
                     // console.log('day la response moi toanh!!!!!!!!!!');
-                    // console.log(response);
+                    // console.log(response);  
                     //invoice
                     let divapi = document.createElement("div");
                     response.data.invoices.forEach(function(item, index) {
@@ -643,7 +786,22 @@
                             document.getElementById(show_table_api).style.display = 'none';
                             document.getElementById(show_detail_api).style.display = 'block';
                         }
+                        let customer_payment_check = item.customer_payment_check;
+                        let user_name = item.user_name;
+                        let checkin_time = item.checkin_time;
+                        let checkout_time = item.checkout_time;
+                        let details = item.details;
+                        let is_qr = item.is_qr;
+                        let is_paid = item.is_paid;
+                        let total_price = item.total_price;
+                        let customer_payment = item.customer_payment;
+                        let remaining_money = item.remaining_money;
+                        let invoice_id = item.invoice_id;
 
+
+                        modal_invoice(table_id_api,table_name,customer_payment_check,user_name,checkin_time,
+                            checkout_time,details,is_qr,is_paid,total_price,customer_payment,remaining_money,invoice_id);
+/*          
                         let modal_invoice_api = `
                             <div id="invoice_detail_${table_id_api}" class="modal fade" role="dialog">
                                 <div class="modal-dialog modal-xl">
@@ -655,9 +813,26 @@
                                         <div class="modal-body">
                                             <form class="form-create">
                                             @csrf
-                                            <h3>Bàn số: ${table_name}</h3>
                                             <input type="hidden" name="paid" value="${item.customer_payment_check}" readonly>
                                             <input type="hidden" name="is_create" value="false" readonly>
+                                            <div class="form-row">
+                                                <div class="form-group col-1">
+                                                    <label>Bàn số</label>
+                                                    <p id="table-id">${table_name}</p>
+                                                </div>
+                                                <div class="form-group col-5">
+                                                    <label for="">Tên người lập</label>
+                                                    <p class="form-control">${item.user_name}</p>
+                                                </div>
+                                                <div class="form-group col-2">
+                                                    <label for="">Giờ vào</label>
+                                                    <p class="form-control">${item.checkin_time}</p>
+                                                </div>
+                                                <div class="form-group col-2">
+                                                    <label for="">Giờ ra</label>
+                                                    <p class="form-control">${item.checkout_time}</p>
+                                                </div>
+                                            </div>
                             `;
                         //invoice detail
                         item.details.forEach(function(item, index) {
@@ -748,7 +923,7 @@
 
                         document.getElementById("append_modal_invoice_detail").appendChild(
                             diva);
-                        console.log('---------------------');
+                        console.log('---------------------');*/
                         // divapi.innerHTML = modal_invoice_api;
                         // console.log(modal_invoice_api);
                         // // modal_invoice_api = null;
@@ -1430,7 +1605,7 @@
             //         });
             //     });
             // }
-            if (invoice_id < 0) {
+            // if (invoice_id < 0) {
                 // let invoice_detail = '#invoice_detail_' + table_id;
                 // $(invoice_detail).modal('show');
                 $(invoice_detail).off('click', '.btn-generate-invoice');
@@ -1458,7 +1633,7 @@
                         }
                     });
                 });
-            }
+            // }
 
             // if (invoice_id < 0) {
             //     let invoice_detail = '#invoice_detail_' + table_id;
