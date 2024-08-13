@@ -30,9 +30,16 @@ if(!function_exists('getAndCacheTableName')){
             84000*30,
             function()
             {
-                $tables = Table::query()
-                    ->paginate(20);
+                // $tables = Table::query()
+                //     ->paginate(20);
                 // $tables = Table::query()->get();
+
+                $tables = Table::select('*')
+                    ->orderBy(DB::raw("CASE
+                        WHEN name REGEXP '^[A-Za-z]+' THEN CONCAT(LEFT(name, LENGTH(name) - LENGTH(SUBSTRING_INDEX(name, '_', -1))), LPAD(SUBSTRING_INDEX(name, '_', -1), 10, '0'))
+                        ELSE name
+                    END"))
+                    ->paginate(20);
                 return $tables;
             }
         );
@@ -47,10 +54,15 @@ if(!function_exists('getAndCacheAvailableTableNames')){
             84000 * 30,
             function()
             {
+                // $tables = Table::query()
+                //         ->get()
+                //         ->toArray();
+                // $tables = Table::where(DB::raw("name REGEXP '^T[0-9]+_[0-9]+$'"))
+                //             ->get();
+                // $tables = array_slice($tables, 6);
                 $tables = Table::query()
-                        ->get()
-                        ->toArray();
-                $tables = array_slice($tables, 6);
+                    ->whereRaw("name REGEXP '^T[0-9]+_[0-9]+$'")
+                    ->get();
 
                 return $tables;
             }
