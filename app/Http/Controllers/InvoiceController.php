@@ -85,7 +85,7 @@ class InvoiceController extends Controller
                 ]);
                 $invoice_id = $invoice->id;
 
-                if($table_name != 'unknow' || $table_name != 'ta')
+                if($table_name != 'takeaway')
                 {
                     Table::where('id', $tableId)->update([
                         'status' => TableStausEnum::getKey(0),
@@ -169,11 +169,12 @@ class InvoiceController extends Controller
             //     dd('error');
             // }
             $invoice[$tableId] = [
+                'user_id' => user()->id,
                 'table_id' => $tableId,
                 'table_name' => $table_name,
                 'details' => $invoice_details,
                 'total_price' => $total_price,
-                'created_at' => $now->format('d-m-Y'),
+                'created_at' => Carbon::now(),
                 // 'created_at' => $now->format('Y:m:d H:i:s'),
                 'checkin_time' => $now->format('H:i:s'),
                 // 'checkout_time' => $now->format('H:i:s'),
@@ -603,7 +604,10 @@ class InvoiceController extends Controller
         //session thi invoice_id = -1 va chi co table_id
         // dd($request->all());
         $invoice_id = (int)$request->invoice_id;
-        $table_id = $request->table_id;
+        $table_id = (int)$request->table_id;
+
+        //
+        $is_update_invoice = false;
         //khi đã thanh toán và xuất hoá đơn rồi nhưng khách hàng vẫn muỗn xuất thêm 1 hoá đơn nữa thì
         // if($invoice_id > 0)  //lam sau
         // {
@@ -640,23 +644,69 @@ class InvoiceController extends Controller
         //     ];
         // }
         $now = Carbon::now('Asia/Bangkok');
-        $invoice = [];
+        $invoice_test = [];
         if($invoice_id < 0)
         {
+            $is_update_invoice = true;
             // dd($request->all());
             $customer_payment = $request->customer_payment;
             $data = session('invoice')[$table_id];
-            $remaining_money = $customer_payment - $data['total_price'];
-            if(is_null($customer_payment) || $remaining_money < 0)
+            $remaining_money = ($customer_payment * 1000) - $data['total_price'];
+            if($remaining_money < 0 || is_null($customer_payment))
             {
                 return $this->errorResponse('Error!!!');
             }
             ///////////////lam cai nay nhe!!!!
             // $table_id = $data['table_id'];
-            $data['checkout_time'] = $now->format('H:i:s');
-            $data['remaining_money'] = $remaining_money;
-            session()->put('invoice', $data);
-            dd($data);
+            // $data['checkout_time'] = $now->format('H:i:s');
+            // $data['remaining_money'] = $remaining_money;
+            // session()->put('invoice', $data);
+            // dd($data);
+            $invoice = Invoice::create([
+                'table_id' => (int)$data['table_id'],
+                'total_price' => $data['total_price'],
+                'checkin_time' => $data['checkin_time'],
+                'checkout_time' => $now->format('H:i:s'),
+                'customer_payment' => $customer_payment * 1000,
+                'remaining_money' => $remaining_money,
+                'created_at' => $data['created_at'],
+            ]);
+            $invoice_id = $invoice->id;
+            $table_name = Table::query()
+                            ->where('id', $table_id)
+                            ->value('name');
+            if($table_name != 'takeaway')
+            {
+                Table::where('id', $table_id)->update([
+                    'status' => TableStausEnum::getKey(0),
+                    'invoice_id' => $invoice_id,
+                ]);
+            }
+
+            foreach ($data['details'] as $item) {
+                InvoiceDetail::create([
+                    'invoice_id' => $invoice_id,
+                    'menu_item_id' => (int)$item['id'],
+                    'quantity' => (int)$item['quantity'],
+                ]);
+            }
+            $invoices = session()->get('invoice');
+            if(isset($invoices[$table_id]))
+            {
+                unset($invoices[$table_id]);
+                session()->put('invoice', $invoices);
+                // dd($invoices, $table_id);
+            }
+
+            // $invoices = session()->get('invoice');
+            // if (isset($invoices[$table_id])) {
+            //     $index = array_search($table_id, array_keys($invoices));
+            //     if ($index !== false) {
+            //         array_splice($invoices, $index, 1);
+            //         session()->put('invoice', $invoices);
+            //     }
+            // }
+
             // dd($data['customer_payment']);
             // dd($invoice_session);
         }
@@ -666,12 +716,29 @@ class InvoiceController extends Controller
         // $table_name = $invoice_table_name;
         // $total_price = $invoice->total_price;
         // $created_at = $invoice->created_at;
+        $data = Invoice::with(['details' => function($query) {
+                    $query->select('invoice_id', 'menu_item_id', 'quantity');
+                }, 'details.menuItems' => function($query) {
+                    $query->select('id', 'name','price');
+                }, 'tables' => function($query) {
+                    $query->select('id', 'name');
+                },
+                ])
+        ->where('id', $invoice_id)
+        ->first()
+        ->toArray();
+        ///đổi nó thành 1 mảng giống bên invoice api cho nó khoẻ nhé!!!!! 
+        ///làm ngang cỡ 12 giờ thôi, học giải tích và tt HCM
+        // dd($data);
 
         return $this->successResponse([
-            'invoice' => $invoice,
+            'invoice' => $data,
+            'is_update_invoice' => $is_update_invoice,
         ], 'Thanh cong roi nhe!!!');
     }
 
+
+    ///sửa lại định dạng datetime cho cái created_at ở hàm dưới
     public function putInvoice(Request $request)
     {
         // dd($request->all());
