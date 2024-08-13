@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Table;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InvoiceApiController extends Controller
@@ -47,6 +48,9 @@ class InvoiceApiController extends Controller
             // dd($session_invoices_reverse);
             foreach($session_invoices as $item)
             {
+                $user_name = User::query()
+                            ->where('id', $item['user_id'])
+                            ->value('name');
                 $customer_payment_check = true;
                 $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
                 $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
@@ -59,13 +63,14 @@ class InvoiceApiController extends Controller
                     $remaining_money = 'Không';
                 }
                 $merged_array[$count] = [
+                    'user_name' => $user_name,
                     'table_id' => $table_id,
                     'table_name' => $item['table_name'],
                     'total_price' => $item['total_price'],
                     // 'created_at' => $item['created_at'],
                     'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                     'checkin_time' => $item['checkin_time'],
-                    'checkout_time' => $item['checkout_time'] ? $item['checkout_time'] : null,
+                    'checkout_time' => $item['checkout_time'] ? $item['checkout_time'] : 'Chưa',
                     'is_paid' => $item['is_paid'],
                     'customer_payment' => $customer_payment,
                     'remaining_money' => $remaining_money,
@@ -100,6 +105,9 @@ class InvoiceApiController extends Controller
             $customer_payment = number_format($item['customer_payment'], 0, ',', '.');
             $remaining_money = number_format($item['remaining_money'], 0, ',', '.');
             $total_price = number_format($item['total_price'], 0, ',', '.');
+            $user_name = User::query()
+                        ->where('id', $item['user_id'])
+                        ->value('name');
             if($item['remaining_money'] < 0 || $item['customer_payment'] == null)
             {
                 $customer_payment_check = false;
@@ -107,6 +115,7 @@ class InvoiceApiController extends Controller
                 $remaining_money = 'Không';
             }
             $merged_array[$count]= [
+                'user_name' => $user_name, 
                 'table_id' => $table_id,
                 'table_name' => $item['tables']['name'],
                 'total_price' => $total_price,
