@@ -336,7 +336,7 @@
     <form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
         @csrf
         <div class="table-name form-row">
-            <input type="hidden" name="table_id" value="{{ $table_name }}">
+            <input type="hidden" name="table_id" value="{{ $table_id }}">
             <h3>Bàn số: {{ $table_name }}</h3>
         </div>
         <div class="item" id="item">
@@ -381,7 +381,7 @@
             <div class="form-group col-5" id="div-paid">
                 <select name="is_paid" id="select_paid" class="form-control">
                     <option value="0">Thanh toán sau</option>
-                    <option value="1" selected>Thanh toán luôn</option>
+                    <option value="2" selected>Thanh toán luôn</option>
                 </select>
             </div> 
             <div class="form-group col-2" style="margin-left: 15px;float: left;">
@@ -434,7 +434,14 @@
                 // window.location.replace("http://coffee_manage.test/success");
                 console.log('thanh cong roi nhe');
             },
-            error: function(response) {
+            error: function(error) {
+                // console.log(response.responseJSON.message);
+                $.toast({
+                    heading: 'Error',
+                    text: error.responseJSON.message,
+                    showHideTransition: 'slide',
+                    icon: 'error'
+                })
             }
         });
     }
@@ -503,7 +510,8 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('.remaining-money').html(response.data.toLocaleString('vi-VN'));
+                    console.log(response);
+                    $('.remaining-money').html(response.data.remaining_money.toLocaleString('vi-VN'));
                     $('.btn-submit-invoice').prop( "disabled", false);
                 },
                 error: function(error) {
