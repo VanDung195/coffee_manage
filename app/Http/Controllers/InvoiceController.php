@@ -41,6 +41,7 @@ class InvoiceController extends Controller
 
             $allData = $request->all();
             $ItemsId = $allData['id'];
+            $user_name = user()->name;
             if(in_array('0', $ItemsId))
             {
                 return $this->errorResponse('Không được để trống món!');
@@ -55,7 +56,6 @@ class InvoiceController extends Controller
                 $price = $menuItemsMap[$id]['price'];
                 $total_price += $quantity * $price;
             }
-
             $now = Carbon::now('Asia/Bangkok');
             $customer_payment = $request->customer_payment * 1000;
 
@@ -115,20 +115,26 @@ class InvoiceController extends Controller
                         'quantity' => $quantity,
                     ]);
                     $invoice_details[] = [
-                        'id' => $id,
+                        'menu_item_id' => $id,
                         'name' => $item->name,
                         'quantity' => $quantity,
-                        'price' => $price,
-                        'thanh_tien' => $thanh_tien,
+                        'price' => number_format($price, 0, ',', '.'),
+                        // 'price' => $price,
+                        // 'thanh_tien' => $thanh_tien,
+                        'thanh_tien' => number_format($thanh_tien, 0, ',', '.'),
                     ];
                 }
-
+                
                 $message = 'Tạo hoá đơn thành công!';
+                // $total_price_formatted = number_format($total_price,',','.');
+                // dd($total_price);
+                // dd(number_format($total_price, 0, ',', '.'));
                 return $this->successResponse([
                     'table_id' => $tableId,
                     'table_name' => $table_name,
+                    'user_name' => $user_name,
                     'details' => $invoice_details,
-                    'total_price' => $total_price,
+                    'total_price' => number_format($total_price, 0, ',', '.'),
                     // 'created_at' => $now->format('Y:m:d H:i:s'),
                     'created_at' => $now->format('d-m-Y'),
                     'checkin_time' => $now->format('H:i:s'),
@@ -137,6 +143,7 @@ class InvoiceController extends Controller
                     'remaining_money' => $remaining_money_response,
                     'is_paid' => (int)$request->is_paid,
                     'invoice_id' => $invoice_id,
+                    'customer_payment_check' => true,
                 ], $message);
                 // return response()->json([
                 //     'success' => true,
@@ -170,11 +177,13 @@ class InvoiceController extends Controller
                     ->where('id', $id)->first();
 
                 $invoice_details[] = [
-                    'id' => $id,
+                    'menu_item_id' => $id,
                     'name' => $item->name,
                     'quantity' => $quantity,
-                    'price' => $price,
-                    'thanh_tien' => $thanh_tien,
+                    // 'price' => $price,
+                    // 'thanh_tien' => $thanh_tien,
+                    'price' => number_format($price, 0, ',', '.'),
+                    'thanh_tien' => number_format($thanh_tien, 0, ',', '.'),
                 ];
             }
             // session()->flush();
@@ -216,6 +225,7 @@ class InvoiceController extends Controller
 
             $message = 'Thanh cong roi nhe!';
             return $this->successResponse([
+                'user_name' => $user_name,
                 'table_id' => $tableId,
                 'table_name' => $table_name,
                 'details' => $invoice_details,
@@ -230,6 +240,7 @@ class InvoiceController extends Controller
                 'is_paid' => $request->is_paid,
                 'is_qr' => 0,
                 'invoice_id' => -1,
+                'customer_payment_check' => false,
             ], $message);
         } catch (\Throwable $th) {
             dd($th);
@@ -241,6 +252,14 @@ class InvoiceController extends Controller
     public function store_qr(StoreRequest $request)
     {
         // dd($request->all());
+        if((int)$request->is_paid === 2 && $request->customer_payment == null)
+        {
+            return $this->errorResponse('Vui long nhap so tien ma ban phai tra');
+        }
+        if((int)$request->is_paid === 0 && $request->customer_payment != null)
+        {
+            return $this->errorResponse('Vui long chuyen doi trang thai thanh toan sang thanh toan truoc! Cam on quy khach.');
+        }
         try {
             $selected_available = [0, 2];
             if(!in_array($request->is_paid, $selected_available))
@@ -279,7 +298,7 @@ class InvoiceController extends Controller
             $customer_payment_response = number_format($customer_payment, 0, ',', '.');
             $remaining_money_response = number_format($remaining_money, 0, ',', '.');
             // dd($customer_payment_response, $remaining_money_response);
-            if($customer_payment == null)
+            if($request->customer_payment == null)
             {
                 $customer_payment = null;
                 $remaining_money = null;
@@ -295,13 +314,14 @@ class InvoiceController extends Controller
                 $item = MenuItem::query()
                     ->where('id', $id)->first();
                 $invoice_details[] = [
-                    'id' => $id,
+                    'menu_item_id' => $id,
                     'name' => $item->name,
                     'quantity' => $quantity,
                     'price' => $price,
                     'thanh_tien' => $thanh_tien,
                 ];
             }
+            // dd($customer_payment_response);
             // if (!session()->has('invoice')) {
             //     session()->put('invoice', []);
             // }
@@ -322,20 +342,24 @@ class InvoiceController extends Controller
             // ];
             // session()->put('invoice', $invoice);
             // dd($customer_payment_response, $remaining_money_response);
+            $now = Carbon::now('Asia/Bangkok');
             event(new InvoicePlaced(
                 $tableId,
                 $table_name,
                 $invoice_details,
                 (float)$total_price,
-                $now->format('d-m-Y'),
+                $now->format('Y:m:d H:i:s'),
                 $now->format('H:i:s'),
-                $now->format('H:i:s'),
+                // $now->format('H:i:s'),
+                null,
                 $customer_payment_response,
                 $remaining_money_response,
                 $customer_payment,
                 $remaining_money,
                 $request->is_paid,
                 1,
+                // 999,
+                -1,
             ));
             // return redirect()->to('http://coffee_manage.test/success');
             // return redirect()->action([TestController::class, 'success']);
@@ -625,6 +649,7 @@ class InvoiceController extends Controller
     //     // ]);
     // }
 
+    //update ban de khi reload trang no khong nhan o api
     public function generateInvoice(Request $request)
     {
         //session thi invoice_id = -1 va chi co table_id
@@ -674,12 +699,21 @@ class InvoiceController extends Controller
         {
             $is_update_invoice = true;
             // dd($request->all());
-            $customer_payment = $request->customer_payment;
+            $customer_payment = $request->customer_payment * 1000;
+            
+            $data = session('invoice')[$table_id];
+            //cái này là khách hàng đặt món thông qua qr với trạng thái là thanh toán trước (tức là nhập trước số tiền khách trả)
+            
             if(is_null($customer_payment)){
                 return $this->errorResponse('Vui lòng nhập số tiền khách trả!!!');
             }
-            $data = session('invoice')[$table_id];
-            $remaining_money = ($customer_payment * 1000) - $data['total_price'];
+            $remaining_money = $customer_payment - $data['total_price'];
+            // dd($remaining_money);
+            if(!is_null($data['customer_payment']) && $data['is_qr'] === 1)
+            {
+                $customer_payment = $data['customer_payment'];
+                $remaining_money = $data['remaining_money'];
+            }
             if($remaining_money < 0 || is_null($customer_payment))
             {
                 return $this->errorResponse('Error!!!');
@@ -695,7 +729,7 @@ class InvoiceController extends Controller
                 'total_price' => $data['total_price'],
                 'checkin_time' => $data['checkin_time'],
                 'checkout_time' => $now->format('H:i:s'),
-                'customer_payment' => $customer_payment * 1000,
+                'customer_payment' => $customer_payment,
                 'remaining_money' => $remaining_money,
                 'created_at' => $data['created_at'],
             ]);
@@ -714,7 +748,7 @@ class InvoiceController extends Controller
             foreach ($data['details'] as $item) {
                 InvoiceDetail::create([
                     'invoice_id' => $invoice_id,
-                    'menu_item_id' => (int)$item['id'],
+                    'menu_item_id' => (int)$item['menu_item_id'],
                     'quantity' => (int)$item['quantity'],
                 ]);
             }
@@ -785,15 +819,20 @@ class InvoiceController extends Controller
         //làm cái này để format cái price thành vnđ
         foreach ($data['details'] as $item) {
             $invoice_formatted['details'][] = [
+                // 'menu_item_id' => $item['menu_item_id'],
+                // 'quantity' => $item['quantity'],
+                // 'thanh_tien' => number_format($item['menu_items']['price'] * $item['quantity'], 0, ',', '.'),
+                // 'menu_items' => [
+                //     'id' => $item['menu_items']['id'],
+                //     'name' => $item['menu_items']['name'],
+                //     // 'price' => $item['menu_items']['price'],
+                //     'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
+                // ],
                 'menu_item_id' => $item['menu_item_id'],
+                'name' => $item['menu_items']['name'],
+                'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
                 'quantity' => $item['quantity'],
                 'thanh_tien' => number_format($item['menu_items']['price'] * $item['quantity'], 0, ',', '.'),
-                'menu_items' => [
-                    'id' => $item['menu_items']['id'],
-                    'name' => $item['menu_items']['name'],
-                    // 'price' => $item['menu_items']['price'],
-                    'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
-                ],
             ];
         }
         // dd($invoice_formatted);
@@ -810,7 +849,13 @@ class InvoiceController extends Controller
     {
         // dd($request->all());
         $data = $request->all()['invoice'];
-
+        // dd($data);
+        $user_id = $data['user_id'];
+        // dd($user_id);
+        if($user_id === null)
+        {
+            $user_id = user()->id;
+        }
         if (!session()->has('invoice')) {
             session()->put('invoice', []);
         }
@@ -819,6 +864,20 @@ class InvoiceController extends Controller
         // $customer_payment = $request->customer_payment * 1000;
         // $remaining_money = $customer_payment - $total_price;
         // dd($data);
+        $customer_payment = $data['customer_payment'];
+        $remaining_money = $data['remaining_money'];
+        $customer_payment_response = number_format($customer_payment, 0, ',', '.');
+        $remaining_money_response = number_format($remaining_money, 0, ',', '.');
+        // dd($customer_payment_response);
+        if($customer_payment == null)
+        {
+            $customer_payment = null;
+            $remaining_money = null;
+            $customer_payment_response = 'Không';
+            $remaining_money_response = 'Không';
+        }
+        // dd($customer_payment_response, $remaining_money_response);
+        $customer_payment_check = false;
         $invoice[(int)$data['table_id']] = [
             'table_id' => (int)$data['table_id'],
             'table_name' => $data['table_name'],
@@ -827,14 +886,46 @@ class InvoiceController extends Controller
             'created_at' => $data['created_at'],
             'checkin_time' => $data['checkin_time'],
             'checkout_time' => $data['checkout_time'],
-            'customer_payment' => (float)$data['customer_payment'],
-            'remaining_money' => (float)$data['remaining_money'],
+            'customer_payment' => $data['customer_payment'],
+            'remaining_money' => $data['remaining_money'],
             'is_paid' => $data['is_paid'],
             'is_qr' => 1,
             'invoice_id' => -1,
+            'user_id' => (int)$user_id,
         ];
-        
+        // dd($invoice);
+        $user_name = User::query()
+                    ->where('id', (int)$user_id)
+                    ->value('name');
+        if(!is_null($data['customer_payment']))
+        {
+            //true là khách hàng có nhập số tiền phải trả (trả trước) false thì ngược lại
+            $customer_payment_check = true;
+        }
+        if(is_null($data['customer_payment']))
+        {
+            $customer_payment_response = 'Chưa';
+            $remaining_money_response = 'Chưa';
+        }
         session()->put('invoice', $invoice);
-        return 1;
+        //giống bên này <-------------------------------------------------
+        ////làm cái phần số tiền khách trả cho giống với hàm store của .....
+        return $this->successResponse([
+            'user_name' => $user_name,
+            'table_id' => $data['table_id'],
+            'table_name' => $data['table_name'],
+            'details' => $data['details'],
+            'total_price' => number_format($data['total_price'], 0, ',', '.'),
+            'created_at' => $data['created_at'],
+            'checkin_time' => $data['checkin_time'],
+            'checkout_time' => 'Chưa',
+            'customer_payment' => $customer_payment_response,
+            'remaining_money' => $remaining_money_response,
+            'is_paid' => $data['is_paid'],
+            'is_qr' => 1,
+            'invoice_id' => -1,
+            'user_id' => (int)$user_id,
+            'customer_payment_check' => $customer_payment_check,
+        ],'Co don hang moi!!!');
     }
 }
