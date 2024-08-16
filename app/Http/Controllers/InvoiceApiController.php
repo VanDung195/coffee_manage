@@ -82,15 +82,20 @@ class InvoiceApiController extends Controller
                 foreach($item['details'] as $each)
                 {
                     $merged_array[$count]['details'][] = [
-                        'menu_item_id' => (int)$each['id'],
+                        // 'menu_item_id' => (int)$each['id'],
+                        // 'quantity' => (int)$each['quantity'],
+                        // 'thanh_tien' => number_format((float)$each['price'] * (int)$each['quantity'], 0, ',', '.'),
+                        // 'menu_items' => [
+                        //     'id' => (int)$each['id'],
+                        //     'name' => $each['name'],
+                        //     // 'price' => (float)$each['price'],
+                        //     'price' => number_format((float)$each['price'], 0, ',', '.'),
+                        // ],
+                        'menu_item_id' => (int)$each['menu_item_id'],
+                        'name' => $each['name'],
+                        'price' => number_format((float)$each['price'], 0, ',', '.'),
                         'quantity' => (int)$each['quantity'],
                         'thanh_tien' => number_format((float)$each['price'] * (int)$each['quantity'], 0, ',', '.'),
-                        'menu_items' => [
-                            'id' => (int)$each['id'],
-                            'name' => $each['name'],
-                            // 'price' => (float)$each['price'],
-                            'price' => number_format((float)$each['price'], 0, ',', '.'),
-                        ],
                     ];
                 }
                 $count++;
@@ -139,15 +144,21 @@ class InvoiceApiController extends Controller
             //để format cái tiền
             foreach ($item['details'] as $item) {
                 $merged_array[$count]['details'][] = [
+                    // 'menu_item_id' => $item['menu_item_id'],
+                    // 'quantity' => $item['quantity'],
+                    // 'thanh_tien' => number_format($item['menu_items']['price'] * $item['quantity'], 0, ',', '.'),
+                    // 'menu_items' => [
+                    //     'id' => $item['menu_items']['id'],
+                    //     'name' => $item['menu_items']['name'],
+                    //     // 'price' => $item['menu_items']['price'],
+                    //     'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
+                    // ],
+
                     'menu_item_id' => $item['menu_item_id'],
+                    'name' => $item['menu_items']['name'],
+                    'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
                     'quantity' => $item['quantity'],
                     'thanh_tien' => number_format($item['menu_items']['price'] * $item['quantity'], 0, ',', '.'),
-                    'menu_items' => [
-                        'id' => $item['menu_items']['id'],
-                        'name' => $item['menu_items']['name'],
-                        // 'price' => $item['menu_items']['price'],
-                        'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
-                    ],
                 ];
             }
             $count++;
