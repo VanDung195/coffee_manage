@@ -317,8 +317,10 @@ class InvoiceController extends Controller
                     'menu_item_id' => $id,
                     'name' => $item->name,
                     'quantity' => $quantity,
-                    'price' => $price,
-                    'thanh_tien' => $thanh_tien,
+                    // 'price' => $price,  number_format($thanh_tien, 0, ',', '.'),
+                    'price' => number_format($price, 0, ',', '.'),
+                    // 'thanh_tien' => $thanh_tien,
+                    'thanh_tien' => number_format($thanh_tien, 0, ',', '.'),
                 ];
             }
             // dd($customer_payment_response);
@@ -419,7 +421,10 @@ class InvoiceController extends Controller
         }
         if($customer_payment == null)
         {
-            return $this->successResponse(0);
+            return $this->successResponse([
+                'remaining_money' => 'NULL',
+                'is_create' => $is_create,
+            ]);
         }
         return $this->successResponse([
             'remaining_money' => $remaining_money,
