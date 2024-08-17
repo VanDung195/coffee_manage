@@ -726,8 +726,8 @@
                 <div class="modal-footer">
                     <button type="button" onclick="deleteInvoice('${table_id}', 'modal_invoice')" class="btn btn-delete-invoice btn-danger">Xoá hoá đơn</button>
                     <button data-invoice-id="${invoice_id}"
-                        data-table-id="${table_id}" 
-                        class="btn btn-generate-invoice-${table_id} btn-generate-invoice btn-success">
+                        id="btn-generate-invoice-modal-${table_id}"
+                        class="btn btn-generate-invoice btn-success">
                         Xuất hoá đơn
                     </button>
                 </div>
@@ -826,9 +826,9 @@
                     order_table += `
                         <td class="set-row" rowspan="${rowspanCount}">${total_price.toLocaleString('vi-VN')}</td>
                         <td rowspan="${rowspanCount}"> 
-                            <button data-invoice-id="${invoice_id}"
-                                    data-table-id="${table_id}" 
-                                    class="btn btn-generate-invoice-${table_id} btn-generate-invoice btn-success btn-sm">
+                            <button data-table-id="${table_id}" 
+                                    id="btn-generate-invoice-${table_id}"
+                                    class="btn btn-generate-invoice btn-success btn-sm">
                                 Xuất
                             </button>
                         </td>
@@ -955,7 +955,7 @@
         function generateInvoice2(table_name,user_name,checkin_time,checkout_time,details,is_qr,is_paid,total_price,customer_payment,remaining_money,invoice_id,created_at) 
         {
             let invoiceHtml = `
-                <div class="receipt" id="invoice-print" style="background-color: white !important;color:black;">
+                <div class="receipt" id="invoice-print" style="background-color: white !important;color:black;border:none !important;">
                     <h1>PROJECT 01</h1>
                     <div class="center">
                         <p class="center">123ABC, Thành phố Huế, Tỉnh TT Huế</p>
@@ -972,9 +972,9 @@
                     <p>Thu ngân: ${user_name}</p>
                     <p class="bold">Số Bill: <span class="bill-number">${invoice_id}</span></p>
 
-                    <table class="custom-table" style="color:black;border-collapse: collapse;width: 100%;border-top: 2px solid black;border-bottom: 2px solid black;margin: 10px 0;">
+                    <table class="custom-table" style="color:black;border-collapse: collapse;width: 100%;border-top: 2px solid black;border-bottom: 2px solid black;">
                         <thead>
-                            <tr style="border-bottom: 1px solid black !important">
+                            <tr style="border-bottom: 1px solid black !important;margin:0px;border-top: 1px solid black !important;">
                                 <th style="border: none;padding: 6px;text-align: left;">TT</th>
                                 <th style="border: none;padding: 6px;text-align: left;">Tên món</th>
                                 <th style="border: none;padding: 6px;text-align: left;">SL</th>
@@ -987,7 +987,7 @@
             let count = 1;
             details.forEach(function(item) {
                 invoiceHtml += `
-                    <tr style="border-bottom: 1px solid black !important">
+                    <tr style="border-bottom: 1px solid black !important;">
                         <td style="border: none;padding: 6px;text-align: left;">${count}</td>
                         <td style="border: none;padding: 6px;text-align: left;">${item.name}</td>
                         <td style="border: none;padding: 6px;text-align: left;">${item.quantity}</td>
@@ -1068,6 +1068,28 @@
         // customer_payment.addEventListener('keyup', function(){
 
         // });
+
+        //debounce example
+        /* 
+        function debounce(fn, ms) {
+            let timer;
+            
+            return function() {
+                const args = arguments;
+                const context = this;
+                
+                if(timer) clearTimeout(timer);
+                
+                timer = setTimeout(() => {
+                    fn.apply(context, args);
+                }, ms)
+            }
+        }
+
+        document.querySelector('.button').addEventListener("click", debounce((event) => {
+            console.log(event.target)
+        }, 1000));*/
+
         let total_price_global = 0;
         // $(".customer-payment").on('keyup', function() {
         $(document).on('keyup', '.customer-payment',function() {
@@ -1093,14 +1115,19 @@
                 success: function(response) {
                     console.log(response);
                     let remaining_money = response.data.remaining_money;
+                    let remaining_money2 = remaining_money != 'NULL' ? remaining_money.toLocaleString('vi-VN') : 'NULL';
                     let is_create = response.data.is_create;
                     if(is_create == 'true')
                     {
-                        modal_body.find('.remaining-money').html(remaining_money.toLocaleString('vi-VN'));
+                        console.log('true1');
+                        modal_body.find('.remaining-money').html(remaining_money2);
                         modal_body.closest('.modal-container').find('.btn-submit-invoice').prop( "disabled", false);
                     } else {
-                        modal_body.find('.remaining-money').html(remaining_money.toLocaleString('vi-VN'));
+                        console.log('true2');
+                        // let remaining_money2 = remaining_money != 'NULL' ? remaining_money.toLocaleString('vi-VN') : 'NULL';
+                        modal_body.find('.remaining-money').html(remaining_money2);
                         modal_body.closest('.modal-content').find('.btn-generate-invoice').prop( "disabled", false);
+                        // modal_body.closest('.modal-content').find('.btn-generate-invoice').prop( "disabled", false);
                     }
                     // document.getElementById('remaining-money').innerHTML = response.data.toLocaleString(
                     //     'vi-VN');
@@ -1589,66 +1616,123 @@
                     let order_table =  invoice_table_and_modal_change_invoice(table_id,table_name,is_paid,details,is_qr,checkin_time,created_at,
                                                             customer_payment,remaining_money,total_price,invoice_id,true);
 
-                    const invalid_table_id = new Set([5]);
+                    const invalid_table_id = new Set(['999']);
                     if(!invalid_table_id.has(table_id))
                     {
                         document.getElementById(show_table).style.display = 'none';
                         document.getElementById(show_detail).style.display = 'block';
-                    }
 
-                    let table = document.getElementById('order-table-id');
-                    let rows = table.getElementsByTagName('tr');
-                    if(response.data.is_paid == 1 && rows.length > 1)
-                    {
-                        for(let i = 0; i < rows.length; i++)
+                        let table = document.getElementById('order-table-id');
+                        let rows = table.getElementsByTagName('tr');
+                        if(response.data.is_paid == 1 && rows.length > 1)
                         {
-                            //trường hợp khi dữ liệu trong bảng toàn 'Chưa thanh toán'
-                            if(rows[i+1] == undefined)
+                            for(let i = 0; i < rows.length; i++)
                             {
-                                rows[i].insertAdjacentHTML('afterend', order_table);
-                                break;
-                            }
-                            if(rows[i+1].getAttribute('data-status') == '1')
-                            {
-                                rows[i].insertAdjacentHTML('afterend', order_table);
-                                break;
+                                //trường hợp khi dữ liệu trong bảng toàn 'Chưa thanh toán'
+                                if(rows[i+1] == undefined)
+                                {
+                                    rows[i].insertAdjacentHTML('afterend', order_table);
+                                    break;
+                                }
+                                if(rows[i+1].getAttribute('data-status') == '1')
+                                {
+                                    rows[i].insertAdjacentHTML('afterend', order_table);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if(response.data.is_paid == 1 && rows.length == 1 || response.data.is_paid == 0 && rows.length == 1)
-                    {
-                        let targetRow = document.querySelector('.order-table tr:first-child');
-                        targetRow.insertAdjacentHTML('afterend', order_table);
-                    }
-                    if(response.data.is_paid == 0 && rows.length > 1) {
-                        Array.from(rows).some((row, index) => {
-                            if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
-                                row.insertAdjacentHTML('afterend', order_table);
-                                return true; 
-                            }
-                            return false;
+                        if(response.data.is_paid == 1 && rows.length == 1 || response.data.is_paid == 0 && rows.length == 1)
+                        {
+                            let targetRow = document.querySelector('.order-table tr:first-child');
+                            targetRow.insertAdjacentHTML('afterend', order_table);
+                        }
+                        if(response.data.is_paid == 0 && rows.length > 1) {
+                            Array.from(rows).some((row, index) => {
+                                if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
+                                    row.insertAdjacentHTML('afterend', order_table);
+                                    return true; 
+                                }
+                                return false;
+                            });
+                        }
+                        
+
+                        //reset modal sau khi tao hoa don
+                        modal_invoice_close.find('form').trigger('reset');
+                        let parent_div = modal_invoice_close.find('.append-item');
+                        let child_div = parent_div.find('.form-row');
+                        let select_item = modal_invoice_close.find('.select-item');
+                        select_item.select2({
+                            tag: true
                         });
+                        $('.form-row .select-to-table').select2({
+                            tag: true
+                        });
+                        //2 cách để xoá
+                        for (let index = 0; index < child_div.length; index++) {
+                            child_div.get(index).remove();
+                        }
+                        setTimeout(()=> {
+                            $(`#new-row-${table_id} .new-invoice-check`).remove();
+                        }, 10000);
                     }
                     modal_invoice_close.modal('toggle');
+                    
+                    // let table = document.getElementById('order-table-id');
+                    // let rows = table.getElementsByTagName('tr');
+                    // if(response.data.is_paid == 1 && rows.length > 1)
+                    // {
+                    //     for(let i = 0; i < rows.length; i++)
+                    //     {
+                    //         //trường hợp khi dữ liệu trong bảng toàn 'Chưa thanh toán'
+                    //         if(rows[i+1] == undefined)
+                    //         {
+                    //             rows[i].insertAdjacentHTML('afterend', order_table);
+                    //             break;
+                    //         }
+                    //         if(rows[i+1].getAttribute('data-status') == '1')
+                    //         {
+                    //             rows[i].insertAdjacentHTML('afterend', order_table);
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    // if(response.data.is_paid == 1 && rows.length == 1 || response.data.is_paid == 0 && rows.length == 1)
+                    // {
+                    //     let targetRow = document.querySelector('.order-table tr:first-child');
+                    //     targetRow.insertAdjacentHTML('afterend', order_table);
+                    // }
+                    // if(response.data.is_paid == 0 && rows.length > 1) {
+                    //     Array.from(rows).some((row, index) => {
+                    //         if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
+                    //             row.insertAdjacentHTML('afterend', order_table);
+                    //             return true; 
+                    //         }
+                    //         return false;
+                    //     });
+                    // }
+                    // modal_invoice_close.modal('toggle');
 
-                    //reset modal sau khi tao hoa don
-                    modal_invoice_close.find('form').trigger('reset');
-                    let parent_div = modal_invoice_close.find('.append-item');
-                    let child_div = parent_div.find('.form-row');
-                    let select_item = modal_invoice_close.find('.select-item');
-                    select_item.select2({
-                        tag: true
-                    });
-                    $('.form-row .select-to-table').select2({
-                        tag: true
-                    });
-                    //2 cách để xoá
-                    for (let index = 0; index < child_div.length; index++) {
-                        child_div.get(index).remove();
-                    }
-                    setTimeout(()=> {
-                        $(`#new-row-${table_id} .new-invoice-check`).remove();
-                    }, 10000);
+                    // //reset modal sau khi tao hoa don
+                    // modal_invoice_close.find('form').trigger('reset');
+                    // let parent_div = modal_invoice_close.find('.append-item');
+                    // let child_div = parent_div.find('.form-row');
+                    // let select_item = modal_invoice_close.find('.select-item');
+                    // select_item.select2({
+                    //     tag: true
+                    // });
+                    // $('.form-row .select-to-table').select2({
+                    //     tag: true
+                    // });
+                    // //2 cách để xoá
+                    // for (let index = 0; index < child_div.length; index++) {
+                    //     child_div.get(index).remove();
+                    // }
+                    // setTimeout(()=> {
+                    //     $(`#new-row-${table_id} .new-invoice-check`).remove();
+                    // }, 10000);
+
+                    //====================================
                     /*
                     let table_id = response.data.table_id;
                     let invoice_id = response.data.invoice_id;
@@ -2015,8 +2099,8 @@
             $(invoice_detail).modal('show');
 
             let btn_generate_invoice = $(invoice_detail).find('.btn-generate-invoice');
-            let invoice_id = $(btn_generate_invoice).data('invoice-id');
-            console.log(invoice_id);
+            // let invoice_id = $(btn_generate_invoice).data('invoice-id');
+            // console.log(invoice_id);
             
             // if (invoice_id < 0) {
             //     let invoice_detail = '#invoice_detail_' + table_id;
@@ -2056,7 +2140,6 @@
                     let modal_content = $(this).closest('.modal-content');
                     let modal_body = modal_content.find('.modal-body');
                     let customer_payment = modal_body.find('.customer-payment').val();
-
                     console.log('Clicked button inside modal with nested_invoice_id:', nested_invoice_id);
 
                     $.ajax({
@@ -2462,9 +2545,34 @@
                     let btn_change_invoice_id_new = 'btn-change-invoice-'+new_key;
                     let btn_change_invoice_old = $('#'+btn_change_invoice_id_old);
                     let btn_change_invoice_new = $('#'+btn_change_invoice_id_new);
+
+                    //cái id btn-generate-invoice là của ngoài table (nút xuất và chỉ có table id)
+                    //còn id btn-generate-invoice là của bên trong modal (nút xuất trong modal có đầy đủ thông tin từ invoice id và table-id) 
+                    let btn_generate_invoice_old = $('#btn-generate-invoice-'+old_key);
+                    let btn_generate_invoice_new = $('#btn-generate-invoice-'+new_key);
+
+                    let btn_generate_invoice_modal_old = $('#btn-generate-invoice-modal-'+old_key);
+                    let data_invoice_id_old = $(btn_generate_invoice_modal_old).data('invoice-id');
+                    
+                    let btn_generate_invoice_modal_new = $('#btn-generate-invoice-modal-'+new_key);
+                    let data_invoice_id_new = $(btn_delete_modal_new).data('invoice-id');
                     //nếu là trường hợp này thì sẽ đổi tên class của 2 modal với nhau còn else thì chỉ đổi tên class 1 modal thôi
                     if(modal_invoice_new != null)  //done
                     {
+                        btn_generate_invoice_old.data('table-id', new_key).attr('data-table-id', new_key);
+                        btn_generate_invoice_new.data('table-id', old_key).attr('data-table-id', old_key);
+                        //cái này là đổi giá trị trong jquery cache mà không đổi trên DOM (đoạn html)
+                        btn_generate_invoice_old.attr('id', 'btn-generate-invoice-'+new_key);
+                        btn_generate_invoice_new.attr('id', 'btn-generate-invoice-'+old_key);
+                        // btn_generate_invoice_modal_old.data('invoice-id', data_invoice_id_new).attr('data-invoice-id',data_invoice_id_new);
+                        // btn_generate_invoice_modal_new.data('invoice-id', data_invoice_id_old).attr('data-invoice-id',data_invoice_id_old);
+                        btn_generate_invoice_modal_old.attr('id', 'btn-generate-invoice-modal-'+new_key);
+                        btn_generate_invoice_modal_new.attr('id', 'btn-generate-invoice-modal-'+old_key);
+
+                        // console.log(btn_generate_invoice_new);
+                        // console.log(btn_generate_invoice_old);
+                        
+
                         console.log(span_id_table_new);
                         console.log(span_id_table_old);
                         // console.log(response);
@@ -2542,6 +2650,10 @@
                     }
                     else
                     {
+                        btn_generate_invoice_old.data('table-id', new_key).attr('data-table-id', new_key);
+                        btn_generate_invoice_old.attr('id', 'btn-generate-invoice-'+new_key);
+                        btn_generate_invoice_modal_old.attr('id', 'btn-generate-invoice-modal-'+new_key);
+
                         console.log(123);
                         modal_content.find('.from-table-name').html(new_key_name);
                         modal_content.find('.from-table-id').val(new_key); 
