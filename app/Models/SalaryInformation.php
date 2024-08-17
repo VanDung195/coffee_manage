@@ -27,11 +27,7 @@ class SalaryInformation extends Model
 
     public function getPayrollDateFormattedAttribute()
     {
-        if($this->payrolll_date)
-        {
-            return $this->payroll_date;
-        }
-        return 'Chưa';
+        return $this->payroll_date ? date('d-m-Y', strtotime($this->payroll_date)) : 'Chưa';
     }
 
     public function getWorkingNumberAttribute()
