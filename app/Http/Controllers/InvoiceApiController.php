@@ -81,6 +81,7 @@ class InvoiceApiController extends Controller
                 ];
                 foreach($item['details'] as $each)
                 {
+                    // dd($each['thanh_tien']);
                     $merged_array[$count]['details'][] = [
                         // 'menu_item_id' => (int)$each['id'],
                         // 'quantity' => (int)$each['quantity'],
@@ -93,9 +94,11 @@ class InvoiceApiController extends Controller
                         // ],
                         'menu_item_id' => (int)$each['menu_item_id'],
                         'name' => $each['name'],
-                        'price' => number_format((float)$each['price'], 0, ',', '.'),
+                        // 'price' => number_format((float)$each['price'], 0, ',', '.'),
+                        'price' => $each['price'],
                         'quantity' => (int)$each['quantity'],
-                        'thanh_tien' => number_format((float)$each['price'] * (int)$each['quantity'], 0, ',', '.'),
+                        // 'thanh_tien' => number_format((float)$each['price'] * (int)$each['quantity'], 0, ',', '.'),
+                        'thanh_tien' => $each['thanh_tien'],
                     ];
                 }
                 $count++;
