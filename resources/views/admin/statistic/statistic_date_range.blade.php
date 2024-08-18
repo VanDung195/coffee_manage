@@ -1,8 +1,73 @@
 @extends('layout.master')
 @push('css')
     <link rel="stylesheet" href="{{ asset('css/hightcharts.css') }}">
+    <style>
+        
+        #left{
+            width: 38%;
+            float: left;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #37404a;
+            background-clip: border-box;
+            border: 1px solid #4d5764;
+            border-radius: .25rem;
+        }
+        #right{
+            background-color: #37404a;
+            background-clip: border-box;
+            border: 1px solid #4d5764;
+            border-radius: .25rem;
+            height: 100%;
+            width: 60%;
+            float: right;
+            box-sizing: border-box;
+        }
+        .main{
+            margin-top: 30px;
+            height: 900px;
+        }
+        .btn-submit-form{
+            height: 37.39px;
+            margin-top: 29.2px;
+        }
+    </style>
 @endpush
 @section('content')
+
+<div class="main">
+    <div id="left">
+        <div class="form-group col-6">
+            <label for="">Từ ngày</label>
+            <input type="date" id="from" class="form-control" value="2024-03-15">
+        </div>
+        <div class="form-group col-6">
+            <label>Đến ngày</label>
+            <input type="date" id="to" class="form-control" value="{{ date('Y-m-d') }}">
+        </div>
+        <button style="margin-left:13px;" class="btn btn-primary" onclick="ev()">Choose</button>
+        <div class="form-group" style="margin-top:20px;">
+            <label>Tổng doanh thu của tháng: </label>
+            <p class="form-control col-4" id="total-price"></p>
+        </div>
+    </div>
+    <div id="right">
+        <figure class="highcharts-figure">
+            <div id="container1"></div>
+            <p class="highcharts-description">
+                Biểu đồ thống kê số lượng sản phẩm đã bán trong 1 khoảng thời gian
+            </p>
+            <div id="container2"></div>
+            <p class="highcharts-description">
+                Biểu đồ thống kê số lượng sản phẩm đã bán trong 1 khoảng thời gian
+            </p>
+        </figure>
+    </div>
+</div>
+
+
+    {{-- 
     <div class="form-row">
         <div class="form-group col-2">
             <label for="">Từ</label>
@@ -19,14 +84,6 @@
         <p class="form-control col-2" id="total-price"></p>
     </div>
     <figure class="highcharts-figure">
-        {{-- <div id="container"></div>
-        <p class="highcharts-description">
-            A basic column chart comparing estimated corn and wheat production
-            in some countries.
-    
-            The chart is making use of the axis crosshair feature, to highlight
-            the hovered country.
-        </p> --}}
         <div id="container1"></div>
         <p class="highcharts-description">
             Biểu đồ thống kê số lượng sản phẩm đã bán trong 1 khoảng thời gian
@@ -36,7 +93,7 @@
             Biểu đồ thống kê số lượng sản phẩm đã bán trong 1 khoảng thời gian
         </p>
     </figure>
-    <p id="nowarp" style="display: none;">asdsd</p>
+    <p id="nowarp" style="display: none;">asdsd</p> --}}
     
 @endsection
 @push('js')
