@@ -6,9 +6,61 @@
             height: 37.39px;
             margin-top: 29.2px;
         }
+        #left{
+            width: 38%;
+            float: left;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #37404a;
+            background-clip: border-box;
+            border: 1px solid #4d5764;
+            border-radius: .25rem;
+        }
+        #right{
+            background-color: #37404a;
+            background-clip: border-box;
+            border: 1px solid #4d5764;
+            border-radius: .25rem;
+            height: 100%;
+            width: 60%;
+            float: right;
+            box-sizing: border-box;
+        }
+        .main{
+            margin-top: 30px;
+            height: 900px;
+        }
     </style>
 @endpush
 @section('content')
+<div class="main">
+    <div id="left">
+        <p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
+            <div class="form-row">
+                <div class="form-group col-5">
+                    <label for="example-date">Date</label>
+                    <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}" maxlength="10">
+                </div>
+                <div class="form-row col-3">
+                    <button class="btn btn-submit-form btn-primary" onclick="submitForm(event)">Choose</button>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:20px;">
+                <label>Tổng doanh thu của tháng: </label>
+                <p class="form-control col-4" id="total-price"></p>
+            </div>
+        </div>
+        <div id="right">
+            <figure class="highcharts-figure">
+                <div id="container1"></div>
+                <h1>Thống kê thứ 2</h1>
+                <div id="container2"></div>
+            </figure>
+        </div>
+</div>
+
+{{-- 
 <h1>Thống kê ngày hôm nay hoặc chọn ngày cụ thể để thống kê</h1>
 <p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
     <div class="form-row">
@@ -29,6 +81,7 @@
         <h1>Thống kê thứ 2</h1>
         <div id="container2"></div>
     </figure>
+ --}}
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
