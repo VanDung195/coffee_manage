@@ -48,6 +48,7 @@ class MenuItemController extends Controller
         $data = $query->paginate(15)->appends($request->all());
         
         $menu_categories = MenuCategory::query()
+                    ->where('is_hidden', false)
                     ->get();
         return view('admin.menu_item.index', [
             'data' => $data,
