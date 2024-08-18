@@ -35,7 +35,7 @@ return [
     'lifetime' => env('SESSION_LIFETIME', 960),
     
     //true thi session khong bi mat khi dong trinh duyet
-    'expire_on_close' => true,
+    'expire_on_close' => false,
 
     /*
     |--------------------------------------------------------------------------
