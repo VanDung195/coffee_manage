@@ -1,16 +1,81 @@
 @extends('layout.master')
 @push('css')
     <link rel="stylesheet" href="{{ asset('css/hightcharts.css') }}">
+    <style>
+        .btn-submit-form{
+            height: 37.39px;
+            margin-top: 29.2px;
+        }
+        #left{
+            width: 38%;
+            float: left;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #37404a;
+            background-clip: border-box;
+            border: 1px solid #4d5764;
+            border-radius: .25rem;
+        }
+        #right{
+            background-color: #37404a;
+            background-clip: border-box;
+            border: 1px solid #4d5764;
+            border-radius: .25rem;
+            height: 100%;
+            width: 60%;
+            float: right;
+            box-sizing: border-box;
+        }
+        .main{
+            margin-top: 30px;
+            height: 900px;
+        }
+    </style>
 @endpush
 @section('content')
+
+<div class="main">
+    <div id="left">
+        <h2>Thống kê theo năm</h2>
+        <p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="example-number">Năm</label>
+                <select name="" id="year" class="form-control">
+                    @for ($i = date('Y'); $i >= 2022; $i--)
+                        <option value="{{ $i }}">{{ $i }}</option>         
+                    @endfor
+                </select>
+            </div>
+            <div class="form-group col-4">
+                <button class="btn btn-submit-form btn-primary" onclick="ev()">Choose</button>
+            </div>
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+            <label>Tổng doanh thu của tháng: </label>
+            <p class="form-control col-4" id="total-price"></p>
+        </div>
+    </div>
+    <div id="right">
+        <figure class="highcharts-figure">
+            <div id="container"></div>
+        </figure>
+        <figure class="highcharts-figure">
+            <div id="container2"></div>
+        </figure> 
+    </div>
+</div>
+
+{{-- 
 <h2>Thống kê theo năm</h2>
 <p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
 <div class="form-group">
-    {{-- <input class="form-control col-2" type="number" min="1900" max="2099" step="1" value="{{ date('Y') }}" /> --}}
-    {{-- <input class="form-control col-2" id="year" type="year" name="year" value="{{ date('Y') }}"> --}}
+    <input class="form-control col-2" type="number" min="1900" max="2099" step="1" value="{{ date('Y') }}" />
+    <input class="form-control col-2" id="year" type="year" name="year" value="{{ date('Y') }}">
     <div class="form-group">
         <label for="example-number">Năm</label>
-        {{-- <input class="form-control col-1" id="year" type="number" placeholder="YYYY" min="2023" max="{{ date('Y') }}" value="{{ date('Y') }}">  --}}
+        <input class="form-control col-1" id="year" type="number" placeholder="YYYY" min="2023" max="{{ date('Y') }}" value="{{ date('Y') }}"> 
         <select name="" id="year" class="form-control col-1">
             @for ($i = date('Y'); $i >= 2022; $i--)
                 <option value="{{ $i }}">{{ $i }}</option>         
@@ -26,7 +91,8 @@
 <figure class="highcharts-figure">
     <div id="container"></div>
     <div id="container2"></div>
-</figure>
+</figure> 
+--}}
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -38,8 +104,6 @@
 <script>
     // document.querySelector("input[type=number]")
     // .oninput = e => console.log(new Date(e.target.valueAsNumber, 0, 1))
-
-    
 </script>
 <script>
     function ev()
