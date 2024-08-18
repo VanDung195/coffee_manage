@@ -8,25 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class AttendanceUser extends Model
 {
     use HasFactory;
-    // protected $table = 'attendance_users';
-    
-    // protected $primaryKey = 'attendance_id';
-    // protected $primaryKey = null;
-    // public $incrementing = false;
+    // protected $primaryKey = ['attendance_id', 'user_id'];
+    public $incrementing = false;
 
     public $timestamps = false;
     
     protected $fillable = [
         'attendance_id',
         'user_id',
-        'salary_inf_id',
         'status',
     ];
 
-    protected static function booted()
-    {
-        static::creating(static function($object){
-            $object->salary_inf_id = 1;
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::creating(static function($object){
+    //         $object->salary_inf_id = 1;
+    //     });
+    // }
 }
