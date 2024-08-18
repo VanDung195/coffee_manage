@@ -25,6 +25,12 @@
                     <div class=" dropdown-header noti-title">
                         <h6 class="text-overflow m-0">Welcome !</h6>
                     </div>
+                    @if (user()->role === 1 || user()->role === 2 || user()->role === 3)
+                        <a href="{{ route('table') }}" class="dropdown-item notify-item">
+                            <i class="mdi mdi-table-chair"></i>
+                            <span>Bàn</span>
+                        </a>
+                    @endif
                     <!-- item-->
                     <a href="{{ route('reset_password') }}" class="dropdown-item notify-item">
                         <i class="mdi dripicons-clockwise mr-1"></i>
