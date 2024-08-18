@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Shift extends Model
 {
     use HasFactory;
-    
+    public $timestamps = false;
+
     protected $fillable = [
         'time',
         'description'
