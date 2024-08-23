@@ -16,6 +16,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isNull;
+
 class InvoiceController extends Controller
 {
     // : JsonResponse
@@ -442,7 +444,10 @@ class InvoiceController extends Controller
         //old key id
         $old_key = $request->from_table_id;
         $new_key = $request->to_table_id;
-
+        if($old_key === $new_key)
+        {
+            return $this->errorResponse('Không được chọn bàn giống nhau!');
+        }
         //old key name
         $old_key_name = Table::query()
                     ->where('id', $old_key)->value('name');
@@ -484,7 +489,7 @@ class InvoiceController extends Controller
                     'new_key' => $new_key,
                     'old_key_name' => $old_key_name,
                     'new_key_name' => $new_key_name,
-                ],'thanh cong roi nhe');
+                ],'Đổi bàn thành công!');
             }
             
             // //test
@@ -702,6 +707,11 @@ class InvoiceController extends Controller
         $now = Carbon::now('Asia/Bangkok');
         if($invoice_id < 0)
         {
+            // dd($request->customer_payment);
+            if(is_null($request->customer_payment))
+            {
+                return $this->errorResponse('Vui lòng nhập số tiền khách trả!!!');
+            }
             $is_update_invoice = true;
             // dd($request->all());
             $customer_payment = $request->customer_payment * 1000;
@@ -709,9 +719,9 @@ class InvoiceController extends Controller
             $data = session('invoice')[$table_id];
             //cái này là khách hàng đặt món thông qua qr với trạng thái là thanh toán trước (tức là nhập trước số tiền khách trả)
             
-            if(is_null($customer_payment)){
-                return $this->errorResponse('Vui lòng nhập số tiền khách trả!!!');
-            }
+            // if(is_null($customer_payment)){
+            //     return $this->errorResponse('Vui lòng nhập số tiền khách trả!!!');
+            // }
             $remaining_money = $customer_payment - $data['total_price'];
             // dd($remaining_money);
             if(!is_null($data['customer_payment']) && $data['is_qr'] === 1)
