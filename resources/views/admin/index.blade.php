@@ -1581,6 +1581,13 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
+                    // console.log(response);
+                    $.toast({
+                        heading: 'Thành công',
+                        text: response.message,
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    })
                     let invoice = response.data;
                     let table_id = invoice.table_id;
                     let table_name = invoice.table_name;
@@ -2494,8 +2501,14 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    console.log('day la response tra lai');
-                    console.log(response);
+                    $.toast({
+                        heading: 'Thành công',
+                        text: response.message,
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    })
+                    // console.log('day la response tra lai');
+                    // console.log(response);
                     $(modal).modal('toggle');
                     let new_key = response.data.new_key;
                     let old_key = response.data.old_key;
@@ -2695,8 +2708,14 @@
                     // id_p_table_old.innerHTML = new_key;
                     // id_p_table_old.id = new_key_id;
                 },
-                error: function (xhr, status, error) {
-                    console.error(error);
+                error: function (error) {
+                    // console.error(error);
+                    $.toast({
+                        heading: 'Error',
+                        text: error.responseJSON.message,
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    })
                 }
             });
         });
