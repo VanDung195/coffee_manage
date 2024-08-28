@@ -23,7 +23,7 @@
                         <!-- Logo-->
                         <div class="card-header pt-4 pb-4 text-center bg-primary">
                             <a href="index.html">
-                                <span><img src="assets/images/logo.png" alt="" height="18"></span>
+                                {{-- <span><img src="assets/images/logo.png" alt="" height="18"></span> --}}
                             </a>
                         </div>
 
@@ -31,13 +31,12 @@
                             
                             <div class="text-center w-75 m-auto">
                                 <h4 class="text-dark-50 text-center mt-0 font-weight-bold">Đăng ký tài khoản nhân viên</h4>
-                                <p class="text-muted mb-4">Chào admin (quản lý)</p>
                             </div>
 
                             <form action="{{ route('process_register') }}" method="POST">
                                 @csrf
                                 <div class="form-group">
-                                    <label for="fullname">Full Name</label>
+                                    <label for="fullname">Họ tên</label>
                                     <input class="form-control" type="text" id="fullname" name="name" placeholder="Nhập họ tên" required="">
                                 </div>
 
@@ -49,7 +48,7 @@
                                 <div class="form-group">
                                     <label for="password">Mật khẩu</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="password" id="password" class="form-control" name="password" placeholder="Nhập mật khẩu (recommend: Như tài khoản)">
+                                        <input type="password" id="password" class="form-control" name="password" placeholder="Nhập mật khẩu">
                                         <div class="input-group-append" data-password="false">
                                             <div class="input-group-text">
                                                 <span class="password-eye"></span>
@@ -108,7 +107,7 @@
     <!-- end page -->
 
     <footer class="footer footer-alt">
-        2013 - 2024 © HoVanDung - hahah.com
+        Hồ Văn Dũng
     </footer>
 
     <!-- bundle -->
