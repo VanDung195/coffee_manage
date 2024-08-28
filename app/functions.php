@@ -35,6 +35,7 @@ if(!function_exists('getAndCacheTableName')){
                 // $tables = Table::query()->get();
 
                 $tables = Table::select('*')
+                    ->where('is_hidden', 0)
                     ->orderBy(DB::raw("CASE
                         WHEN name REGEXP '^[A-Za-z]+' THEN CONCAT(LEFT(name, LENGTH(name) - LENGTH(SUBSTRING_INDEX(name, '_', -1))), LPAD(SUBSTRING_INDEX(name, '_', -1), 10, '0'))
                         ELSE name
