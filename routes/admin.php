@@ -13,11 +13,11 @@ use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'test']);
-Route::get('/admin/user', [UserController::class, 'index'])->name('user.index');
-Route::get('admin//user/{user}', [UserController::class, 'show'])->name('user.show');
-Route::put('/admin/user/edit/{user_id}', [UserController::class, 'edit'])->name('user.edit');
-Route::put('/admin/user/update', [UserController::class, 'update'])->name('user.update');
-Route::delete('/admin/user/destroy', [UserController::class, 'destroy'])->name('user.destroy');
+Route::get('/user', [UserController::class, 'index'])->name('user.index');
+Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
+Route::put('/user/edit/{user_id}', [UserController::class, 'edit'])->name('user.edit');
+Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
+Route::delete('/user/destroy', [UserController::class, 'destroy'])->name('user.destroy');
 // Route::group([
 //     'as' => 'users',
 //     'prefix' => 'users'],
