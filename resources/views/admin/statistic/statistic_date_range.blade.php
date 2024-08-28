@@ -163,7 +163,7 @@
             },
             title: {
                 align: 'left',
-                text: 'Số lượng sản phẩm đã bán ra trong năm: ',
+                text: 'Số lượng sản phẩm đã bán ra trong năm',
             },
             subtitle: {
                 align: 'left',
@@ -223,7 +223,7 @@
     {
         Highcharts.chart('container2', {
             title: {
-                text: 'Doanh thu của tháng: ' + 'cc',
+                text: 'Doanh thu của năm',
                 align: 'left'
             },
             yAxis: {
