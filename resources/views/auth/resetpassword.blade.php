@@ -103,18 +103,11 @@
     <script src="{{ asset('js/app.min.js') }}"></script>    
     <script>
         $(document).ready(function () {
-            // $('#reset-password').on('submit', function(event) {
-            //     event.preventDefault();
-
-            // })
-
-
             function validatePasswords() {
                 let old_password = $('#old-password').val();
                 let new_password = $('#new-password').val();
                 let confirm_password = $('#confirm-password').val();
                 let hasError = false;
-
                 if (new_password === old_password) {
                     $('#new-password-error').html('Mật khẩu mới không được trùng với mật khẩu cũ');
                     hasError = true;

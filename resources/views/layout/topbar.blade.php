@@ -13,9 +13,9 @@
         
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                <span class="account-user-avatar"> 
-                    <img src="" alt="user-image" class="rounded-circle">
-                </span>
+                {{-- <span class="account-user-avatar"> 
+                    <img src="{{ asset('images/black.png') }}" alt="user-image" class="rounded-circle">
+                </span> --}}
                 <span>
                     <span class="account-user-name">{{ user()->name }}</span>
                     <span class="account-position">{{ getRoleByValue(user()->role) }}</span>
