@@ -6,6 +6,7 @@
     <meta content="Coderthemes" name="author">
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/app-creative-dark.min.css') }}" rel="stylesheet" type="text/css">
+    {{-- <link rel="stylesheet" href="{{ asset('css/app-creative.min.css') }}" type="text/css"> --}}
     @vite(['resources/js/app.js'])
     @stack('css')
 </head>
@@ -26,14 +27,15 @@
         <!-- ============================================================== -->
 
         <div class="content-page">
-            <div class="content" style="margin-top: 30px !important">
+            <div class="content">
+                {{-- <div class="content" style="margin-top: 30px !important"> --}}
 
                 <!-- Start Content-->
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box">
-                                <h4 class="page-title">{{ $title ?? '' }}</h4>
+                                {{-- <h4 class="page-title">{{ $title ?? '' }}</h4> --}}
                             </div>
                         </div>
                     </div>
