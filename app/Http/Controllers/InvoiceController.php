@@ -931,7 +931,7 @@ class InvoiceController extends Controller
             'table_name' => $data['table_name'],
             'details' => $data['details'],
             'total_price' => number_format($data['total_price'], 0, ',', '.'),
-            'created_at' => $data['created_at'],
+            'created_at' => date('d-m-Y', strtotime($data['created_at'])),
             'checkin_time' => $data['checkin_time'],
             'checkout_time' => 'Chưa',
             'customer_payment' => $customer_payment_response,
