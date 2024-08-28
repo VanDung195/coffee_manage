@@ -36,11 +36,11 @@
                             </div>
                             <div class="form-group col-5">
                                 <label for="name">Tên món</label>
-                                <input type="text" name="name" id="menu-item-name" class="form-control">
+                                <input type="text" name="name" id="menu-item-name" class="form-control" required>
                             </div>
                             <div class="form-group col-2">
                                 <label for="price">Giá</label>
-                                <input type="number" name="price" id="price" placeholder="Ví dụ: 1 = 10.000đ, 19 = 19.000đ" class="form-control" inputmode="numeric">
+                                <input type="number" name="price" id="price" placeholder="Ví dụ: 1 = 10.000đ, 19 = 19.000đ" class="form-control" inputmode="numeric" required>
                             </div>
                         </div>
                         <button class="btn btn-success" style="float: left;">Thêm món</button>
