@@ -1,4 +1,6 @@
-<html lang="en"><head>
+<html lang="en">
+
+<head>
     <meta charset="utf-8">
     <title>Register - Sign Up | HAHAHAHA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,32 +25,35 @@
                         <!-- Logo-->
                         <div class="card-header pt-4 pb-4 text-center bg-primary">
                             <a href="index.html">
-                                {{-- <span><img src="assets/images/logo.png" alt="" height="18"></span> --}}
                             </a>
                         </div>
 
                         <div class="card-body p-4">
-                            
+
                             <div class="text-center w-75 m-auto">
-                                <h4 class="text-dark-50 text-center mt-0 font-weight-bold">Đăng ký tài khoản nhân viên</h4>
+                                <h4 class="text-dark-50 text-center mt-0 font-weight-bold">Đăng ký tài khoản nhân viên
+                                </h4>
                             </div>
 
                             <form action="{{ route('process_register') }}" method="POST">
                                 @csrf
                                 <div class="form-group">
                                     <label for="fullname">Họ tên</label>
-                                    <input class="form-control" type="text" id="fullname" name="name" placeholder="Nhập họ tên" required="">
+                                    <input class="form-control" type="text" id="fullname" name="name"
+                                        placeholder="Nhập họ tên" required="">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="emailaddress">Tài khoản</label>
-                                    <input class="form-control" name="account" id="emailaddress" required="" placeholder="Nhập tên tài khoản">
+                                    <input class="form-control" name="account" id="emailaddress" required=""
+                                        placeholder="Nhập tên tài khoản">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="password">Mật khẩu</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="password" id="password" class="form-control" name="password" placeholder="Nhập mật khẩu">
+                                        <input type="password" id="password" class="form-control" name="password"
+                                            placeholder="Nhập mật khẩu">
                                         <div class="input-group-append" data-password="false">
                                             <div class="input-group-text">
                                                 <span class="password-eye"></span>
@@ -59,12 +64,12 @@
 
                                 <div class="form-group">
                                     <label for="emailaddress">Số điện thoại</label>
-                                    <input class="form-control" name="phone" id="phone" required="" placeholder="Nhập số điện thoại">
+                                    <input class="form-control" name="phone" id="phone" required=""
+                                        placeholder="Nhập số điện thoại">
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-5">
                                         <label for="emailaddress">Chọn chức vụ:</label>
-                                        {{-- <input class="form-control" name="account" id="emailaddress" required="" placeholder="Enter your account"> --}}
                                         <select name="role" id="" class="form-control">
                                             @foreach ($roles as $key => $value)
                                                 <option value="{{ $value }}">{{ $key }}</option>
@@ -93,7 +98,8 @@
 
                     <div class="row mt-3">
                         <div class="col-12 text-center">
-                            <p class="text-muted">Already have account? <a href="pages-login.html" class="text-muted ml-1"><b>Log In</b></a></p>
+                            <p class="text-muted">Already have account? <a href="pages-login.html"
+                                    class="text-muted ml-1"><b>Log In</b></a></p>
                         </div> <!-- end col-->
                     </div>
                     <!-- end row -->
@@ -112,8 +118,10 @@
 
     <!-- bundle -->
     <script src="{{ asset('js/vendor.min.js') }}"></script>
-    <script src="{{ asset('js/app.min.js') }}"></script>    
-    
+    <script src="{{ asset('js/app.min.js') }}"></script>
 
 
-</body></html>
+
+</body>
+
+</html>

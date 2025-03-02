@@ -17,10 +17,6 @@
                                 <label for="birthdate">Ngày sinh</label>
                                 <input type="date" name="birthdate" id="birthdate" value="{{ $user->birthdate }}" class="form-control">
                             </div>
-                            {{-- <div class="form-group col-1">
-                                <label for="gender">Giới tính</label>
-                                <input type="text" name="gender" id="gender" value="{{ $user->gender_name }}" class="form-control">
-                            </div> --}}
                             <div class="form-group col-2">
                                 <label for="phone">Số điện thoại</label>
                                 <input type="text" name="phone" id="phone" value="{{ $user->phone }}" class="form-control">
@@ -37,7 +33,6 @@
                             </div>
                             <div class="form-group col-2">
                                <label for="role">Chức vụ</label>
-                               {{-- <input type="text" name="role" id="role" value="{{ $user->role_second_name }}" class="form-control"> --}}
                                <select name="role" id="role" class="form-control">
                                     @foreach ($positions as $item)
                                         <option value="{{ $item->id }}" @if (($item->id) == $user->role) selected @endif>
@@ -48,7 +43,6 @@
                             </div>
                             <div class="form-group col-2">
                                 <label for="shift">Ca làm việc</label>
-                                {{-- <input type="text" name="shift" id="shift" value="{{ $user->shift_id }}" class="form-control"> --}}
                                 <select name="shift" id="shift" class="form-control">
                                     @foreach ($shifts as $item)
                                         <option value="{{ $item->id }}" @if ($item->id == $user->shift_id) selected @endif>
@@ -67,19 +61,3 @@
         </div>
     </div>
 @endsection
-
-
-
-
-
-
-
-{{-- <div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                
-            </div>
-        </div>
-    </div>
-</div> --}}

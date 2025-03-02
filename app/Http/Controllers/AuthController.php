@@ -23,31 +23,12 @@ class AuthController extends Controller
         }
         return view('auth.login');
     }
-    public function process_login(Request $request) 
+    public function process_login(Request $request)
     {
-        // dd(auth()->check());
         if(auth()->check())
         {
             return redirect()->route('login')->with('error', 'Đăng xuất đã!');
         }
-        // $account = $request->account;
-        // $password = $request->password;
-        
-        // $user = User::query()
-        //         ->where('account','=', $account)
-        //         ->first();
-        // if($user) {
-        //     $user = User::query()
-        //             ->where('password', $password)->first();
-        // }
-        // dd($user);
-        // $user = $request->only('account','password');
-        // $role = User::query()
-        //             ->where('account', $request->account)
-        //             ->pluck('role');
-        // dd($role);
-        // $clientIpAddress = $request->getClientIp();
-        // dd($clientIpAddress);
         $user = User::query()
                 ->where('account', $request->account)
                 ->first();
@@ -58,26 +39,11 @@ class AuthController extends Controller
             $available_role = [1, 2, 3];
             if(!in_array(user()->role, $available_role))
             {
-                // return redirect()->route('table');
                 return redirect()->route('user.index');
             }
             return redirect()->route('table');
         }
         return redirect()->route('login')->with('error', 'Dang nhap that bai');
-
-        // $check_exist = true;
-        // dd($user);
-        // // if(Auth::attempt($user)){
-        // //     $user = Auth::user();
-        // //     $check_exist = true;
-        // //     auth()->login($user, true);
-        // //     // dd(user()->role);
-        // //     // if(user()->role )
-        // return redirect()->route('table');
-
-        // // }
-
-        // return redirect()->route('login')->with('error', 'Dang nhap that bai');
     }
     public function register() {
         $roleForRegister = UserRoleEnum::getRoleForRegister();
@@ -88,8 +54,7 @@ class AuthController extends Controller
         ]);
     }
     public function process_register(Request $request)
-    {   
-        // dd($request->all());
+    {
         $user = User::query()
                 ->where('account', $request->account)->first();
 
@@ -141,13 +106,10 @@ class AuthController extends Controller
             'confirm_password.min' => 'Tối thiểu 8 ký tự!',
             'confirm_password.max' => 'Tối đa 15 ký tự!',
         ]);
-        
+
         $errors = [];
         if(!Hash::check($request->old_password, user()->password))
         {
-            // return back()->withErrors([
-            //     'old_password' => 'Mật khẩu cũ không chính xác.',
-            // ]);
             $errors['old_password'] = 'Mật khẩu cũ không chính xác.';
         }
         if(Hash::check($request->new_password, user()->password))
@@ -156,9 +118,6 @@ class AuthController extends Controller
         }
         if($request->confirm_password != $request->new_password)
         {
-            // return back()->withErrors([
-            //     'confirm_password' => 'Mật khẩu mới không khớp. Hãy nhập lại.'
-            // ]);
             $errors['confirm_password'] = 'Mật khẩu mới không khớp. Hãy nhập lại.';
         }
         if(!empty($errors))

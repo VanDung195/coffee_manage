@@ -25,7 +25,7 @@
                                 <option value="" selected>ALL</option>
                                 @foreach ($shifts as $shift)
                                     <option value="{{ $shift->id }}" @if ((string)$shift->id == $selected_shift) selected @endif>
-                                        {{ $shift->description }} 
+                                        {{ $shift->description }}
                                     </option>
                                 @endforeach
                             </select>
@@ -107,8 +107,8 @@
             </div>
         </div>
     </div>
-</div>    
-<div id="modal-accept" class="modal fade" role="dialog" tabindex="-1"> 
+</div>
+<div id="modal-accept" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -139,13 +139,6 @@
             $('.select-filter').change(function () {
                 $('#form-inline').submit()
             })
-
-            // $('.btn-submit-form').click(function(){
-            //     $('#modal-accept').modal('toggle');
-            //     setTimeout(()=> {
-            //         $('#form-accept').submit();
-            //     }, 400);
-            // })
             $('.btn-delete').on('click', function(){
                 let user_id = $(this).data('user-id');
                 $('#user-id').val(user_id);

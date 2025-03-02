@@ -57,28 +57,10 @@
         </figure>
         <figure class="highcharts-figure">
             <div id="container2"></div>
-        </figure> 
+        </figure>
     </div>
 </div>
 
-
-{{-- 
-<div class="form-group">
-    <label for="example-month">Chọn tháng để thống kê</label>
-    <input class="form-control col-2" id="date" type="month" name="month" value="{{ date('Y-m') }}">
-</div>
-<button class="btn btn-primary" onclick="ev()">Choose</button>
-<div class="form-group" style="margin-top:20px;">
-    <label>Tổng doanh thu của tháng: </label>
-    <p class="form-control col-2" id="total-price"></p>
-</div>
-<figure class="highcharts-figure">
-    <div id="container"></div>
-</figure>
-<figure class="highcharts-figure">
-    <div id="container2"></div>
-</figure> 
---}}
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -96,7 +78,6 @@
         let [year, month] = date_input.split('-');
         let formattedDate = `${month}/${year}`;
         console.log(formattedDate);
-        // console.log(date_input);
         $.ajax({
             type: "get",
             url: '{{ route('admin.statistic.month') }}',
@@ -137,9 +118,9 @@
                 let [year, month] = date_input.split('-');
                 let formattedDate = `${month}/${year}`;
                 console.log(formattedDate);
-                
+
                 //data arr2 (chart1)
-                let data = response.data.arr1; 
+                let data = response.data.arr1;
                 let arr = Object.values(data);
                 let data2 = response.data.arr2;
                 // let arrDetail = Object.values(data2);
@@ -241,7 +222,7 @@
 
             yAxis: {
                 title: {
-                    text: 'Tổng tiền' 
+                    text: 'Tổng tiền'
                 }
             },
 

@@ -28,11 +28,10 @@
                                 <p class="text-muted mt-3">
                                     {{ $error_message }}
                                 </p>
-                                {{-- <a class="btn btn-info mt-3" href="index.html"><i class="mdi mdi-reply"></i> Return Home</a> --}}
                             </div>
-                        </div> 
+                        </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
@@ -42,9 +41,9 @@
     </footer>
 
     <script src="{{ asset('js/vendor.min.js') }}"></script>
-    <script src="{{ asset('js/app.min.js') }}"></script>    
-    <script src="{{ asset('js/helper.js') }}"></script>  
-    
+    <script src="{{ asset('js/app.min.js') }}"></script>
+    <script src="{{ asset('js/helper.js') }}"></script>
+
 
 
 </body></html>

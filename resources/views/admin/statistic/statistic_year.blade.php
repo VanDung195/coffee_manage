@@ -44,7 +44,7 @@
                 <label for="example-number">Năm</label>
                 <select name="" id="year" class="form-control">
                     @for ($i = date('Y'); $i >= 2022; $i--)
-                        <option value="{{ $i }}">{{ $i }}</option>         
+                        <option value="{{ $i }}">{{ $i }}</option>
                     @endfor
                 </select>
             </div>
@@ -63,36 +63,10 @@
         </figure>
         <figure class="highcharts-figure">
             <div id="container2"></div>
-        </figure> 
+        </figure>
     </div>
 </div>
 
-{{-- 
-<h2>Thống kê theo năm</h2>
-<p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
-<div class="form-group">
-    <input class="form-control col-2" type="number" min="1900" max="2099" step="1" value="{{ date('Y') }}" />
-    <input class="form-control col-2" id="year" type="year" name="year" value="{{ date('Y') }}">
-    <div class="form-group">
-        <label for="example-number">Năm</label>
-        <input class="form-control col-1" id="year" type="number" placeholder="YYYY" min="2023" max="{{ date('Y') }}" value="{{ date('Y') }}"> 
-        <select name="" id="year" class="form-control col-1">
-            @for ($i = date('Y'); $i >= 2022; $i--)
-                <option value="{{ $i }}">{{ $i }}</option>         
-            @endfor
-        </select>
-    </div>
-</div>
-<button class="btn btn-primary" onclick="ev()">Choose</button>
-<div class="form-group" style="margin-top:20px;">
-    <label>Tổng doanh thu của tháng: </label>
-    <p class="form-control col-2" id="total-price"></p>
-</div>
-<figure class="highcharts-figure">
-    <div id="container"></div>
-    <div id="container2"></div>
-</figure> 
---}}
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -118,7 +92,7 @@
                 // console.log(year);
                 let data1 = response.data.arr1;
                 let arr1 = Object.values(data1);
-                
+
                 let data2 = response.data.arr2;
                 let arr2 = Object.values(data2);
 
@@ -208,15 +182,9 @@
                 text: 'Doanh thu của năm: '+year,
                 align: 'left'
             },
-
-            // subtitle: {
-            //     text: 'By Job Category. Source: <a href="https://irecusa.org/programs/solar-jobs-census/" target="_blank">IREC</a>.',
-            //     align: 'left'
-            // },
-
             yAxis: {
                 title: {
-                    text: 'Số tiền' 
+                    text: 'Số tiền'
                 }
             },
 
@@ -262,7 +230,7 @@
                 // console.log(response);
                 let data1 = response.data.arr1;
                 let arr1 = Object.values(data1);
-                
+
                 let data2 = response.data.arr2;
                 let arr2 = Object.values(data2);
 

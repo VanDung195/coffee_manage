@@ -21,7 +21,7 @@ class PositionController extends Controller
             'positions' => $positions,
         ]);
     }
-    
+
     public function create()
     {
         return view('admin.position.create');
@@ -35,7 +35,7 @@ class PositionController extends Controller
             return redirect()->back()->with('error', 'Tối đa chỉ được 4 chức vụ!!!');
         }
         $pos_name = Str::title($request->position_name);
-        $check_null = Position::query()  
+        $check_null = Position::query()
                 ->where('name', $request->position_name)
                 ->first();
         if(!is_null($check_null))
@@ -56,7 +56,6 @@ class PositionController extends Controller
         $position = Position::query()
                     ->where('id', $pos_id)
                     ->first();
-        // dd($position);
         return view('admin.position.edit', [
             'position' => $position,
         ]);
@@ -70,31 +69,21 @@ class PositionController extends Controller
                     'name' => $request->pos_name,
                     'salary' => $request->salary * 1000,
                 ]);
-        
+
         return redirect()->route('admin.positions.index')->with('success', 'Cap nhat thanh cong roi nhe');
     }
 
     public function destroy(Request $request)
     {
         $pos_id = $request->pos_id;
-
-        // $check = User::query()
-        //         ->where('role', $pos_id)
-        //         ->value('name');
-
-        // $check = User::query()
-        //         ->where('role', $pos_id)
-        //         ->get();
         $check = User::query()
                 ->where('role', $pos_id)
                 ->exists();
-        // dd($check);
         if($check == true)
         {
             return $this->errorResponse('Hãy đảm bảo không còn nhân viên nào thuộc chức vụ này! Hãy thử lại sau');
         }
         Position::destroy($request->pos_id);
-        // return redirect()->back();
         return $this->successResponse([
             'pos_id' => $pos_id,
         ], 'Xoá chức vụ thành công!');

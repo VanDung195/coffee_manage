@@ -17,12 +17,12 @@ class UserController extends Controller
 
     protected object $model;
     protected string $table;
-    
+
     public function __construct()
     {
         $this->model = User::query()->where('is_hidden', false);
         $this->table = (new User())->getTable();
-        FacadesView::share('title', ucwords($this->table));  
+        FacadesView::share('title', ucwords($this->table));
         FacadesView::share('table', $this->table);
     }
 
@@ -30,7 +30,6 @@ class UserController extends Controller
         $selected_role = $request->role;
         $selected_shift = $request->shift_id;
         $query = $this->model->clone()
-                // ->with('shift:id,description')
                 ->where('role', '<>', 1);
         if(!is_null($selected_role))
         {
@@ -38,23 +37,15 @@ class UserController extends Controller
         }
         if(!is_null($selected_shift))
         {
-            // $query->whereHas('shift', function($q) use ($selected_shift) {
-            //     return $q->where('id', $selected_shift);
-            // });
             $query->where('shift_id', $selected_shift);
         }
 
         $users = $query->paginate()->appends($request->all());
 
-        // $users = User::query()
-        //         ->orderBy('role', 'asc')
-        //         ->where('role', '<>', 1)
-        //         ->paginate();
         $role = UserRoleEnum::getRole();
         $shift = Shift::query()
                 ->where('time', '<>', 0)
                 ->get();
-        // $role = UserRoleEnum::getKeys();
         return view('admin.user.index', [
             'users' => $users,
             'role' => $role,
@@ -62,7 +53,7 @@ class UserController extends Controller
             'selected_role' => $selected_role,
             'selected_shift' => $selected_shift,
         ]);
-    } 
+    }
     public function show($user) {
         dd($user);
     }
@@ -85,9 +76,6 @@ class UserController extends Controller
     }
     public function update(Request $request)
     {
-        // dd($request->all());
-        // $id = User::find($request->id);
-        // dd($id);
         User::query()
             ->where('id', $request->id)
             ->update([
@@ -99,7 +87,7 @@ class UserController extends Controller
                 'role' => $request->role,
                 'shift_id' => $request->shift,
             ]);
-        
+
         return redirect()->route('admin.user.index')->with('success', 'Cập nhật thông tin nhân viên thành công!');
     }
     public function destroy(Request $request)
@@ -107,16 +95,13 @@ class UserController extends Controller
         $user = User::find($request->user_id);
         if(!isset($user))
         {
-            // return redirect()->back()->with('error', 'Nhân viên không tồn tại trong hệ thống');
             return $this->errorResponse('Nhân viên này không tồn tại trong hệ thống! Hãy thử lại su');
         }
-        // User::destroy($request->user_id);
         User::query()
                 ->where('id', $request->user_id)
                 ->update([
                     'is_hidden' => true,
                 ]);
-        // return redirect()->back()->with('success','Xoá người dùng thành công');
         return $this->successResponse([
             'user_id' => $request->user_id,
         ],'Xoá nhân viên thành công!');

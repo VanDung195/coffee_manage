@@ -22,7 +22,7 @@ class AttendanceController extends Controller
     {
         $now = Carbon::now('Asia/Bangkok');
         $this->date = $now->format('Y-m-d');
-        $this->hour = (int) $now->format('H'); 
+        $this->hour = (int) $now->format('H');
 
         switch (true) {
             case $this->hour >= 6 && $this->hour <= 11:
@@ -35,7 +35,7 @@ class AttendanceController extends Controller
                 $this->shift_id = 3;
                 break;
             default:
-                $this->shift_id = 3; 
+                $this->shift_id = 3;
                 break;
         }
     }
@@ -44,7 +44,7 @@ class AttendanceController extends Controller
     {
         $now = Carbon::now('Asia/Bangkok');
         $date = $now->format('d/m/Y');
-        
+
         $users = User::selectRaw('users.id as id ,users.name as name, positions.name as role_name')
                         ->join('positions', 'users.role', '=', 'positions.id')
                         ->where('users.role', '<>', 1)
@@ -90,10 +90,8 @@ class AttendanceController extends Controller
 
     public function attendance(Request $request)
     {
-        // dd($request->all(), $this->hour, $this->date);
         $statuses = $request->get('statuses');
         $shift_id = $this->shift_id;
-        // dd($statuses);
         //kiểm tra ngày đấy và ca đấy đã tồn tại trong cơ sở dữ liệu chưa
         $attendance = Attendance::query()
                     ->where([
@@ -107,10 +105,9 @@ class AttendanceController extends Controller
                 'shift_id' => $shift_id,
             ]);
         }
-        
-        foreach ($statuses as $user_id => $status) 
+
+        foreach ($statuses as $user_id => $status)
         {
-            // echo $status;
             $attendance_user = AttendanceUser::where('attendance_id', $attendance->id)
                                              ->where('user_id', $user_id)
                                              ->first();
@@ -122,26 +119,13 @@ class AttendanceController extends Controller
                             ->update([
                                 'status' => $status,
                             ]);
-            } else {  
-                // dd('attendance user not found', $attendance->id, $user_id, $status);
-                // dd($attendance->id, $user_id, $status);
-                // AttendanceUser::create([
-                //     'attendance_id' => $attendance->id,
-                //     'user_id' => $user_id,
-                //     'status' => (int) $status,
-                // ]);
+            } else {
                 $attendance_user = new AttendanceUser();
                 $attendance_user->attendance_id = $attendance->id;
                 $attendance_user->user_id = $user_id;
                 $attendance_user->status = $status;
                 $attendance_user->save();
             }
-            // dd($attendance_user->status, $status);
-            // if ($attendance_user) {
-            //     dd($attendance_user->status, $status);
-            // } else {
-            //     dd('Attendance user not found', $status);
-            // }
 
             $user = User::find($user_id);
             $position = Position::find($user->role);
@@ -150,16 +134,11 @@ class AttendanceController extends Controller
                                     ->whereNull('payroll_date')
                                     ->orderBy('created_at', 'desc')
                                     ->first();
-            
-            // dd($last_salary_infor->created_at->diffInDays(Carbon::now()));
-            // dd($last_salary_infor);
-            // dd(($last_salary_infor->work_hours + $work_hours) * $position->salary);
+
             if($last_salary_infor && $last_salary_infor->created_at->diffInDays(Carbon::now()) <= 30)
             {
-                // dd($attendance_user->status, $status);
                 if($attendance_user && $attendance_user->status == 1 && (int)$status == 2)
                 {
-                    // dd(1);
                     $new_work_hours = $last_salary_infor->work_hours - 4;
                     $last_salary_infor->update([
                         'work_hours' => $new_work_hours,
@@ -168,7 +147,6 @@ class AttendanceController extends Controller
                 }
                 if($attendance_user && $attendance_user->status == 2 && (int)$status == 1)
                 {
-                    // dd(2);
                     $work_hours = $status == 1 ? 4 : 0;
                     $last_salary_infor->update([
                         'work_hours' => $last_salary_infor->work_hours + $work_hours,
@@ -177,8 +155,6 @@ class AttendanceController extends Controller
                 }
                 if($attendance_user && $attendance_user->status == 1 && (int)$status === 1)
                 {
-                    // dd(3);
-                    // $work_hours = $status == 1 ? 4 : 0;
                     $new_work_hours = $last_salary_infor->work_hours + 4;
                     $last_salary_infor->update([
                         'work_hours' => $new_work_hours,
@@ -197,125 +173,11 @@ class AttendanceController extends Controller
                 $work_hours = $status == 1 ? 4 : 0;
                 SalaryInformation::create([
                     'user_id' => $user_id,
-                    // 'payroll_date' => Carbon::now(),
                     'work_hours' => $work_hours,
                     'total_amount' => $work_hours * $position->salary,
                 ]);
             }
-
-
-            // if ($attendance_user) {
-            //     // if($attendance_user->status == 1 && $status == 2)
-            //     // {
-            //     //     $work_hours -= 4;
-            //     // } else {
-            //     //     $work_hours = $status == 1 ? 4 : 0;
-            //     // }
-            //     // $attendance_user -> update([
-            //     //     'status' => $status,
-            //     // ]);
-            //     AttendanceUser::query()
-            //                 ->where('attendance_id', $attendance->id)
-            //                 ->where('user_id', $user_id)
-            //                 ->update([
-            //                     'status' => $status,
-            //                 ]);
-            // } else {
-            //     AttendanceUser::create([
-            //         'attendance_id' => $attendance->id,
-            //         'user_id' => $user_id,
-            //         'status' => (int) $status,
-            //     ]);
-            // }
-
-            
         }
-
-        // foreach ($statuses as $user_id => $status) {
-        //     // Log::info('Updating attendance for user', [
-        //     //     'attendance_id' => $attendance->id,
-        //     //     'user_id' => $user_id,
-        //     //     'status' => $status
-        //     // ]);
-        //     // AttendanceUser::updateOrCreate(
-        //     //     [
-        //     //         'attendance_id' => $attendance->id,
-        //     //         'user_id' => $user_id,
-        //     //     ],
-        //     //     [
-        //     //         'status' => $status,
-        //     //     ]
-        //     // );
-
-        //     $attendance_user = AttendanceUser::query()
-        //                     ->where([
-        //                         'attendance_id' => $attendance->id,
-        //                         'user_id' => $user_id,
-        //                     ])->first();
-        //     if($attendance_user)
-        //     {
-                
-        //         $attendance_user->status = (int)$status;
-        //         $attendance_user->save();
-        //     }else
-        //     {
-        //         Attendance::create([
-        //             'attendance_id' => $attendance_id,
-        //             'user_id' => $user_id,
-        //             'status' => (int)$status,
-        //         ]);
-        //     }
-        // }
-        
-
-        // foreach ($statuses as $user_id => $status) {
-        //     $attendance_user = AttendanceUser::where('attendance_id', $attendance->id)
-        //                                      ->where('user_id', $user_id)
-        //                                      ->first();
-        //     if ($attendance_user) {
-        //         AttendanceUser::query()
-        //                     ->where('attendance_id', $attendance->id)
-        //                     ->where('user_id', $user_id)
-        //                     ->update([
-        //                         'status' => $status,
-        //                     ]);
-        //     } else {
-        //         AttendanceUser::create([
-        //             'attendance_id' => $attendance->id,
-        //             'user_id' => $user_id,
-        //             'status' => (int) $status,
-        //         ]);
-        //     }
-        // }
-        
-        // foreach ($statuses as $user_id => $status) {
-        //     $attendanceUser = AttendanceUser::firstOrNew([
-        //         'attendance_id' => $attendance->id,
-        //         'user_id' => $user_id,
-        //     ]);
-        //     $attendanceUser->status = $status;
-        //     $attendanceUser->save();
-        // }
-        // $user_ids = array_keys($statuses);
-        // $attendance_users = AttendanceUser::where('attendance_id', $attendance->id)
-        //                                 ->whereIn('user_id', $user_ids)
-        //                                 ->get()
-        //                                 ->keyBy('user_id');
-        
-        // foreach ($statuses as $user_id => $status) {
-        //     if (isset($attendance_users[$user_id])) {
-        //         $attendance_users[$user_id]->update([
-        //             'status' => $status,
-        //         ]);
-        //     } else {
-        //         AttendanceUser::create([
-        //             'attendance_id' => $attendance->id,
-        //             'user_id' => $user_id,
-        //             'status' => (int) $status,
-        //         ]);
-        //     }
-        // }
-
         return redirect()->route('attendance.index');
     }
 }

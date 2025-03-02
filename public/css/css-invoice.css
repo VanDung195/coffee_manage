@@ -1,6 +1,7 @@
 .invoice {
     /* max-width: 400px; */
     width: 400px;
+    /* height: 1000px; */
     /* margin: 30px auto; */
     margin: auto;
     padding: 20px;
@@ -65,7 +66,7 @@
     font-size: 16px;
 }
 
-.footer p {
+.footer-p {
     margin: 5px 0;
     font-size: 14px;
     color: #666;

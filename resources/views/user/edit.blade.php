@@ -19,7 +19,7 @@
                 margin-bottom: 1rem;
             }
         }
-    </style>    
+    </style>
 @endpush
 @section('content')
 <div class="row">
@@ -41,60 +41,37 @@
                             <label for="">Tên :</label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ $name }}">
                             <span id="name-error" class="text-danger"></span>
-                            {{-- @if ($errors->has('name'))
-                                <span class="text-danger">{{ $errors->first('name') }}</span>
-                            @endif --}}
                         </div>
                         <div class="form-group col-12 col-md-2">
                             <label for="">Ngày sinh</label>
                             <input type="date" name="birthdate" id="birthdate" class="form-control" value="{{ $birthdate }}">
                             <span id="birthdate-error" class="text-danger"></span>
-                            {{-- @if ($errors->has('birthdate'))
-                                <span class="text-danger">{{ $errors->first('birthdate') }}</span>
-                            @endif --}}
                         </div>
                         <div class="form-group col-12 col-md-2">
                             <label for="">Số điện thoại</label>
                             <input type="text" name="phone" id="phone" class="form-control" value="{{ $phone }}">
                             <span id="phone-error" class="text-danger"></span>
-                            {{-- @if ($errors->has('phone'))
-                                <span class="text-danger">{{ $errors->first('phone') }}</span>
-                            @endif --}}
                         </div>
                         <div class="form-group col-12 col-md-2">
                             <label for="">CCCD</label>
                             <input type="text" name="cccd" id="cccd" class="form-control" value="{{ $cccd }}">
                             <span id="cccd-error" class="text-danger"></span>
-                            {{-- @if ($errors->has('cccd'))
-                                <span class="text-danger">{{ $errors->first('cccd') }}</span>
-                            @endif --}}
                         </div>
                         <div class="form-group col-12 col-md-4">
                             <label for="">Địa chỉ</label>
                             <input type="text" name="address" id="address" class="form-control" value="{{ $address }}">
                             <span id="address-error" class="text-danger"></span>
-                            {{-- @if ($errors->has('address'))
-                                <span class="text-danger">{{ $errors->first('address') }}</span>
-                            @endif --}}
                         </div>
                     </div>
                     <button class="btn btn-submit btn-light" style="width:100%;">Sửa</button>
                 </form>
-            </div> 
+            </div>
         </div>
-    </div> 
+    </div>
 </div>
 @endsection
 @push('js')
     <script>
-        // $(document).ready(function () {
-        //     $('.btn-submit').on('click', function() {
-        //         let name = $('#name').val();
-        //         let birthdate = $('#birthdate').val();
-        //         let id = $('#phone').val();
-        //         let id = $('#phone').val();
-        //     })
-        // });
         $(document).ready(function () {
             $('#update-user-form').on('submit', function(event) {
                 event.preventDefault();
@@ -120,7 +97,7 @@
                             var errorHtml = errors[field][0];
                             $('#'+field+'-error').html(errorHtml);
                         }
-                    } 
+                    }
                 });
             })
         });

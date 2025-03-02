@@ -60,28 +60,6 @@
         </div>
 </div>
 
-{{-- 
-<h1>Thống kê ngày hôm nay hoặc chọn ngày cụ thể để thống kê</h1>
-<p style="font-size: 20px;">Lưu ý: Các món đã xoá không xuất hiện trong phần thống kê số lượng món bán ra, nhưng phần thống kê doanh thu thì có!</p>
-    <div class="form-row">
-        <div class="form-group col-2">
-            <label for="example-date">Date</label>
-            <input class="form-control" id="date" type="date" name="date" value="{{ date('Y-m-d') }}" maxlength="10">
-        </div>
-        <div class="form-row col-2">
-            <button class="btn btn-submit-form btn-primary" onclick="submitForm(event)">Choose</button>
-        </div>
-    </div>
-    <div class="form-group" style="margin-top:20px;">
-        <label>Tổng doanh thu của tháng: </label>
-        <p class="form-control col-2" id="total-price"></p>
-    </div>
-    <figure class="highcharts-figure">
-        <div id="container1"></div>
-        <h1>Thống kê thứ 2</h1>
-        <div id="container2"></div>
-    </figure>
- --}}
 @endsection
 @push('js')
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -115,7 +93,6 @@ function submitForm(){
     });
 }
 $(document).ready(function () {
-    // let date = $('#date').val();
     let date_input = $('#date').val();
     let date = new Date(date_input);
     let formattedDate = date.toLocaleDateString('vi-VN');
@@ -123,13 +100,12 @@ $(document).ready(function () {
         url: '{{ route('admin.statistic.day') }}',
         dataType: "json",
         success: function (response) {
-            // console.log(response);
             let data = response.data;
             let ArrX = data.arrX;
             let ArrY = data.arrY;
             getChart1(ArrX,response,formattedDate);
             getChart2(ArrY,response,formattedDate);
-            
+
             let total_price = response.data.total_price;
             let p_total_price = document.getElementById('total-price');
             p_total_price.textContent = total_price.toLocaleString('vi-VN') + ' VNĐ';

@@ -8,7 +8,7 @@
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
-                    <thead> 
+                    <thead>
                         <tr>
                             <th>#</th>
                             <th>Tên chức vụ</th>
@@ -30,7 +30,7 @@
                                     <a>{{ $position->salary_formatted }}</a>
                                 </td>
                                 <td>
-                                    <form action="{{ route('admin.positions.edit', $position->id) }}" method="POST" style="margin: 0px;"> 
+                                    <form action="{{ route('admin.positions.edit', $position->id) }}" method="POST" style="margin: 0px;">
                                         @csrf
                                         @method('put')
                                         <button class="btn btn-success">Sửa chức vụ</button>
@@ -47,7 +47,7 @@
         </div>
     </div>
 </div>
-<div id="modal-accept" class="modal fade" role="dialog" tabindex="-1"> 
+<div id="modal-accept" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <!-- Modal content-->
         <div class="modal-content">
@@ -56,12 +56,6 @@
                 <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                {{-- <form action="{{ route('admin.positions.destroy') }}" method="POST" id="form-accept">
-                    @csrf
-                    @method('delete')
-                    <input type="hidden" name="pos_id" id="pos-id">
-                    <h4 class="center">Nếu bạn muốn xoá loại món này thì bạn phải xoá tất cả các món có liên quan đến loại món này. Tiếp tục xoá?</h4>
-                </form> --}}
                 <input type="hidden" name="pos_id" id="pos-id">
                 <h4 class="center">Hãy đảm bảo không còn nhân viên nào thuộc chức vụ này! Xác nhận?</h4>
             </div>
@@ -84,12 +78,6 @@
             $('#modal-accept').modal('toggle');
         })
         $(document).ready(function () {
-            // $('.btn-submit-form').click(function(){
-            //     $('#modal-accept').modal('toggle');
-            //     setTimeout(()=> {
-            //         $('#form-accept').submit();
-            //     }, 400);
-            // })
             $('.btn-accept').on('click', function(){
                 let pos_id = $('#pos-id').val();
                 $.ajax({

@@ -40,7 +40,7 @@ class MenuCategoryController extends Controller
     {
         $category = MenuCategory::query()
                     ->where('id', $item_id)
-                    ->first();    
+                    ->first();
         return view('admin.menu_category.edit', [
             'category' => $category,
         ]);
@@ -58,36 +58,20 @@ class MenuCategoryController extends Controller
 
     public function destroy(Request $request)
     {
-        // dd($request->menu_category_id);
         $menu_item_check = MenuItem::query()
                             ->where('menu_category_id',$request->menu_category_id)
                             ->where('is_hidden', false)
                             ->first();
-        // dd($menu_item_check->name);
-        // dd($menu_item_check);
-        // if($menu_item_check != null)
-        // {
-        //     return $this->errorResponse('Đã xoá hết món đâu, hãy kiểm tra và thử lại sau!');
-        // }
-        // if($menu_item_check != null)
-        // {
-        //     dd(1);
-        // }
         if(!is_null($menu_item_check))
         {
             return $this->errorResponse('Đã xoá hết món đâu, hãy kiểm tra và thử lại sau!');
 
         }
-        // MenuCategory::destroy($request->menu_category_id);
-
         MenuCategory::query()
                     ->where('id', $request->menu_category_id)
                     ->update([
                         'is_hidden' => true,
                     ]);
-        // $menu_category = MenuCategory::find($request->menu_category_id);
-        // $menu_category->delete();
-        // return redirect()->back();
         return $this->successResponse([
             'id' => $request->menu_category_id,
         ],'Đã xoá loại món thành công');

@@ -9,7 +9,7 @@
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
-                    <thead> 
+                    <thead>
                         <tr>
                             <th>#</th>
                             <th>Số giờ</th>
@@ -40,7 +40,7 @@
         </div>
     </div>
 </div>
-<div id="modal-edit" class="modal fade" role="dialog" tabindex="-1"> 
+<div id="modal-edit" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,42 +74,17 @@
 @push('js')
 <script>
     $(document).ready(function () {
-        // $('.btn-open-modal').on('click', function() {
-        //     let shift_id = $(this).data('shift-id');
-        //     $.ajax({
-        //         type: "get",
-        //         url: '{{ route('admin.shifts.get_data') }}',
-        //         data: {
-        //             id: shift_id
-        //         },
-        //         dataType: "json",
-        //         success: function (response) {
-        //             // console.log(response);
-        //             // console.log(response.data.shift.description);
-        //             let data = response.data.shift;
-        //             let id = data.id;
-        //             let time = data.time;
-        //             let description = data.description;
-
-        //             $('#shift-id').val(id);
-        //             $('#time').val(time);
-        //             $('#description').val(description);
-
-        //             $('#modal-edit').modal('show');
-        //         }
-        //     });
-        // })
         $('.btn-cancel').on('click', function() {
             $('#modal-edit').modal('toggle');
         })
 
         $('.btn-open-modal').on('click', function() {
             let shift_id = $(this).data('shift-id');
-            
+
             let id = $('.shift-id-'+shift_id).text();
             let time = $('.time-'+shift_id).text();
             let description = $('.description-'+shift_id).text();
-            
+
             $('#shift-id').val(id);
             $('#time').val(time);
             $('#description').val(description);
@@ -151,7 +126,7 @@
                     })
 
                     $('#modal-edit').modal('toggle');
-                }, 
+                },
                 error: function() {
                     $.toast({
                         heading: 'Lỗi',

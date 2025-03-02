@@ -8,7 +8,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-hover table-centered mb-0">
-                        <thead> 
+                        <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Tên loại món</th>
@@ -28,7 +28,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <form action="{{ route('admin.menu_categories.edit', $item->id) }}" method="POST" style="margin: 0px;"> 
+                                        <form action="{{ route('admin.menu_categories.edit', $item->id) }}" method="POST" style="margin: 0px;">
                                             @csrf
                                             @method('put')
                                             <button class="btn btn-success">Sửa món</button>
@@ -45,7 +45,7 @@
             </div>
         </div>
     </div>
-    <div id="modal-accept" class="modal fade" role="dialog" tabindex="-1"> 
+    <div id="modal-accept" class="modal fade" role="dialog" tabindex="-1">
         <div class="modal-dialog modal-sm">
             <!-- Modal content-->
             <div class="modal-content">
@@ -77,8 +77,8 @@
                 heading: type,
                 text: message,
                 icon: icon,
-                loader: true,        
-                loaderBg: color  
+                loader: true,
+                loaderBg: color
             })
         }
         // #FF0000 'info'
@@ -91,13 +91,6 @@
             $('#modal-accept').modal('toggle');
         });
         $(document).ready(function () {
-            // $('.btn-submit-form').click(function(){
-            //     $('#modal-accept').modal('toggle');
-            //     setTimeout(()=> {
-            //         $('#form-accept').submit();
-            //     }, 400);
-            // })
-
             $('.btn-submit-form').click(function(){
                 let item_id = $('#item-id').val();
                 $.ajax({
@@ -111,10 +104,9 @@
                         document.getElementById(response.data.id).remove();
                         $('#modal-accept').modal('toggle');
                         notify('Thành công,',response.message,'success','#FF0000');
-                    }, 
+                    },
                     error: function(error)
                     {
-                        // $('#modal-accept').modal('toggle');
                         notify('Lỗi,',error.responseJSON.message,'warning','#FF0000');
                     }
                 });

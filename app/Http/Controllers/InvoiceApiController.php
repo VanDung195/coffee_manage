@@ -12,13 +12,9 @@ class InvoiceApiController extends Controller
     use ResponseTrait;
     private object $model;
 
-    // public function __construct()
-    // {
-    //     $this->model = Invoice::query();
-    // }
     public function index()
     {
-        
+
         $table_invoice_id = Table::query()
                                     ->where('invoice_id', '<>', 0)
                                     ->pluck('invoice_id')->toArray();
@@ -31,21 +27,16 @@ class InvoiceApiController extends Controller
             $query->select('id', 'name');
         },
         ])
-        // ->select('id','customer_payment', 'remaining_money')
         ->whereIn('id', $table_invoice_id)
         ->orderBy('created_at', 'desc')
         ->get()
         ->toArray();
-        // dd($invoices);
         $merged_array = [];
         $count = 0;
         //Nếu không dùng count mà dùng $table_id thì nó sẽ biến thành một object có key => value
         $session_invoices = session()->get('invoice');
-        // dd(array_reverse($session_invoices));
         if(!is_null($session_invoices))
         {
-            // $session_invoices_reverse = array_reverse($session_invoices);
-            // dd($session_invoices_reverse);
             foreach($session_invoices as $item)
             {
                 $user_name = User::query()
@@ -67,7 +58,6 @@ class InvoiceApiController extends Controller
                     'table_id' => $table_id,
                     'table_name' => $item['table_name'],
                     'total_price' => $item['total_price'],
-                    // 'created_at' => $item['created_at'],
                     'created_at' => date('d-m-Y', strtotime($item['created_at'])),
                     'checkin_time' => $item['checkin_time'],
                     'checkout_time' => $item['checkout_time'] ? $item['checkout_time'] : 'Chưa',
@@ -81,33 +71,17 @@ class InvoiceApiController extends Controller
                 ];
                 foreach($item['details'] as $each)
                 {
-                    // dd($each['thanh_tien']);
                     $merged_array[$count]['details'][] = [
-                        // 'menu_item_id' => (int)$each['id'],
-                        // 'quantity' => (int)$each['quantity'],
-                        // 'thanh_tien' => number_format((float)$each['price'] * (int)$each['quantity'], 0, ',', '.'),
-                        // 'menu_items' => [
-                        //     'id' => (int)$each['id'],
-                        //     'name' => $each['name'],
-                        //     // 'price' => (float)$each['price'],
-                        //     'price' => number_format((float)$each['price'], 0, ',', '.'),
-                        // ],
                         'menu_item_id' => (int)$each['menu_item_id'],
                         'name' => $each['name'],
-                        // 'price' => number_format((float)$each['price'], 0, ',', '.'),
                         'price' => $each['price'],
                         'quantity' => (int)$each['quantity'],
-                        // 'thanh_tien' => number_format((float)$each['price'] * (int)$each['quantity'], 0, ',', '.'),
                         'thanh_tien' => $each['thanh_tien'],
                     ];
                 }
                 $count++;
             }
         }
-        // foreach($invoices as $item)
-        // {
-        //     dd($item);
-        // }
         foreach($invoices as $item)
         {
             $table_id = $item['table_id'];
@@ -125,20 +99,16 @@ class InvoiceApiController extends Controller
                 $remaining_money = 'Không';
             }
             $merged_array[$count]= [
-                'user_name' => $user_name, 
+                'user_name' => $user_name,
                 'table_id' => $table_id,
                 'table_name' => $item['tables']['name'],
                 'total_price' => $total_price,
                 'created_at' => date('d-m-Y', strtotime($item['created_at'])),
-                // 'created_at' => $item['created_at'],
                 'checkin_time' => $item['checkin_time'],
                 'checkout_time' => $item['checkout_time'],
                 'is_paid' => 1,
                 'customer_payment' => $customer_payment,
                 'remaining_money' => $remaining_money,
-                // 'customer_payment' => $item['customer_payment'],
-                // 'remaining_money' => $item['remaining_money'],
-                // 'details' => $item['details'],
                 'details' => [],
                 'is_qr' => 0,
                 'invoice_id' => $item['id'],
@@ -147,16 +117,6 @@ class InvoiceApiController extends Controller
             //để format cái tiền
             foreach ($item['details'] as $item) {
                 $merged_array[$count]['details'][] = [
-                    // 'menu_item_id' => $item['menu_item_id'],
-                    // 'quantity' => $item['quantity'],
-                    // 'thanh_tien' => number_format($item['menu_items']['price'] * $item['quantity'], 0, ',', '.'),
-                    // 'menu_items' => [
-                    //     'id' => $item['menu_items']['id'],
-                    //     'name' => $item['menu_items']['name'],
-                    //     // 'price' => $item['menu_items']['price'],
-                    //     'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
-                    // ],
-
                     'menu_item_id' => $item['menu_item_id'],
                     'name' => $item['menu_items']['name'],
                     'price' => number_format($item['menu_items']['price'], 0, ',', '.'),
@@ -166,16 +126,13 @@ class InvoiceApiController extends Controller
             }
             $count++;
         }
-        // dd($merged_array);
         $message = 'Get api thanh cong';
         $table_names_available = getAndCacheAvailableTableNames();
-        // return $this->successResponse($invoices,$message);
         return $this->successResponse([
-            // 'invoices' => $invoices,
             'invoices' => (array)$merged_array,
             'table_names_available' => $table_names_available,
         ]
         ,$message);
     }
-    
+
 }

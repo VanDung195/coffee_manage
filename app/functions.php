@@ -30,10 +30,6 @@ if(!function_exists('getAndCacheTableName')){
             84000*30,
             function()
             {
-                // $tables = Table::query()
-                //     ->paginate(20);
-                // $tables = Table::query()->get();
-
                 $tables = Table::select('*')
                     ->where('is_hidden', 0)
                     ->orderBy(DB::raw("CASE
@@ -46,7 +42,7 @@ if(!function_exists('getAndCacheTableName')){
         );
     }
 }
-//except table names: unknow, takeaway (use for change information table) 
+//except table names: unknow, takeaway (use for change information table)
 if(!function_exists('getAndCacheAvailableTableNames')){
     function getAndCacheAvailableTableNames()
     {
@@ -55,12 +51,6 @@ if(!function_exists('getAndCacheAvailableTableNames')){
             84000 * 30,
             function()
             {
-                // $tables = Table::query()
-                //         ->get()
-                //         ->toArray();
-                // $tables = Table::where(DB::raw("name REGEXP '^T[0-9]+_[0-9]+$'"))
-                //             ->get();
-                // $tables = array_slice($tables, 6);
                 $tables = Table::query()
                     ->whereRaw("name REGEXP '^T[0-9]+_[0-9]+$'")
                     ->get();
@@ -91,7 +81,7 @@ if(!function_exists('getAndCachePositions'))
     function getAndCachePositions()
     {
         return cache()->remember(
-            SystemCacheEnum::POSITIONS, 
+            SystemCacheEnum::POSITIONS,
             84000 * 30,
             function()
             {
@@ -110,7 +100,7 @@ if(!function_exists('getAndCacheInvalidTableForQROrder'))
         return cache()->remember(
             SystemCacheEnum::INVALIDTABLE,
             84000 * 30,
-            function() 
+            function()
             {
                 //query builder
                 // $invalid_table_name = Table::query()

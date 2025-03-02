@@ -1,7 +1,7 @@
 @extends('layout.master')
 @push('css')
     <style>
-        
+
     </style>
 @endpush
 @section('content')
@@ -69,7 +69,7 @@
             </div>
             <div class="card-body">
                 <table class="table table-hover table-centered mb-0">
-                    <thead> 
+                    <thead>
                         <tr>
                             <th>#</th>
                             <th>Ngày tạo</th>
@@ -185,10 +185,6 @@
                         @endforeach
                     </tbody>
                 </table>
-                {{-- <ul class="pagination pagination-info" style="float: right;">
-                    {{ $invoices->appends(request()->all())->links() }}
-                </ul> --}}
-                {{-- {{ $invoices->appends(request()->all())->links() }} --}}
             </div>
         </div>
     </div>
@@ -220,7 +216,6 @@
                 }, 300);
             })
             $('.btn-search').on('click', function(event) {
-                // event.preventDefault();
             })
         });
     </script>

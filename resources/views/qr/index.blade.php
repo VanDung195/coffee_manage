@@ -34,11 +34,11 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-    
+
         .btn-update-quantity:hover {
             background-color: #e2e6ea;
         }
-    
+
         .btn-update-quantity:active {
             background-color: #dae0e5;
         }
@@ -46,7 +46,7 @@
             color: red;
         }
 
-        
+
         body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -132,7 +132,7 @@
     .form-control{
         margin-top: 0px;
     }
-    
+
     .form-invoice{
         /* border: 1px solid black; */
         margin-top: 20px;
@@ -144,7 +144,7 @@
     }
     .table-name{
         margin-left: 5px;
-        
+
     }
     .icon-center{
         max-width: fit-content;
@@ -178,7 +178,7 @@
         cursor: pointer; /* Con trỏ tay */
         font-size: 20px; /* Kích thước chữ lớn */
         /* height: 40px;  */
-        height: 38.4px; 
+        height: 38.4px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -219,7 +219,7 @@
         width: 66px;
         cursor: not-allowed;
         background-color: #34495e; /* Màu nền cho trạng thái disabled */
-        border: none; 
+        border: none;
         float: right;
         border-radius: 5px;
     }
@@ -232,44 +232,26 @@
     .btn-submit-invoice:disabled{
         background-color: rgb(178, 240, 178);
     }
-    /* CSS cho màn hình điện thoại di động (mobile) */
-    /* @media (max-width: 768px) {
-        body {
-            background-color: lightgreen;
-            font-size: 14px;
-            padding: 10px;
-        }
-    } */
 
     @media (min-width: 1200px) {
-        /* body {
-            background-color: lightcoral;
-            font-size: 20px;
-            padding: 30px;
-        } */
         .btn-delete-disabled:disabled{
             height: 38.4px;
             width: 66px;
             cursor: not-allowed;
             background-color: #34495e; /* Màu nền cho trạng thái disabled */
-            border: none; 
+            border: none;
             float: right;
             border-radius: 5px;
         }
     }
     /* CSS cho màn hình máy tính bảng (tablet) */
     @media (max-width: 1024px) {
-        /* body {
-            background-color: rgb(0, 0, 0);
-            font-size: 16px;
-            padding: 15px;
-        } */
         .btn-delete-disabled:disabled{
             height: 38.4px;
             width: 80px;
             cursor: not-allowed;
             background-color: #34495e; /* Màu nền cho trạng thái disabled */
-            border: none; 
+            border: none;
             float: right;
             border-radius: 5px;
         }
@@ -277,60 +259,6 @@
     </style>
 </head>
 <body>
-{{-- <div class="form-invoice">
-    <form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
-        @csrf
-        <div class="table-name form-row">
-            <input type="hidden" name="table-id" value="{{ $table_name }}">
-            <h3>Bàn số: {{ $table_name }}</h3>
-        </div>
-        <div class="item" id="item">
-            <div class="form-row">
-                <div class="form-group col-7 div-select" id="div-select">
-                    <label for="id[]">Món: </label>
-                    <select name="id[]" class="form-control select-item">
-                        <option selected>Chọn món</option>
-                        @foreach ($items as $item)
-                            <option value="{{ $item->id }}" data-price="{{ $item->price }}">
-                                {{ $item->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group col-4" style="margin-left: 5px; margin-right: 5px;">
-                    <label for="quantity">Số lượng: </label>
-                    <div style="display: flex;">
-                        <button type="button" class="btn-update-quantity" data-type='0' disabled>-</button>
-                        <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69; border: none; height: 40px; width: 40px; text-align: center;" readonly>
-                        <button type="button" class="btn-update-quantity" data-type='1' disabled>+</button>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group col-4" style="padding:0px;">
-                <label for="price">Giá: </label>
-                <input type="text" id="price" class="price form-control" value="0" readonly>
-            </div>
-        </div>
-        
-        <div id="append-item"></div>
-        <div class="form-row" style="margin-top: 10px;">
-            <div class="form-group col-5" id="div-paid">
-                <select name="is_paid" id="select_paid" class="form-control">
-                    <option value="0">Thanh toán sau</option>
-                    <option value="1" selected>Thanh toán luôn</option>
-                </select>
-            </div> 
-            <div class="form-group col-2" style="margin-left: 15px;float: left;">
-                <h4>Tổng tiền:</h4>
-            </div>
-            <div class="form-group col-4" style="margin-top: 5px; margin-left: 0;">
-                <input type="text" id="total-price" value="0" class="form-control" readonly>
-            </div>
-        </div>
-        <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button>
-    </form>
-    <button type="button" onclick="submitForm()" class="btn btn-success">Tạo hoá đơn</button>
-</div> --}}
 
 <div class="form-invoice">
     <form action="{{ route('invoice.store_qr') }}" method="POST" id="form-create">
@@ -372,7 +300,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="append-item"></div>
         <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append" style="margin-bottom:20px;margin-top:20px;">
             Thêm món
@@ -383,19 +311,14 @@
                     <option value="0">Thanh toán sau</option>
                     <option value="2" selected>Thanh toán luôn</option>
                 </select>
-            </div> 
+            </div>
             <div class="form-group col-2" style="margin-left: 15px;float: left;">
                 <h4>Tổng tiền:</h4>
             </div>
             <div class="form-group col-4" style="margin-top: 5px; margin-left: 0;">
-                {{-- <input type="text" name="total_price" id="total-price" value="0" class="form-control" readonly> --}}
                 <p style="margin:0px;display: flex; align-items: center;" id="total-price" class="form-control">0</p>
             </div>
         </div>
-        {{-- <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append" style="margin-bottom:20px;">
-            Thêm món
-        </button> --}}
-
         <div class="form-row">
             <div class="form-group col-6">
                 <label for="">Số tiền trả (1 = 10.000):</label>
@@ -403,19 +326,17 @@
             </div>
             <div class="form-group col-5"  style="margin-left: 20px;">
                 <label for="">Số tiền còn lại:</label>
-                {{-- <input class="form-control" type="text" name="" id=""> --}}
                 <p style="margin: 0px;display: flex; align-items: center;" class="remaining-money form-control">0</p>
             </div>
         </div>
-        {{-- <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm món</button> --}}
     </form>
     <button type="button" onclick="submitForm()" class="btn btn-submit-invoice btn-success">Tạo hoá đơn</button>
 </div>
 </body>
 </html>
 <script src="{{ asset('js/vendor.min.js') }}"></script>
-<script src="{{ asset('js/app.min.js') }}"></script>    
-<script src="{{ asset('js/helper.js') }}"></script> 
+<script src="{{ asset('js/app.min.js') }}"></script>
+<script src="{{ asset('js/helper.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
@@ -431,11 +352,9 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                // window.location.replace("http://coffee_manage.test/success");
                 console.log('thanh cong roi nhe');
             },
             error: function(error) {
-                // console.log(response.responseJSON.message);
                 $.toast({
                     heading: 'Error',
                     text: error.responseJSON.message,
@@ -486,7 +405,7 @@
         }
         $("#total-price").html(total.toLocaleString('vi-VN'));
     }
-    
+
 
     $(document).ready(function () {
         $.ajaxSetup({
@@ -496,9 +415,6 @@
         });
 
         $('.customer-payment').on('keyup', function() {
-            // let modal_content = $(this).closest('.modal-content');
-            // let object = modal_content.find('.form-create');
-            // let form_data = new FormData(object[0]);
             let object = $('#form-create');
             let form_data = new FormData(object[0]);
             console.log(123);
@@ -539,7 +455,7 @@
 
             update_row_total(item_class);
         });
-        
+
         $(".btn-update-quantity").on('click', function(){
             let item_class = $(this).closest('.item');
             let type = parseInt($(this).data('type'));
@@ -557,7 +473,7 @@
                 quantity_input.val(quantity);
             }
             update_row_total(item_class);
-            
+
         })
 
         var addBtn = document.getElementById('append');
@@ -608,49 +524,6 @@
             envent();
         });
 
-        
-                //Append item 
-        // var addBtn = document.getElementById('append');
-        // addBtn.addEventListener('click', function(){
-        //     let div = document.createElement("div");
-        //     div.innerHTML = `
-        //         <div class="form-group col-5 div-select">
-        //             <label for="">Món</label>
-        //             <select name="id[]" class="select-item">
-        //                 <option value="0" data-price="0" selected>Chọn món</option>
-        //                 @foreach ($items as $item)
-        //                     <option value="{{$item->id}}" data-price="{{ $item->price }}">
-        //                         {{ $item->name }}
-        //                     </option>
-        //                 @endforeach
-        //             </select>
-        //         </div>
-        //         <div class="form-group" style="margin-left: 42px;width:135px;">
-        //             <label for="">Số lượng (Min: 1)</label>
-        //             <br>
-        //             <button type="button" class="btn-update-quantity" data-type='0' style="float: left" disabled>-</button>
-        //             <input type="text" id="quantity" name="quantity[]" class="quantity form-control" value="0" style="background-color: #515c69;border:none;height:30px;width:40px;float: left;" readonly>
-        //             <button type="button" class="btn-update-quantity" data-type='1' style="float: left;" disabled>+</button>
-        //         </div>
-        //         <div class="form-group col-3">
-        //             <span class="span-sum">
-        //                 <label>Giá</label>
-        //                 <input type="text" id="price" class="price form-control" value=0 readonly>
-        //             </span>
-        //         </div>
-        //         <div class="form-group col-1">
-        //             <label>Delete</label>
-        //             <button type="button" class="btn-delete btn-danger">X</button>
-        //         </div>
-        //     `;
-
-        //     div.classList.add("form-row");
-        //     div.classList.add("item");
-        //     document.getElementById('append-item').appendChild(div);
-        //     $(".form-row .select-item").select2({ tag: true });
-        //     envent();
-        // })
-
 
         function envent()
         {
@@ -661,21 +534,6 @@
                 btn_update_quantity.attr('disabled', false);
                 update_row_total(item_class);
             });
-                // Sự kiện cho nút tăng giảm trong form-row mới
-            // $(".form-row:last-child .btn-update-quantity").on('click', function(){
-            //     let formRow = $(this).closest('.form-row');
-            //     let type = parseInt($(this).data('type'));
-            //     let quantityInput = $(this).closest('.form-row').find('.quantity');
-            //     let quantity = parseInt(quantityInput.val());
-            //     if (type === 0 && quantity > 1) {
-            //         quantity = quantity - 1;
-            //         quantityInput.val(quantity);
-            //     } else if (type === 1) {
-            //         quantity += 1;
-            //         quantityInput.val(quantity);
-            //     }
-            //     updateRowTotal(formRow);
-            // });
 
             $(".btn-update-quantity").on('click', function(){
                 let item_class = $(this).closest('.item');
@@ -694,7 +552,7 @@
                     quantity_input.val(quantity);
                 }
                 update_row_total(item_class);
-                
+
             });
 
             $(".item .btn-delete").on('click', function(){
@@ -702,6 +560,6 @@
                 divDelete.remove();
                 update_total_price();
             })
-        } 
+        }
     });
 </script>

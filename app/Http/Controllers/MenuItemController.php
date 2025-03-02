@@ -21,22 +21,20 @@ class MenuItemController extends Controller
         $this->model = MenuItem::query()->where('is_hidden', false);
         $this->table = (new MenuItem())->getTable();
     }
-    
+
     public function index(Request $request)
     {
         $selected_sort = $request->sort;
-        
+
         $selected_category = $request->get('category');
         $query = $this->model->clone()
                 ->with('menu_category:id,name');
-                // ->latest();
         if(!is_null($selected_category))
         {
             //whereHas (WHERE EXISTS vào truy vấn sql)
             $query->whereHas('menu_category', function($q) use($selected_category){
                 return $q->where('id', $selected_category);
             });
-            // dd($query->toSql(), $query->getBindings());
         }
         if(!is_null($selected_sort))
         {
@@ -46,7 +44,7 @@ class MenuItemController extends Controller
             }
         }
         $data = $query->paginate(15)->appends($request->all());
-        
+
         $menu_categories = MenuCategory::query()
                     ->where('is_hidden', false)
                     ->get();
@@ -77,10 +75,8 @@ class MenuItemController extends Controller
             return redirect()->back()->with('error', 'Không được để trống');
         }
         $check = MenuItem::query()
-                // ->where('menu_category_id', $category)
                 ->where('name', $name)
                 ->first();
-        // dd($check);
         if($check)
         {
             return redirect()->back()->with('error','Tên món đã tồn tại trong hệ thống!');
@@ -91,7 +87,6 @@ class MenuItemController extends Controller
             'price' => $price * 1000,
             'is_hidden' => false,
         ]);
-        // return redirect()->back()->with('success', 'Thêm món thành công rồi nhé!');
         return redirect()->route('admin.menu_items.index')->with('success', 'Thêm món thành công rồi nhé!');
     }
 
@@ -100,18 +95,8 @@ class MenuItemController extends Controller
         $item = MenuItem::query()
                 ->where('id', $item_id)
                 ->first();
-        // $category = MenuCategory::find($item->menu_category_id);
-
-        // $item = $this->model
-        //         ->clone()
-        //         ->with('menu_category:id,name')
-        //         ->where('id', $item_id)
-        //         ->first();
         $menu_categories = MenuCategory::query()
                 ->get();
-        // dd($item);
-        // dd($menu_categories);
-        // dd($item->menu_category->id);
         return view('admin.menu_item.edit',[
             'item' => $item,
             'categories' => $menu_categories,
@@ -120,7 +105,6 @@ class MenuItemController extends Controller
 
     public function update(Request $request)
     {
-        // dd($request->all());
         MenuItem::query()
                 ->where('id', $request->menu_item_id)
                 ->update([
@@ -133,16 +117,9 @@ class MenuItemController extends Controller
 
     public function destroy(Request $request)
     {
-        // MenuItem::query()
-        //         ->where('id', $request->menu_item_id)
-        //         ->update([
-        //             'is_hidden' => 1,
-        //         ]);
-        // dd($request->all());
         $check = MenuItem::query()
                 ->where('id', $request->menu_item_id)
                 ->value('id');
-        // dd($check);
         if(is_null($check))
         {
             return $this->errorResponse('Lỗi, hãy thử lại sau!');
@@ -150,28 +127,8 @@ class MenuItemController extends Controller
         $menu_item = MenuItem::findOrFail($request->menu_item_id);
         $menu_item->is_hidden = 1;
         $menu_item->save();
-        // return redirect()->back();
         return $this->successResponse([
             'menu_item_id' => $request->menu_item_id,
         ], 'Xoá món thành công!');
     }
-    // public function search(Request $request): JsonResponse
-    // {
-    //     if($request->ajax())
-    //     {
-    //         $output = '';
-    //         $items = MenuItem::query()
-    //                 ->where('name', 'like', '%' . $request->search . '%')->get();
-            
-    //         if($items)
-    //         {
-    //             $output .= '<ul>';
-    //             foreach ($items as $key => $item) {
-    //                 $output .= '<li><a href="#" data-id="' . $item->id . '" class="item-link">' . $item->name . '</a></li>';
-    //             }
-    //             $output .= '</ul>';
-    //         }
-    //     }
-    //     return $this->successResponse($output);
-    // }
 }

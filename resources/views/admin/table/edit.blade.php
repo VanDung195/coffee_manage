@@ -25,7 +25,6 @@
                             <button class="btn btn-submit btn-success" style="float: left; margin-top:27px; margin-left:10px;">Sửa bàn</button>
                         </div>
                         <div class="form-group">
-                            {{-- <button class="btn btn-danger" style="float: left; margin-top:27px;; margin-left:10px;">Huỷ</button> --}}
                             <a class="btn btn-danger" style="float: left; margin-top:27px;; margin-left:10px;" href="{{ route('admin.tables.index') }}">Huỷ</a>
                         </div>
                     </div>

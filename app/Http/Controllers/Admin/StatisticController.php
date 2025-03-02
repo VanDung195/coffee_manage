@@ -29,9 +29,9 @@ class StatisticController extends Controller
 
         $menu_items_name = MenuItem::query()->pluck('name');
         $arrX = [];
-        
-        $menu_items = Invoice::selectRaw('year(created_at) as year, month(created_at) as month, 
-                                        day(created_at) as day,menu_items.name,sum(invoice_details.quantity) as quantity, 
+
+        $menu_items = Invoice::selectRaw('year(created_at) as year, month(created_at) as month,
+                                        day(created_at) as day,menu_items.name,sum(invoice_details.quantity) as quantity,
                                         sum(invoice_details.quantity*menu_items.price) as total_price')
                 ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
                 ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
@@ -42,12 +42,12 @@ class StatisticController extends Controller
         $arrX = [];
         $arrY = [];
         $total_price = 0.0;
-        foreach($menu_items_name as $data) 
+        foreach($menu_items_name as $data)
         {
             $arrX[$data] = 0;
             $arrY[$data] = 0;
         }
-        foreach($menu_items as $each) 
+        foreach($menu_items as $each)
         {
             $arrX[$each['name']] = (int)$each['quantity'];
             $arrY[$each['name']] = (float)$each['total_price'];
@@ -60,7 +60,7 @@ class StatisticController extends Controller
             'total_price' => $total_price,
         ]);
     }
-    public function statistic_month_i() 
+    public function statistic_month_i()
     {
         return view('admin.statistic.statistic_month');
     }
@@ -120,11 +120,11 @@ class StatisticController extends Controller
     //         ];
     //         $arr2[$menu_item_id]['data'] = [];
     //         for($i = $start_day; $i <= $end_day; $i++)
-    //         {   
+    //         {
     //             $key = $i . '-' . $month;
     //             $arr2[$menu_item_id]['data'][$key] = [
     //                 $key,
-    //                 0                    
+    //                 0
     //             ];
     //         }
     //     }
@@ -152,7 +152,7 @@ class StatisticController extends Controller
 
         $month = date('m', strtotime($date));
         $year = date('Y', strtotime($date));
-        $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham, 
+        $invoices = Invoice::selectRaw('menu_items.id as masanpham, menu_items.name as tensanpham,
                                 date_format(invoices.created_at, "%e-%m") as ngaytao,
                                 sum(invoice_details.quantity) as soluong')
             ->join('invoice_details', 'invoices.id', '=', 'invoice_details.invoice_id')
@@ -241,7 +241,7 @@ class StatisticController extends Controller
             // $total_price += (float)$invoice['total_price'];
         }
         // dd($arrChart2);
-        $invoice_for_total_price = Invoice::selectRaw('date_format(invoices.created_at, "%e-%m") as day_month, 
+        $invoice_for_total_price = Invoice::selectRaw('date_format(invoices.created_at, "%e-%m") as day_month,
                         sum(invoices.total_price) as total_price')
                         ->whereMonth('invoices.created_at', '=', $month)
                         ->whereYear('invoices.created_at', $year)
@@ -289,7 +289,7 @@ class StatisticController extends Controller
         // $menu_items = MenuItem::query()
         //                 ->where('is_hidden', false)
         //                 ->get();
-        foreach($menu_items as $each) 
+        foreach($menu_items as $each)
         {
             $arr1[$each['id']] = [
                 'name' => $each['name'],
@@ -313,7 +313,7 @@ class StatisticController extends Controller
                 // dd($item['data'][$i]);
 
                 $arrChart2[$i] = 0;
-            }    
+            }
         }
         // dd($arr2);
         // dd($invoices->toArray());
@@ -371,13 +371,12 @@ class StatisticController extends Controller
         //set default value (0)
         foreach ($menu_items as $each) {
             //chart1
-            // $arrX[$each['name']] = 0;
 
             //drilldown chart
             $arr1[$each['id']] = [
                 'name' => $each['name'],
                 'y' => 0,
-                'drilldown' => $each['id'] 
+                'drilldown' => $each['id']
             ];
 
             $arr2[$each['id']] = [
@@ -389,14 +388,6 @@ class StatisticController extends Controller
         $total_price = 0.0;
         if($number_of_days <= 100)
         {
-            //đổi sang dateformat của câu truy vấn dưới cho đồng bộ
-            // $data = Invoice::selectRaw('date_format(invoices.created_at, "%d-%m-%Y") as date ,menu_items.name,menu_items.id as id,sum(invoice_details.quantity) as quantity, 
-            //                         sum(invoice_details.quantity*menu_items.price) as total_price')
-            //             ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
-            //             ->join('menu_items','invoice_details.menu_item_id','=','menu_items.id')
-            //             ->whereBetween('invoices.created_at', [$start_date, $end_date_formatted])
-            //             ->groupBy('date','menu_items.name', 'id')
-            //             ->get();
             $data = Invoice::selectRaw('date_format(invoices.created_at, "%d-%m-%Y") as date,
                                          menu_items.name, menu_items.id as id,
                                         sum(invoice_details.quantity) as quantity')
@@ -408,12 +399,9 @@ class StatisticController extends Controller
                         ->get();
 
             foreach ($arr2 as $key => $value) {
-                // $arrX[$each['name']] += (int)$each['quantity'];
                 $current_date = $start_date;
                 while($current_date <= $end_date)
-                {   
-                    // $date_test = new DateTime(date('Y-m-d', strtotime($current_date))); cồng kềnh
-                    // dd($date_test->format('d-m-Y'));
+                {
                     $current_date_formatted = date('d-m-Y', strtotime($current_date));
                     $arr2[$value['id']]['data'][$current_date_formatted] = [$current_date_formatted, 0];
 
@@ -424,13 +412,9 @@ class StatisticController extends Controller
             foreach($data as $each)
             {
                 $menu_item_id = $each['id'];
-                // $key = $each['year'] . '-' . $each['month'] . '-' . $each['day'];
                 $key = $each['date'];
                 $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
                 $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
-
-                // $arrLine[$key] += (float)$each['total_price'];
-                // $total_price += (float)$each['total_price'];
             }
             $invoice_for_total_price = Invoice::selectRaw('date_format(invoices.created_at, "%d-%m-%Y") as date,
                                                         sum(invoices.total_price) as total_price')
@@ -444,7 +428,6 @@ class StatisticController extends Controller
                 $total_price += (float)$item['total_price'];
             }
             return $this->successResponse([
-                // 'arrX' => $arrX,
                 'arr1' => $arr1,
                 'arr2' => $arr2,
                 'arrLine' => $arrLine,
@@ -456,11 +439,11 @@ class StatisticController extends Controller
         $end_date_timestamp = strtotime($end_date);
         $start_date = new DateTime(date('Y-m-d', $start_date_timestamp));
         $end_date = new DateTime(date('Y-m-d', $end_date_timestamp));
-        
+
         //start if number of day <= 2000
         if($number_of_days <= 2000)
         {
-            //có thể đổi sang month(invoices.created_at) để không có số 0 ở đằng trước 
+            //có thể đổi sang month(invoices.created_at) để không có số 0 ở đằng trước
             $data = Invoice::selectRaw('menu_items.id as id, date_format(invoices.created_at, "%m-%Y") as month,
                                         sum(invoice_details.quantity) as quantity')
                             ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
@@ -471,7 +454,7 @@ class StatisticController extends Controller
                             ->get();
 
             $start_month = $start_date->format('m-Y');
-            $end_month = $end_date->format('m-Y'); 
+            $end_month = $end_date->format('m-Y');
 
             //Tối ưu lại hoặc clean code sau
             list($thang_start, $nam_start) = explode('-', $start_month);
@@ -492,7 +475,6 @@ class StatisticController extends Controller
                 {
                     $formatted_thang = ($thang_start_1 < 10) ? "0$thang_start_1" : $thang_start_1;
                     $key = $formatted_thang . '-' . $nam_start_1;
-                    // echo $key . '        ';
                     $arr2[$item['id']]['data'][$key] = [$key,0];
                     $arrLine[$key] = 0;
                     $thang_start_1++;
@@ -509,8 +491,6 @@ class StatisticController extends Controller
                 $key = $each['month'];
                 $arr1[$menu_item_id]['y'] += (int)$each['quantity'];
                 $arr2[$menu_item_id]['data'][$key] = [$key, (int)$each['quantity']];
-                // $arrLine[$key] += (float)$each['total_price'];
-                // $total_price += (float)$each['total_price'];
             }
             $invoice_for_total_price = Invoice::selectRaw('date_format(invoices.created_at, "%m-%Y") as day_month,
                                                         sum(invoices.total_price) as total_price')
@@ -532,7 +512,6 @@ class StatisticController extends Controller
             ]);
         }
         //end (number of day <= 2000)
-
         $data = Invoice::selectRaw('menu_items.id as id, date_format(invoices.created_at, "%Y") as year,
                                 sum(invoice_details.quantity) as quantity')
                         ->join('invoice_details','invoices.id','=','invoice_details.invoice_id')
@@ -543,7 +522,7 @@ class StatisticController extends Controller
                         ->get();
         $start_year = intval($start_date->format('Y'));
         $end_year = intval($end_date->format('Y'));
-        
+
         foreach($arr2 as $items => $item)
         {
             $nam_start = $start_year;
@@ -582,4 +561,4 @@ class StatisticController extends Controller
             'total_price' => $total_price,
         ]);
     }
-}   
+}

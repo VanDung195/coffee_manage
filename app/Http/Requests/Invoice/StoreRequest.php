@@ -23,7 +23,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'table-id' => [
+            'table_id' => [
                 'required',
                 // Rule::in(['T1.1','T1.2','T1.3','T1.4','T1.5','T1.6','T1.7','T1.8','T1.9','T1.10'])
             ],

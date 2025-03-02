@@ -46,6 +46,7 @@ class UserController extends Controller
                             ->orderBy('created_at', 'desc')
                             ->get();
         // dd($salary_information);
+        // dd($salary_information);
         return view('user.index', [
             // 'user' => $user,
             'id' => $id,
@@ -171,7 +172,7 @@ class UserController extends Controller
     
             if(!auth()->check())
             {
-                // return redirect()->route('login')->with('error', 'Dang nhap da!');
+                // return redirect()->route('login')->with('error', 'error');
                 // return 
             }
             $id = user()->id;

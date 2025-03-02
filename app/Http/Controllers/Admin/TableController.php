@@ -15,7 +15,6 @@ class TableController extends Controller
     {
         $tables = Table::query()
                 ->where('is_hidden', 0)
-                // ->orderBy('stt', 'asc')    
                 ->orderByRaw("CASE
                     WHEN name REGEXP '^[A-Za-z]+' THEN CONCAT(LEFT(name, LENGTH(name) - LENGTH(SUBSTRING_INDEX(name, '_', -1))), LPAD(SUBSTRING_INDEX(name, '_', -1), 10, '0'))
                     ELSE name
@@ -33,23 +32,16 @@ class TableController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
         $name = $request->name;
         $floor = (int)$request->floor;
         $check = Table::query()
                 ->where('name', $name)
                 ->value('name');
-        // dd($check);
         if(!is_null($check))
         {
             return $this->errorResponse('Bàn đã tồn tại trong hệ thống!!!');
         }
 
-        // Table::query()
-        //         ->create([
-        //             'name' => $name,
-        //             'floor' => $floor,
-        //         ]);
         $table = new Table();
         $table->name = $name;
         $table->floor = $floor;
@@ -63,15 +55,12 @@ class TableController extends Controller
 
     public function edit($table_id)
     {
-        // dd($table_id);
         $table = Table::query()
                     ->where('id', $table_id)
-                    // ->first();
                     ->findOrFail($table_id);
-        // dd($table);
         return view('admin.table.edit', [
             'table' => $table,
-        ]); 
+        ]);
 
     }
 
@@ -94,7 +83,7 @@ class TableController extends Controller
             ->update([
                 'name' => $name,
                 'floor' => $floor,
-            ]); 
+            ]);
         return $this->successResponse(1,'Cập nhật bàn thành công! sẽ điều hướng sau 3 giây.');
     }
 
