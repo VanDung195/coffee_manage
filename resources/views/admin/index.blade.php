@@ -41,7 +41,6 @@
         <div class="header">
             <h1>Bàn</h1>
         </div>
-        <button data-button-id="12" class="btn btn-click-me btn-danger">click me for delete!!</button>
         <div>
         </div>
         @foreach ($tables as $table)
@@ -69,6 +68,8 @@
                                 @csrf
                                 <input type="hidden" name="table_id" id="table_id" class="form-control" value="{{ $table->id }}" readonly>
                                 <input type="hidden" name="is_create" value="true">
+                                {{-- <input type="text" class="form-control" name="table-id" id="table-id"
+                                    value="11111" readonly> --}}
                                 <p style="font-size: 20px;" id="table-id">{{ $table->name }}</p>
                                 <div class="item form-row">
                                     <div class="div-select form-group col-5" id="div-select">
@@ -107,6 +108,7 @@
                                     </div>
                                 </div>
                                 <div class="append-item">
+                                    {{-- # Đổi id thành class ở đây --}}
                                 </div>
                                 <div class="form-row" style="margin-top: 30px;">
                                     <div class="form-group col-3" id="div-paid">
@@ -119,8 +121,10 @@
                                         </select>
                                     </div>
                                     <div class="form-group col-3" style="margin-left:0px;">
+                                        {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
                                         <label for="">Tổng tiền: </label>
                                         <input type="text" value="0" class="total-price form-control" readonly>
+                                        {{-- </span> --}}
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="">Số tiền khách trả: </label>
@@ -130,8 +134,10 @@
                                     <div class="form-group col-3">
                                         <label for="">Tiền thừa: </label>
                                         <p class="remaining-money form-control">0</p>
+                                        {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
                                     </div>
                                 </div>
+                                {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
                                 <button type="button" class="append btn btn-block btn-lg btn-fill btn-danger">Thêm
                                     món</button>
                             </form>
@@ -140,6 +146,8 @@
                         <div class="modal-footer">
                             <button class="btn-submit-invoice btn btn-primary" type="button" onclick="submitForm()">Reset
                                 hoá đơn</button>
+                            {{-- <button class="btn-submit-invoice-test btn btn-primary" type="button">test</button> --}}
+                            {{-- <button class="btn-submit-invoice btn btn-success" type="button" onclick="submitForm()">Tạo hoá đơn</button> --}}
                             <button class="btn-submit-invoice btn btn-success" type="button">Tạo hoá đơn</button>
                         </div>
                     </div>
@@ -152,10 +160,13 @@
             <h1>Quản Lý Hoá Đơn</h1>
         </div>
     </div>
+    {{-- Div chứa modal invoice detail --}}
     <div id="append_modal_invoice_detail"></div>
     <div id="modal-invoice-change"></div>
+    <!-- Modal botstrap -->
     <div id="modal-invoice-bak" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Tạo hoá đơn</h4>
@@ -212,8 +223,10 @@
                                 </select>
                             </div>
                             <div class="form-group col-3" style="margin-left:0px;">
+                                {{-- <span class="fl-right" style="margin-bottom: 20px;"> --}}
                                 <label for="">Tổng tiền: </label>
                                 <input type="text" id="total-price" value="0" class="form-control" readonly>
+                                {{-- </span> --}}
                             </div>
                             <div class="form-group col-3">
                                 <label for="">Số tiền khách trả: </label>
@@ -223,8 +236,10 @@
                             <div class="form-group col-3">
                                 <label for="">Tiền thừa: </label>
                                 <p class="form-control" id="remaining-money">0</p>
+                                {{-- <input class="form-control" type="text" name="" id="remaining-money" readonly> --}}
                             </div>
                         </div>
+                        {{-- <button type="button" class="delete-test">Xoá div con</button> --}}
                         <button type="button" class="btn btn-block btn-lg btn-fill btn-danger" id="append">Thêm
                             món</button>
                     </form>
@@ -232,6 +247,7 @@
 
                 </div>
                 <div class="modal-footer">
+
                 </div>
             </div>
         </div>
@@ -243,8 +259,10 @@
     @vite(['resources/js/app.js'])
     <script type="module">
         let soundEnabled = false;
+
         window.Echo.channel('order-channel')
             .listen('InvoicePlaced', (response) => {
+
                 $.ajax({
                     type: "get",
                     url: '{{ route('putInvoice') }}',
@@ -298,11 +316,13 @@
                         let rows = table.getElementsByTagName('tr');
                         if(rows.length == 1 && is_paid == 0 || rows.length == 1 && is_paid == 2)
                         {
+                            // console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table');
                             let targetRow = document.querySelector('.order-table tr:first-child');
                             targetRow.insertAdjacentHTML('afterend', order_table);
                         }
 
                         if(is_paid == 0 || is_paid == 2 && rows.length > 1) {
+                            // console.log('Đây là trường hợp khi chưa có dòng dữ liệu nào trong table nhưng ở if thứ 2');
                             Array.from(rows).some((row, index) => {
                                 if(rows[index + 1] == undefined || rows[index + 1].getAttribute('data-status') == '1') {
                                     row.insertAdjacentHTML('afterend', order_table);
@@ -326,9 +346,9 @@
             })
     </script>
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
         });
-
         function modal_invoice(table_id,table_name,customer_payment_check,user_name,checkin_time,
                                 checkout_time,details,is_qr,is_paid,total_price,customer_payment,
                                 remaining_money,invoice_id)
@@ -737,6 +757,7 @@
                 defaultOption.prop('disabled', false);
             }
         });
+
         let total_price_global = 0;
         $(document).on('keyup', '.customer-payment',function() {
             console.log(123);
@@ -790,6 +811,7 @@
                 url: '{{ route('api.invoices') }}',
                 dataType: 'json',
                 success: function(response) {
+                    //invoice
                     let divapi = document.createElement("div");
                     response.data.invoices.forEach(function(item, index) {
                         console.log(123);
@@ -820,6 +842,7 @@
 
                         let modal_invoice_api = modal_invoice(table_id_api,table_name,customer_payment_check,user_name,checkin_time,
                             checkout_time,details,is_qr,is_paid,total_price,customer_payment,remaining_money,invoice_id);
+                        // console.log(modal_invoice_api);
                         let diva = document.createElement("div");
                         diva.innerHTML = modal_invoice_api;
                         diva.classList.add("form-group");
@@ -875,19 +898,7 @@
                     $('.form-row .select-to-table').select2({
                         tag: true
                     });
-
-                    order_table += `
-                        </table>
-                    `;
-                    let div_table = document.createElement("div");
-                    div_table.innerHTML = order_table;
-                    div_table.classList.add("form-group");
-                    document.getElementById("right").appendChild(div_table);
-                    let table = document.getElementById('order-table-id');
-                    let rows = table.getElementsByTagName('tr');
-                    $('.form-row .select-to-table').select2({
-                        tag: true
-                    });
+                    console.log(123);
                 },
                 error: function(error) {
                     console.log(error);
@@ -896,7 +907,17 @@
             });
 
         });
-        //https://stackoverflow.com/questions/7114780/convert-jquery-element-to-html-element
+
+        // setTimeout(()=> {
+        //     $('.btn-change-invoice').on('click', function(){
+        //         let table_name = $(this).data('table-name');
+        //         let modal_change_invoice = '.modal-change-invoice-'+table_name;
+        //         $(modal_change_invoice).modal('show');
+        //         console.log(123);
+        //     })
+        // }, 800);
+        //delegation
+
         $('.btn-submit-invoice').on('click', function() {
             let modal_content = $(this).closest('.modal-content');
             let obj = modal_content.find('.form-create');
@@ -911,6 +932,7 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
+                    // console.log(response);
                     $.toast({
                         heading: 'Thành công',
                         text: response.message,
@@ -1017,6 +1039,7 @@
                     $('.form-row .select-to-table').select2({
                         tag: true
                     });
+
                 },
                 error: function(error) {
                     console.log(error);
@@ -1058,7 +1081,6 @@
             $(invoice_detail).modal('show');
 
             let btn_generate_invoice = $(invoice_detail).find('.btn-generate-invoice');
-
                 $(invoice_detail).off('click', '.btn-generate-invoice');
                 $(invoice_detail).on('click', '.btn-generate-invoice', function () {
                     let nested_invoice_id = $(this).data('invoice-id');
@@ -1182,9 +1204,14 @@
                         }
                     });
                 });
+        });
+
+
         $(document).on('click', '.btn-submit-change-invoice', function(){
             let modal_content = $(this).closest('.modal-content');
             let modal = $(this).closest('.modal');
+            // let from_table = modal_content.find('.from-table').text();
+            // let to_table = modal_content.find('.select-to-table').val();
 
             let from_table_id = modal_content.find('.from-table-id').val();
             let to_table_id = modal_content.find('.select-to-table').val();
@@ -1193,6 +1220,7 @@
             let csrf_token = modal_content.find('input[name="_token"]').val();
 
             let modal_class_new = '.modal-change-invoice-'+to_table_id;
+            // modal_class_new = '#modal-change-invoice-id-'+to_table_id;
             let payment_status_new = $(modal_class_new).find('.payment-status').val();
             console.log(payment_status_new);
             console.log("day la ajax de doi thong tin ban");
@@ -1214,14 +1242,17 @@
                         showHideTransition: 'slide',
                         icon: 'success'
                     })
+
                     $(modal).modal('toggle');
                     let new_key = response.data.new_key;
                     let old_key = response.data.old_key;
 
                     let new_key_name = response.data.new_key_name;
                     let old_key_name = response.data.old_key_name;
+
                     let span_id_old_key = 'span-table-id-' + old_key;
                     let span_id_new_key = 'span-table-id-' + new_key;
+
                     let span_id_table_new = document.getElementById(span_id_new_key);
                     let span_id_table_old = document.getElementById(span_id_old_key);
 
@@ -1257,6 +1288,7 @@
                     let btn_change_invoice_old = $('#'+btn_change_invoice_id_old);
                     let btn_change_invoice_new = $('#'+btn_change_invoice_id_new);
 
+
                     let btn_generate_invoice_old = $('#btn-generate-invoice-'+old_key);
                     let btn_generate_invoice_new = $('#btn-generate-invoice-'+new_key);
 
@@ -1271,16 +1303,13 @@
                         btn_generate_invoice_new.data('table-id', old_key).attr('data-table-id', old_key);
                         btn_generate_invoice_old.attr('id', 'btn-generate-invoice-'+new_key);
                         btn_generate_invoice_new.attr('id', 'btn-generate-invoice-'+old_key);
+
                         btn_generate_invoice_modal_old.attr('id', 'btn-generate-invoice-modal-'+new_key);
                         btn_generate_invoice_modal_new.attr('id', 'btn-generate-invoice-modal-'+old_key);
-
-
 
                         console.log(span_id_table_new);
                         console.log(span_id_table_old);
                         console.log('co modal invoice new nhe!!!!!');
-                        //data table change
-
                         $(class_invoice_new).find('.from-table-name').html(old_key_name);
                         $(class_invoice_new).find('.from-table-id').val(old_key);
                         $(class_invoice_new).removeClass(class_invoice_new_without_dot).addClass(class_invoice_old_without_dot); ////
@@ -1403,14 +1432,11 @@
                     console.log(div_invoice);
                     divR.remove();
 
-                    //switch tu red button to green button
                     let btn_show_table = "show_table_" + table_id;
                     let btn_show_invoice_detail = "show_detail_" + table_id;
                     document.getElementById(btn_show_table).style.display = 'block';
                     document.getElementById(btn_show_invoice_detail).style.display = 'none';
 
-
-                    //remove tr table
                     console.log(table_id);
                     let elements = document.querySelectorAll('.order_table_class_' + table_id);
                     elements.forEach(function(element) {
@@ -1447,7 +1473,6 @@
         }
 
         function updateTotalPrice(modal_body) {
-            // let modal_body = $(this).closest('.modal-body');
             let item = modal_body.find('.item');
             let total_price = 0;
 
@@ -1512,6 +1537,7 @@
                 let formRow = $(this).closest('.form-row');
                 let type = parseInt($(this).data('type'));
                 let quantityInput = $(this).closest('.form-row').find('.quantity');
+                // console.log(quantityInput);
                 let quantity = parseInt(quantityInput.val());
                 if (type === 0) {
                     if (quantity > 1) {
@@ -1600,7 +1626,6 @@
                     btnUpdateQuantity.attr('disabled', false);
                     quantityInput.val('1');
                     let quantity = parseInt(quantityInput.val());
-
                     let modal_body = $(this).closest('.modal-body');
                     updateRowTotal(formRow, modal_body);
                 });
