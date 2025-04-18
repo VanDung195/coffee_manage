@@ -1,0 +1,51 @@
+variables:
+  DOCKER_IMAGE: ${REGISTRY_URL}/${REGISTRY_USER}/${CI_PROJECT_NAME}:${CI_COMMIT_TAG}_${CI_COMMIT_SHORT_SHA}
+  DOCKER_CONTAINER: ${CI_PROJECT_NAME}
+
+stages:
+  - buildandpush
+  - deploy
+  - showlog
+
+buildandpush:
+  stage: buildandpush
+  variables:
+    GIT_STRATEGY: clone
+  before_script:
+    - docker login ${REGISTRY_URL} -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD}
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
+  tags:
+   - lab-server
+  only:
+    - tags
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+  before_script:
+    - docker login ${REGISTRY_URL} -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD}
+  script:
+    - docker pull $DOCKER_IMAGE
+    - docker compose down
+    - docker compose up -d --build
+  tags:
+   - lab-server
+  only:
+    - tags
+
+showlog:
+  stage: showlog
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - docker login ${REGISTRY_URL} -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD}
+  script:
+    # - docker logs $DOCKER_CONTAINER
+    - docker logs app
+  tags:
+   - lab-server
+  only:
+    - tags
